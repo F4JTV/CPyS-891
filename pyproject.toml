@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "py891"
+authors = [
+  { name="F4JTV", email="f4jtv@orange.fr" },
+]
+description = "Package for controling/programming a Yaesu FT-891"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Development Status :: 1 - Planning"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/F4JTV/FT_891"
