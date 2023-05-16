@@ -61,6 +61,10 @@ ACG_FAST = b"1"
 ACG_MID = b"2"
 ACG_SLOW = b"3"
 ACG_AUTO = b"4"
+BANDS = {"1.8": b"00", "3.5": b"01", "5.0": b"02", "7": b"03",
+         "10": b"04", "14": b"05", "18": b"06", "21": b"07",
+         "24.5": b"08", "28": b"09", "50": b"10", "GEN": b"11",
+         "MW": b"12"}
 
 
 class FT891(Serial):
@@ -188,7 +192,7 @@ class FT891(Serial):
         """
         self.write(b"BA;")
 
-    def set_auto_notch(self, state):
+    def set_auto_notch(self, state=bool()):
         """
         Set auto notch
 
@@ -374,8 +378,10 @@ class FT891(Serial):
         Set: B S P1 P1 ;
         5
         """
-        b = bytes(band, ENCODER)
-        cmd = b"BS" + b + b";"
+        if band not in BANDS.keys():
+            return
+
+        cmd = b"BS" + BANDS[band] + b";"
         self.write(cmd)
 
     def get_busy(self):
@@ -395,7 +401,7 @@ class FT891(Serial):
         self.write(b"BY;")
         return self.read(5)
 
-    def set_clar(self, state):
+    def set_clar(self, state=bool()):
         """
         Set the CLAR state
 
@@ -533,7 +539,7 @@ class FT891(Serial):
         self.write(b"CN01;")
         return self.read(8)
 
-    def set_contour_state(self, state):
+    def set_contour_state(self, state=bool()):
         """
         Set the contour state
 
@@ -560,7 +566,7 @@ class FT891(Serial):
         else:
             self.write(b"CO000000;")
 
-    def set_contour_freq(self, freq):
+    def set_contour_freq(self, freq=str()):
         """
         Set the contour freq
 
@@ -586,7 +592,7 @@ class FT891(Serial):
         cmd = b"CO01" + f + b";"
         self.write(cmd)
 
-    def set_contour_apf_state(self, state):
+    def set_contour_apf_state(self, state=bool()):
         """
         Set the contour APT state
 
@@ -613,7 +619,7 @@ class FT891(Serial):
         else:
             self.write(b"CO020000;")
 
-    def set_controur_apf_freq(self, freq):
+    def set_controur_apf_freq(self, freq=str()):
         """
         Set the contour APT freq
 
@@ -739,7 +745,7 @@ class FT891(Serial):
         self.write(b"CO03;")
         return self.read(9)
 
-    def set_cw_spot(self, state):
+    def set_cw_spot(self, state=bool()):
         """
         Set the CW spot state
 
@@ -864,8 +870,10 @@ class FT891(Serial):
         self.write(b"CT0;")
         return self.read(5)
 
-    def set_dimmer(self, contrast_level, backlight_level,
-                   lcd_level, tx_busy_level):
+    def set_dimmer(self, contrast_level=str(),
+                   backlight_level=str(),
+                   lcd_level=str(),
+                   tx_busy_level=str()):
         """
         Set the dimmer levels
 
@@ -921,7 +929,7 @@ class FT891(Serial):
         """
         self.write(b"DN;")
 
-    def set_main_encoder_down(self, steps):
+    def set_main_encoder_down(self, steps=str()):
         """
         Set the main encoder down for nb steps
 
@@ -935,7 +943,7 @@ class FT891(Serial):
         cmd = b"ED0" + step + b";"
         self.write(cmd)
 
-    def set_multi_func_encoder_down(self, steps):
+    def set_multi_func_encoder_down(self, steps=str()):
         """
         Set the multi function encoder down for nb steps
 
@@ -949,7 +957,7 @@ class FT891(Serial):
         cmd = b"ED8" + step + b";"
         self.write(cmd)
 
-    def set_main_encoder_up(self, steps):
+    def set_main_encoder_up(self, steps=str()):
         """
         Set the main encoder up for nb steps
 
@@ -963,7 +971,7 @@ class FT891(Serial):
         cmd = b"EU0" + step + b";"
         self.write(cmd)
 
-    def set_multi_func_encoder_up(self, steps):
+    def set_multi_func_encoder_up(self, steps=str()):
         """
         Set the multi function encoder up for nb steps
 
@@ -986,7 +994,7 @@ class FT891(Serial):
         """
         self.write(b"EK;")
 
-    def set_vfoa_freq(self, frequency):
+    def set_vfoa_freq(self, frequency=str()):
         """
         Set the frequency of VFOA
 
@@ -1002,7 +1010,7 @@ class FT891(Serial):
         cmd = b"FA" + freq + b";"
         self.write(cmd)
 
-    def set_vfob_freq(self, frequency):
+    def set_vfob_freq(self, frequency=str()):
         """
         Set the frequency of VFOB
 
@@ -1111,7 +1119,7 @@ class FT891(Serial):
         5
         """
         if state not in [ACG_OFF, ACG_FAST, ACG_MID, ACG_SLOW, ACG_AUTO]:
-           return
+            return
 
         cmd = b"GT0" + state + b";"
         self.write(cmd)
@@ -1161,3 +1169,145 @@ class FT891(Serial):
         self.write(b"ID;")
         return self.read(7)
 
+    def get_info(self):
+        """
+        Get the information about current config
+
+        P1 001 - 099 (Regular Memory Channel)
+           P1L - P9U (PMS)
+           501 - 510 (5 MHz, U.S. and U.K. version only)
+           EMG (Emergency)
+        P2 VFO-A Frequency (Hz)
+        P3 Clarifier Direction +: Plus Shift, -: Minus Shift
+           Clarifier Offset: 0000 - 9999 (Hz)
+        P4 0: CLAR “OFF” 1: CLAR “ON”
+        P5 0: (Fixed)
+        P6 MODE 1: SSB (SSB BFO) 2: SSB (SSB BFO) 3: CW 4: FM 5: AM
+                6: RTTY (RTTY BFO) 7: CW (CW BFO) 8: DATA (DATA BFO)
+                9: RTTY (RTTY BFO) A: - B: FM-N C: DATA (DATA BFO)
+                D: AM-N
+        P7 0: VFO 1: Memory 2: Memory Tune 3: - 4: - 5: PMS
+        P8 0: CTCSS “OFF” 1: CTCSS ENC/DEC 2: CTCSS ENC
+        P9 00: (Fixed)
+        P10 0: Simplex 1: Plus Shift 2: Minus Shift
+
+        Read: I F ;
+        3
+
+        Answer:
+        I F P1 P1 P1 P2 P2 P2 P2 P2 P2 P2 P2 P2
+        +/- P3 P3 P3 P3 P4 P5 P6 P7 P8 P9 P9 P10 ;
+        28
+        """
+        self.write(b"IF;")
+        return self.read(28)
+
+    def set_if_shift(self, state=bool(), freq=str(), neg_pos=str()):
+        """
+        Set the shift frequency
+
+        P1 0:(Fixed)
+        P2 0: OFF
+           1: ON
+        P3 0 ~ 1200 Hz (20 Hz steps)
+
+        Set & Answer: I S P1 P2 +/- P3 P3 P3 P3 ;
+        10
+
+        Read: I S P1 ;
+        4
+        """
+        f_shift = bytes(freq, ENCODER)
+        n_p = bytes(neg_pos, ENCODER)
+
+        if state:
+            cmd = b"IS01" + n_p + f_shift + b";"
+        else:
+            cmd = b"IS00" + n_p + f_shift + b";"
+
+        self.write(cmd)
+
+    def get_if_shift(self):
+        """
+        Get the shift frequency
+
+        P1 0:(Fixed)
+        P2 0: OFF
+           1: ON
+        P3 0 ~ 1200 Hz (20 Hz steps)
+
+        Set & Answer: I S P1 P2 +/- P3 P3 P3 P3 ;
+        10
+
+        Read: I S P1 ;
+        4
+        """
+        self.write(b"IS;")
+        return self.read(10)
+
+    def set_keyer_memory(self, channel_number=str(), message=str()):
+        """
+        Set a message (50 chars max) to a keyer memory(1 - 5)
+
+        P1 1 - 5 : Keyer Memory Channel Number
+        P2 Message Characters (up to 50 characters)
+
+        Set & Answer: K M P1 P2 P2 P2 P2 ~ P2 ;
+        5 to 54
+
+        Read: K M P1 ;
+        4
+        """
+        ch_nb = bytes(channel_number, ENCODER)
+        msg = bytes(message, ENCODER)
+        cmd = b"KM" + ch_nb + msg + b";"
+        self.write(cmd)
+
+    def get_keyer_memory(self, channel_number=str()):
+        """
+        Get a message (50 chars max) to a keyer memory(1 - 5)
+
+        P1 1 - 5 : Keyer Memory Channel Number
+        P2 Message Characters (up to 50 characters)
+
+        Set & Answer: K M P1 P2 P2 P2 P2 ~ P2 ;
+        5 to 54
+
+        Read: K M P1 ;
+        4
+        """
+        ch_nb = bytes(channel_number, ENCODER)
+        cmd = b"KM" + ch_nb + b";"
+        self.write(cmd)
+        return self.read(54)
+
+    def set_key_pitch(self, pitch=str()):
+        """
+        Set the key pitch
+
+        P1 00: 300 Hz - 75: 1050 Hz (10Hz steps)
+
+        Set & Answer: K P P1 P1 ;
+        5
+
+        Read: K P ;
+        3
+        """
+        p_val = bytes(pitch, ENCODER)
+        cmd = b"KP" + p_val + b";"
+        self.write(cmd)
+
+    def get_key_pitch(self):
+        """
+        Get the key pitch
+
+        P1 00: 300 Hz - 75: 1050 Hz (10Hz steps)
+
+        Set & Answer: K P P1 P1 ;
+        5
+
+        Read: K P ;
+        3
+        """
+        self.write(b"KP;")
+        self.read(5)
