@@ -1310,4 +1310,268 @@ class FT891(Serial):
         3
         """
         self.write(b"KP;")
-        self.read(5)
+        return self.read(5)
+
+    def set_keyer(self, state=bool()):
+        """
+        Set keyer ON or OFF
+
+        P1 0: KEYER “OFF”
+           1: KEYER “ON”
+
+        Set & Answer: K R P1 ;
+        4
+
+        Read: K R ;
+        3
+        """
+        if state:
+            self.write(b"KR1;")
+        else:
+            self.write(b"KR0;")
+
+    def get_keyer(self):
+        """
+        Get keyer ON or OFF
+
+        P1 0: KEYER “OFF”
+           1: KEYER “ON”
+
+        Set & Answer: K R P1 ;
+        4
+
+        Read: K R ;
+        3
+        """
+        self.write(b"KR;")
+        return self.read(4)
+
+    def set_key_speed(self, speed=str()):
+        """
+        Set the key speed
+
+        P1 004 - 060 (WPM)
+
+        Set & Answer: K S P1 P1 P1 ;
+        6
+
+        Read: K S ;
+        3
+        """
+        k_speed = bytes(speed, ENCODER)
+        cmd = b"KS" + k_speed + b";"
+        self.write(cmd)
+
+    def get_key_speed(self):
+        """
+        Get the key speed
+
+        P1 004 - 060 (WPM)
+
+        Set & Answer: K S P1 P1 P1 ;
+        6
+
+        Read: K S ;
+        3
+        """
+        self.write(b"KS;")
+        return self.read(6)
+
+    def set_keyer_memory_playback(self, memory_number=str()):
+        """
+        Play a Keyer Memory/Message Keyer number
+
+        P1 1: Keyer Memory “1” Playback
+           2: Keyer Memory “2” Playback
+           3: Keyer Memory “3” Playback
+           4: Keyer Memory “4” Playback
+           5: Keyer Memory “5” Playback
+           6: Message Keyer “1” Playback
+           7: Message Keyer “2” Playback
+           8: Message Keyer “3” Playback
+           9: Message Keyer “4” Playback
+           A: Message Keyer “5” Playback
+
+        Set: K | Y | P1 | ;
+        4
+        """
+        mem_num = bytes(memory_number, ENCODER)
+        cmd = b"KY" + mem_num
+        self.write(cmd)
+
+    def set_lock(self, state=bool()):
+        """
+        Lock/Unlock the main dial
+
+        P1 0: VFO DIAL Lock “OFF”
+           1: VFO DIAL Lock “ON”
+
+        Set & Answer: L | K | P1 | ;
+        4
+
+        Read: L | K | ;
+        3
+        """
+        if state:
+            self.write(b"LK1;")
+        else:
+            self.write(b"LK0;")
+
+    def get_lock(self):
+        """
+        Get the main dial Lock/Unlock state
+
+        P1 0: VFO DIAL Lock “OFF”
+           1: VFO DIAL Lock “ON”
+
+        Set & Answer: L | K | P1 | ;
+        4
+
+        Read: L | K | ;
+        3
+        """
+        self.write(b"LK;")
+        return self.read(4)
+
+    def toggle_dvs_recording(self, dvs_channel=str()):
+        """
+        Toggle the DVS channel recording (Recording Start/Stop)
+
+        P1 0: DVS
+        P2 0: DVS (Recording Stop)
+           1: DVS (CH “1” Recording Start/Stop)
+           2: DVS (CH “2” Recording Start/Stop)
+           3: DVS (CH “3” Recording Start/Stop)
+           4: DVS (CH “4” Recording Start/Stop)
+           5: DVS (CH “5” Recording Start/Stop)
+
+        Set & Answer: L | M | P1 | P2 | ;
+        5
+
+        Read: L | M | P1 | ;
+        4
+        """
+        dvs_ch_nb = bytes(dvs_channel, ENCODER)
+        cmd = b"LM0" + dvs_ch_nb + b";"
+        self.write(cmd)
+
+    def get_dvs_state(self):
+        """
+        Toggle the DVS channel recording (Recording Start/Stop)
+
+        P1 0: DVS
+        P2 0: DVS (Recording Stop)
+           1: DVS (CH “1” Recording Start/Stop)
+           2: DVS (CH “2” Recording Start/Stop)
+           3: DVS (CH “3” Recording Start/Stop)
+           4: DVS (CH “4” Recording Start/Stop)
+           5: DVS (CH “5” Recording Start/Stop)
+
+        Set & Answer: L | M | P1 | P2 | ;
+        5
+
+        Read: L | M | P1 | ;
+        4
+        """
+        self.write(b"LM0;")
+        return self.read(5)
+
+    def set_memory_2_vfoa(self):
+        """
+        Set the memory channel to the VFOA
+
+        Set: M | A | ;
+        """
+        self.write(b"MA;")
+
+    def set_memory_channel(self, channel=str()):
+        """
+        Set the memory channel number
+
+        P1 001 - 099: Regular Memory Channel
+           P1L - P9U (PMS)
+
+        Set & Answer: M | C | P1 | P1 | P1 | ;
+        6
+
+        Read: M | C | ;
+        3
+        """
+        ch = bytes(channel, ENCODER)
+        cmd = b"MC" + ch + b";"
+        self.write(cmd)
+
+    def get_memory_channel(self):
+        """
+        Get the memory channel number
+
+        P1 001 - 099: Regular Memory Channel
+           P1L - P9U (PMS)
+
+        Set & Answer: M | C | P1 | P1 | P1 | ;
+        6
+
+        Read: M | C | ;
+        3
+        """
+        self.write(b"MC;")
+        return self.read(6)
+
+    def set_mode(self, mode):
+        """
+        Set the operating mode
+
+        P1 0: MAIN RX
+        P2 MODE 1: SSB (SSB BFO)
+                2: SSB (SSB BFO)
+                3: CW (CW BFO)
+                4: FM
+                5: AM
+                6: RTTY (RTTY BFO)
+                7: CW (CW BFO)
+                8: DATA (DATA BFO)
+                9: RTTY (RTTY BFO)
+                A: -
+                B: FM-N
+                C: DATA (DATA BFO)
+                D: AM-N
+
+        Set & Answer: M | D | P1 | P2 | ;
+        5
+
+        Read: M | D | ;
+        4
+        """
+        op_mode = bytes(mode, ENCODER)
+        cmd = b"MD0" + op_mode + b";"
+        self.write(cmd)
+
+    def get_mode(self):
+        """
+        Get the operating mode
+
+        P1 0: MAIN RX
+        P2 MODE 1: SSB (SSB BFO)
+                2: SSB (SSB BFO)
+                3: CW (CW BFO)
+                4: FM
+                5: AM
+                6: RTTY (RTTY BFO)
+                7: CW (CW BFO)
+                8: DATA (DATA BFO)
+                9: RTTY (RTTY BFO)
+                A: -
+                B: FM-N
+                C: DATA (DATA BFO)
+                D: AM-N
+
+        Set & Answer: M | D | P1 | P2 | ;
+        5
+
+        Read: M | D | ;
+        4
+        """
+        self.write(b"MD0;")
+        return self.read(5)
+
+
