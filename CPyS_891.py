@@ -48,6 +48,20 @@ APO = {"OFF": 0, "1 h": 1, "2 h": 2, "4 h": 3,
        "6 h": 4, "8 h": 5, "10 h": 6, "12 h": 7}
 FAN_CONTROL = {"NORMAL": b"0", "CONTEST": b"1"}
 AM_LCUT_SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
+AM_HCUT_SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
+AM_MIC_SELECT = {"MIC": b"0", "REAR": b"1"}
+AM_PTT_SELECT = {"DAKY": b"0", "RTS": b"1", "DTR": b"2"}
+CW_LCUT_SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
+CW_HCUT_SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
+CW_AUTO_MODE = {"OFF": b"0", "50M": b"1", "ON": b"2"}
+CW_BFO = {"USB": b"0", "LSB": b"1", "AUTO": b"2"}
+CW_BK_IN_TYPE = {"SEMI": b"0", "FULL": b"1"}
+CW_WAVE_SHAPE = {"2 msec": b"1", "4 msec": b"2"}
+CW_FREQ_DISPLAY = {"FREQ": b"0", "PITCH": b"1"}
+PC_KEYING = {"OFF": b"0", "DAKY": b"1",
+             "RTS": b"2", "DTR": b"3"}
+QSK_DELAY_TIME = {"15 msec": b"0", "20 msec": b"1",
+                  "25 msec": b"2", "30 msec": b"3"}
 
 
 def format_combo(combobox):
@@ -912,6 +926,330 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(44, 1, self.am_lcut_slope_menu_nb)
         self.menu_table.setItem(44, 2, self.am_lcut_slope_parm_name)
         self.menu_table.setCellWidget(44, 3, self.am_lcut_slope_combo)
+
+        # 06-03
+        self.am_hcut_freq_menu_name = QTableWidgetItem("MODE AM")
+        self.am_hcut_freq_menu_nb = QTableWidgetItem("06-03")
+        self.am_hcut_freq_parm_name = QTableWidgetItem("AM HCUT FREQ")
+
+        self.am_hcut_freq_spin = QSpinBox()
+        self.am_hcut_freq_spin.setAlignment(Qt.AlignCenter)
+        self.am_hcut_freq_spin.setMaximum(4000)
+        self.am_hcut_freq_spin.setMinimum(650)
+        self.am_hcut_freq_spin.setSingleStep(50)
+        self.am_hcut_freq_spin.setSpecialValueText("OFF")
+        self.am_hcut_freq_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(45, 0, self.am_hcut_freq_menu_name)
+        self.menu_table.setItem(45, 1, self.am_hcut_freq_menu_nb)
+        self.menu_table.setItem(45, 2, self.am_hcut_freq_parm_name)
+        self.menu_table.setCellWidget(45, 3, self.am_hcut_freq_spin)
+
+        # 06-04
+        self.am_hcut_slope_menu_name = QTableWidgetItem("MODE AM")
+        self.am_hcut_slope_menu_nb = QTableWidgetItem("06-04")
+        self.am_hcut_slope_parm_name = QTableWidgetItem("AM HCUT SLOPE")
+
+        self.am_hcut_slope_combo = QComboBox()
+        self.am_hcut_slope_combo.setEditable(True)
+        self.am_hcut_slope_combo.lineEdit().setReadOnly(True)
+        self.am_hcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.am_hcut_slope_combo.addItems([i for i in AM_HCUT_SLOPE.keys()])
+        format_combo(self.am_hcut_slope_combo)
+        self.am_hcut_slope_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(46, 0, self.am_hcut_slope_menu_name)
+        self.menu_table.setItem(46, 1, self.am_hcut_slope_menu_nb)
+        self.menu_table.setItem(46, 2, self.am_hcut_slope_parm_name)
+        self.menu_table.setCellWidget(46, 3, self.am_hcut_slope_combo)
+
+        # 06-05
+        self.am_mic_select_menu_name = QTableWidgetItem("MODE AM")
+        self.am_mic_select_menu_nb = QTableWidgetItem("06-05")
+        self.am_mic_select_parm_name = QTableWidgetItem("AM MIC SELECT")
+
+        self.am_mic_select_combo = QComboBox()
+        self.am_mic_select_combo.setEditable(True)
+        self.am_mic_select_combo.lineEdit().setReadOnly(True)
+        self.am_mic_select_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.am_mic_select_combo.addItems([i for i in AM_MIC_SELECT.keys()])
+        format_combo(self.am_mic_select_combo)
+        self.am_mic_select_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(47, 0, self.am_mic_select_menu_name)
+        self.menu_table.setItem(47, 1, self.am_mic_select_menu_nb)
+        self.menu_table.setItem(47, 2, self.am_mic_select_parm_name)
+        self.menu_table.setCellWidget(47, 3, self.am_mic_select_combo)
+
+        # 06-06
+        self.am_out_level_menu_name = QTableWidgetItem("MODE AM")
+        self.am_out_level_menu_nb = QTableWidgetItem("06-06")
+        self.am_out_level_parm_name = QTableWidgetItem("AM OUT LEVEL")
+
+        self.am_out_level_spin = QSpinBox()
+        self.am_out_level_spin.setAlignment(Qt.AlignCenter)
+        self.am_out_level_spin.setMaximum(100)
+        self.am_out_level_spin.setMinimum(0)
+        self.am_out_level_spin.setSingleStep(1)
+        self.am_out_level_spin.setValue(50)
+
+        self.menu_table.setItem(48, 0, self.am_out_level_menu_name)
+        self.menu_table.setItem(48, 1, self.am_out_level_menu_nb)
+        self.menu_table.setItem(48, 2, self.am_out_level_parm_name)
+        self.menu_table.setCellWidget(48, 3, self.am_out_level_spin)
+
+        # 06-07
+        self.am_ptt_select_menu_name = QTableWidgetItem("MODE AM")
+        self.am_ptt_select_menu_nb = QTableWidgetItem("06-07")
+        self.am_ptt_select_parm_name = QTableWidgetItem("AM PTT SELECT")
+
+        self.am_ptt_select_combo = QComboBox()
+        self.am_ptt_select_combo.setEditable(True)
+        self.am_ptt_select_combo.lineEdit().setReadOnly(True)
+        self.am_ptt_select_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.am_ptt_select_combo.addItems([i for i in AM_PTT_SELECT.keys()])
+        format_combo(self.am_ptt_select_combo)
+        self.am_ptt_select_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(49, 0, self.am_ptt_select_menu_name)
+        self.menu_table.setItem(49, 1, self.am_ptt_select_menu_nb)
+        self.menu_table.setItem(49, 2, self.am_ptt_select_parm_name)
+        self.menu_table.setCellWidget(49, 3, self.am_ptt_select_combo)
+
+        # 07-01
+        self.cw_lcut_freq_menu_name = QTableWidgetItem("MODE CW")
+        self.cw_lcut_freq_menu_nb = QTableWidgetItem("07-01")
+        self.cw_lcut_freq_parm_name = QTableWidgetItem("CW LCUT FREQ")
+
+        self.cw_lcut_freq_spin = QSpinBox()
+        self.cw_lcut_freq_spin.setAlignment(Qt.AlignCenter)
+        self.cw_lcut_freq_spin.setMaximum(1000)
+        self.cw_lcut_freq_spin.setMinimum(50)
+        self.cw_lcut_freq_spin.setSingleStep(50)
+        self.cw_lcut_freq_spin.setSpecialValueText("OFF")
+        self.cw_lcut_freq_spin.setValue(250)
+        self.cw_lcut_freq_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(50, 0, self.cw_lcut_freq_menu_name)
+        self.menu_table.setItem(50, 1, self.cw_lcut_freq_menu_nb)
+        self.menu_table.setItem(50, 2, self.cw_lcut_freq_parm_name)
+        self.menu_table.setCellWidget(50, 3, self.cw_lcut_freq_spin)
+
+        # 07-02
+        self.cw_lcut_slope_menu_name = QTableWidgetItem("MODE CW")
+        self.cw_lcut_slope_menu_nb = QTableWidgetItem("07-02")
+        self.cw_lcut_slope_parm_name = QTableWidgetItem("CW LCUT SLOPE")
+
+        self.cw_lcut_slope_combo = QComboBox()
+        self.cw_lcut_slope_combo.setEditable(True)
+        self.cw_lcut_slope_combo.lineEdit().setReadOnly(True)
+        self.cw_lcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.cw_lcut_slope_combo.addItems([i for i in CW_LCUT_SLOPE.keys()])
+        format_combo(self.cw_lcut_slope_combo)
+        self.cw_lcut_slope_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(51, 0, self.cw_lcut_slope_menu_name)
+        self.menu_table.setItem(51, 1, self.cw_lcut_slope_menu_nb)
+        self.menu_table.setItem(51, 2, self.cw_lcut_slope_parm_name)
+        self.menu_table.setCellWidget(51, 3, self.cw_lcut_slope_combo)
+
+        # 07-03
+        self.cw_hcut_freq_menu_name = QTableWidgetItem("MODE CW")
+        self.cw_hcut_freq_menu_nb = QTableWidgetItem("07-03")
+        self.cw_hcut_freq_parm_name = QTableWidgetItem("CW HCUT FREQ")
+
+        self.cw_hcut_freq_spin = QSpinBox()
+        self.cw_hcut_freq_spin.setAlignment(Qt.AlignCenter)
+        self.cw_hcut_freq_spin.setMaximum(4000)
+        self.cw_hcut_freq_spin.setMinimum(650)
+        self.cw_hcut_freq_spin.setSingleStep(50)
+        self.cw_hcut_freq_spin.setSpecialValueText("OFF")
+        self.cw_hcut_freq_spin.setValue(1200)
+        self.cw_hcut_freq_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(52, 0, self.cw_hcut_freq_menu_name)
+        self.menu_table.setItem(52, 1, self.cw_hcut_freq_menu_nb)
+        self.menu_table.setItem(52, 2, self.cw_hcut_freq_parm_name)
+        self.menu_table.setCellWidget(52, 3, self.cw_hcut_freq_spin)
+
+        # 07-04
+        self.cw_hcut_slope_menu_name = QTableWidgetItem("MODE CW")
+        self.cw_hcut_slope_menu_nb = QTableWidgetItem("07-04")
+        self.cw_hcut_slope_parm_name = QTableWidgetItem("CW HCUT SLOPE")
+
+        self.cw_hcut_slope_combo = QComboBox()
+        self.cw_hcut_slope_combo.setEditable(True)
+        self.cw_hcut_slope_combo.lineEdit().setReadOnly(True)
+        self.cw_hcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.cw_hcut_slope_combo.addItems([i for i in CW_HCUT_SLOPE.keys()])
+        format_combo(self.cw_hcut_slope_combo)
+        self.cw_hcut_slope_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(53, 0, self.cw_hcut_slope_menu_name)
+        self.menu_table.setItem(53, 1, self.cw_hcut_slope_menu_nb)
+        self.menu_table.setItem(53, 2, self.cw_hcut_slope_parm_name)
+        self.menu_table.setCellWidget(53, 3, self.cw_hcut_slope_combo)
+
+        # 07-05
+        self.cw_out_level_menu_name = QTableWidgetItem("MODE CW")
+        self.cw_out_level_menu_nb = QTableWidgetItem("07-05")
+        self.cw_out_level_parm_name = QTableWidgetItem("CW OUT LEVEL")
+
+        self.cw_out_level_spin = QSpinBox()
+        self.cw_out_level_spin.setAlignment(Qt.AlignCenter)
+        self.cw_out_level_spin.setMaximum(100)
+        self.cw_out_level_spin.setMinimum(0)
+        self.cw_out_level_spin.setSingleStep(1)
+        self.cw_out_level_spin.setValue(50)
+
+        self.menu_table.setItem(54, 0, self.cw_out_level_menu_name)
+        self.menu_table.setItem(54, 1, self.cw_out_level_menu_nb)
+        self.menu_table.setItem(54, 2, self.cw_out_level_parm_name)
+        self.menu_table.setCellWidget(54, 3, self.cw_out_level_spin)
+
+        # 07-06
+        self.cw_auto_mode_menu_name = QTableWidgetItem("MODE CW")
+        self.cw_auto_mode_menu_nb = QTableWidgetItem("07-06")
+        self.cw_auto_mode_parm_name = QTableWidgetItem("CW AUTO MODE")
+
+        self.cw_auto_mode_combo = QComboBox()
+        self.cw_auto_mode_combo.setEditable(True)
+        self.cw_auto_mode_combo.lineEdit().setReadOnly(True)
+        self.cw_auto_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.cw_auto_mode_combo.addItems([i for i in CW_AUTO_MODE.keys()])
+        format_combo(self.cw_auto_mode_combo)
+        self.cw_auto_mode_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(55, 0, self.cw_auto_mode_menu_name)
+        self.menu_table.setItem(55, 1, self.cw_auto_mode_menu_nb)
+        self.menu_table.setItem(55, 2, self.cw_auto_mode_parm_name)
+        self.menu_table.setCellWidget(55, 3, self.cw_auto_mode_combo)
+
+        # 07-07
+        self.cw_bfo_menu_name = QTableWidgetItem("MODE CW")
+        self.cw_bfo_menu_nb = QTableWidgetItem("07-07")
+        self.cw_bfo_parm_name = QTableWidgetItem("CW BFO")
+
+        self.cw_bfo_combo = QComboBox()
+        self.cw_bfo_combo.setEditable(True)
+        self.cw_bfo_combo.lineEdit().setReadOnly(True)
+        self.cw_bfo_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.cw_bfo_combo.addItems([i for i in CW_BFO.keys()])
+        format_combo(self.cw_bfo_combo)
+        self.cw_bfo_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(56, 0, self.cw_bfo_menu_name)
+        self.menu_table.setItem(56, 1, self.cw_bfo_menu_nb)
+        self.menu_table.setItem(56, 2, self.cw_bfo_parm_name)
+        self.menu_table.setCellWidget(56, 3, self.cw_bfo_combo)
+
+        # 07-08
+        self.cw_bk_in_type_menu_name = QTableWidgetItem("MODE CW")
+        self.cw_bk_in_type_menu_nb = QTableWidgetItem("07-08")
+        self.cw_bk_in_type_parm_name = QTableWidgetItem("CW BK-IN TYPE")
+
+        self.cw_bk_in_type_combo = QComboBox()
+        self.cw_bk_in_type_combo.setEditable(True)
+        self.cw_bk_in_type_combo.lineEdit().setReadOnly(True)
+        self.cw_bk_in_type_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.cw_bk_in_type_combo.addItems([i for i in CW_BK_IN_TYPE.keys()])
+        format_combo(self.cw_bk_in_type_combo)
+        self.cw_bk_in_type_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(57, 0, self.cw_bk_in_type_menu_name)
+        self.menu_table.setItem(57, 1, self.cw_bk_in_type_menu_nb)
+        self.menu_table.setItem(57, 2, self.cw_bk_in_type_parm_name)
+        self.menu_table.setCellWidget(57, 3, self.cw_bk_in_type_combo)
+
+        # 07-09
+        self.cw_bk_in_delay_menu_name = QTableWidgetItem("MODE CW")
+        self.cw_bk_in_delay_menu_nb = QTableWidgetItem("07-09")
+        self.cw_bk_in_delay_parm_name = QTableWidgetItem("CW BK-IN DELAY")
+
+        self.cw_bk_in_delay_spin = QSpinBox()
+        self.cw_bk_in_delay_spin.setAlignment(Qt.AlignCenter)
+        self.cw_bk_in_delay_spin.setMaximum(3000)
+        self.cw_bk_in_delay_spin.setMinimum(30)
+        self.cw_bk_in_delay_spin.setSingleStep(1)
+        self.cw_bk_in_delay_spin.setValue(200)
+        self.cw_bk_in_delay_spin.setSuffix(" msec")
+
+        self.menu_table.setItem(58, 0, self.cw_bk_in_delay_menu_name)
+        self.menu_table.setItem(58, 1, self.cw_bk_in_delay_menu_nb)
+        self.menu_table.setItem(58, 2, self.cw_bk_in_delay_parm_name)
+        self.menu_table.setCellWidget(58, 3, self.cw_bk_in_delay_spin)
+
+        # 07-10
+        self.cw_wav_shape_menu_name = QTableWidgetItem("MODE CW")
+        self.cw_wav_shape_menu_nb = QTableWidgetItem("07-10")
+        self.cw_wav_shape_parm_name = QTableWidgetItem("CW WAVE SHAPE")
+
+        self.cw_wav_shape_combo = QComboBox()
+        self.cw_wav_shape_combo.setEditable(True)
+        self.cw_wav_shape_combo.lineEdit().setReadOnly(True)
+        self.cw_wav_shape_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.cw_wav_shape_combo.addItems([i for i in CW_WAVE_SHAPE.keys()])
+        format_combo(self.cw_wav_shape_combo)
+        self.cw_wav_shape_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(59, 0, self.cw_wav_shape_menu_name)
+        self.menu_table.setItem(59, 1, self.cw_wav_shape_menu_nb)
+        self.menu_table.setItem(59, 2, self.cw_wav_shape_parm_name)
+        self.menu_table.setCellWidget(59, 3, self.cw_wav_shape_combo)
+
+        # 07-11
+        self.cw_freq_display_menu_name = QTableWidgetItem("MODE CW")
+        self.cw_freq_display_menu_nb = QTableWidgetItem("07-11")
+        self.cw_freq_display_parm_name = QTableWidgetItem("CW FREQ DISPLAY")
+
+        self.cw_freq_display_combo = QComboBox()
+        self.cw_freq_display_combo.setEditable(True)
+        self.cw_freq_display_combo.lineEdit().setReadOnly(True)
+        self.cw_freq_display_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.cw_freq_display_combo.addItems([i for i in CW_FREQ_DISPLAY.keys()])
+        format_combo(self.cw_freq_display_combo)
+        self.cw_freq_display_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(60, 0, self.cw_freq_display_menu_name)
+        self.menu_table.setItem(60, 1, self.cw_freq_display_menu_nb)
+        self.menu_table.setItem(60, 2, self.cw_freq_display_parm_name)
+        self.menu_table.setCellWidget(60, 3, self.cw_freq_display_combo)
+
+        # 07-12
+        self.pc_keying_menu_name = QTableWidgetItem("MODE CW")
+        self.pc_keying_menu_nb = QTableWidgetItem("07-12")
+        self.pc_keying_parm_name = QTableWidgetItem("PC KEYING")
+
+        self.pc_keying_combo = QComboBox()
+        self.pc_keying_combo.setEditable(True)
+        self.pc_keying_combo.lineEdit().setReadOnly(True)
+        self.pc_keying_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.pc_keying_combo.addItems([i for i in PC_KEYING.keys()])
+        format_combo(self.pc_keying_combo)
+        self.pc_keying_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(61, 0, self.pc_keying_menu_name)
+        self.menu_table.setItem(61, 1, self.pc_keying_menu_nb)
+        self.menu_table.setItem(61, 2, self.pc_keying_parm_name)
+        self.menu_table.setCellWidget(61, 3, self.pc_keying_combo)
+
+        # 07-13
+        self.qsk_delay_time_menu_name = QTableWidgetItem("MODE CW")
+        self.qsk_delay_time_menu_nb = QTableWidgetItem("07-13")
+        self.qsk_delay_time_parm_name = QTableWidgetItem("QSK DELAY TIME")
+
+        self.qsk_delay_time_combo = QComboBox()
+        self.qsk_delay_time_combo.setEditable(True)
+        self.qsk_delay_time_combo.lineEdit().setReadOnly(True)
+        self.qsk_delay_time_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.qsk_delay_time_combo.addItems([i for i in QSK_DELAY_TIME.keys()])
+        format_combo(self.qsk_delay_time_combo)
+        self.qsk_delay_time_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(62, 0, self.qsk_delay_time_menu_name)
+        self.menu_table.setItem(62, 1, self.qsk_delay_time_menu_nb)
+        self.menu_table.setItem(62, 2, self.qsk_delay_time_parm_name)
+        self.menu_table.setCellWidget(62, 3, self.qsk_delay_time_combo)
 
         # Table config
         for row in range(0, self.menu_table.rowCount()):
