@@ -37,6 +37,17 @@ CAT_RATE = {"4800 bds": b"0", "9600 bds": b"1",
 CAT_TOT = {"10 msec": b"0", "100 msec": b"1",
            "1000 msec": b"2", "3000 msec": b"3"}
 CAT_RTS = {"DISABLE": b"0", "ENABLE": b"1"}
+MEMORY_GROUP = {"DISABLE": b"0", "ENABLE": b"1"}
+FM_SETTING = {"DISABLE": b"0", "ENABLE": b"1"}
+REC_SETTING = {"DISABLE": b"0", "ENABLE": b"1"}
+ATAS_SETTING = {"DISABLE": b"0", "ENABLE": b"1"}
+MIC_SCAN = {"DISABLE": b"0", "ENABLE": b"1"}
+MIC_SCAN_RESUME = {"PAUSE": b"0", "TIME": b"1"}
+CLAR_SELECT = {"RX": b"0", "TX": b"1", "TRX": b"2"}
+APO = {"OFF": 0, "1 h": 1, "2 h": 2, "4 h": 3,
+       "6 h": 4, "8 h": 5, "10 h": 6, "12 h": 7}
+FAN_CONTROL = {"NORMAL": b"0", "CONTEST": b"1"}
+AM_LCUT_SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
 
 
 def format_combo(combobox):
@@ -60,7 +71,7 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(ICON))
         # self.setWindowFlags(Qt.FramelessWindowHint)
         # self.setAttribute(Qt.WA_TranslucentBackground)
-        self.setMouseTracking(True)
+        # self.setMouseTracking(True)
 
         self.central_Widget = QWidget()
         self.setCentralWidget(self.central_Widget)
@@ -95,6 +106,7 @@ class MainWindow(QMainWindow):
         self.menu_table.horizontalHeader().setVisible(False)
         self.menu_table.setSortingEnabled(False)
         self.menu_table.setMinimumSize(600, 450)
+        self.menu_table.setAlternatingRowColors(True)
         self.menu_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         self.menu_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
         self.menu_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
@@ -105,16 +117,6 @@ class MainWindow(QMainWindow):
         self.acg_fast_menu_name = QTableWidgetItem("ACG")
         self.acg_fast_menu_number = QTableWidgetItem("01-01")
         self.acg_fast_parm_name = QTableWidgetItem("ACG FAST DELAY")
-
-        self.acg_fast_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.acg_fast_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.acg_fast_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.acg_fast_menu_number.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.acg_fast_menu_number.setTextAlignment(Qt.AlignCenter)
-        self.acg_fast_menu_number.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.acg_fast_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.acg_fast_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.acg_fast_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.acg_fast_spin = QSpinBox()
         self.acg_fast_spin.setAlignment(Qt.AlignCenter)
@@ -135,16 +137,6 @@ class MainWindow(QMainWindow):
         self.acg_mid_menu_number = QTableWidgetItem("01-02")
         self.acg_mid_parm_name = QTableWidgetItem("ACG MID DELAY")
 
-        self.acg_mid_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.acg_mid_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.acg_mid_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.acg_mid_menu_number.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.acg_mid_menu_number.setTextAlignment(Qt.AlignCenter)
-        self.acg_mid_menu_number.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.acg_mid_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.acg_mid_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.acg_mid_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.acg_mid_spin = QSpinBox()
         self.acg_mid_spin.setAlignment(Qt.AlignCenter)
         self.acg_mid_spin.setMaximum(4000)
@@ -161,16 +153,6 @@ class MainWindow(QMainWindow):
         self.acg_slow_menu_name = QTableWidgetItem("ACG")
         self.acg_slow_menu_number = QTableWidgetItem("01-03")
         self.acg_slow_parm_name = QTableWidgetItem("ACG SLOW DELAY")
-
-        self.acg_slow_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.acg_slow_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.acg_slow_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.acg_slow_menu_number.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.acg_slow_menu_number.setTextAlignment(Qt.AlignCenter)
-        self.acg_slow_menu_number.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.acg_slow_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.acg_slow_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.acg_slow_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.acg_slow_spin = QSpinBox()
         self.acg_slow_spin.setAlignment(Qt.AlignCenter)
@@ -190,16 +172,6 @@ class MainWindow(QMainWindow):
         self.display_lcd_contrast_menu_nb = QTableWidgetItem("02-01")
         self.display_lcd_contrast_parm_name = QTableWidgetItem("LCD CONTRAST")
 
-        self.display_lcd_contrast_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_lcd_contrast_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.display_lcd_contrast_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.display_lcd_contrast_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_lcd_contrast_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.display_lcd_contrast_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.display_lcd_contrast_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_lcd_contrast_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.display_lcd_contrast_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.display_lcd_contrast_spin = QSpinBox()
         self.display_lcd_contrast_spin.setAlignment(Qt.AlignCenter)
         self.display_lcd_contrast_spin.setMaximum(15)
@@ -215,16 +187,6 @@ class MainWindow(QMainWindow):
         self.display_dimmer_backlit_menu_name = QTableWidgetItem("DISPLAY")
         self.display_dimmer_backlit_menu_nb = QTableWidgetItem("02-02")
         self.display_dimmer_backlit_parm_name = QTableWidgetItem("DIMMER BACKLIT")
-
-        self.display_dimmer_backlit_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_dimmer_backlit_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.display_dimmer_backlit_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.display_dimmer_backlit_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_dimmer_backlit_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.display_dimmer_backlit_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.display_dimmer_backlit_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_dimmer_backlit_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.display_dimmer_backlit_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.display_dimmer_backlit_spin = QSpinBox()
         self.display_dimmer_backlit_spin.setAlignment(Qt.AlignCenter)
@@ -243,16 +205,6 @@ class MainWindow(QMainWindow):
         self.display_dimmer_lcd_menu_nb = QTableWidgetItem("02-03")
         self.display_dimmer_lcd_parm_name = QTableWidgetItem("DIMMER LCD")
 
-        self.display_dimmer_lcd_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_dimmer_lcd_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.display_dimmer_lcd_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.display_dimmer_lcd_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_dimmer_lcd_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.display_dimmer_lcd_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.display_dimmer_lcd_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_dimmer_lcd_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.display_dimmer_lcd_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.display_dimmer_lcd_spin = QSpinBox()
         self.display_dimmer_lcd_spin.setAlignment(Qt.AlignCenter)
         self.display_dimmer_lcd_spin.setMaximum(15)
@@ -270,16 +222,6 @@ class MainWindow(QMainWindow):
         self.display_dimmer_tx_busy_menu_nb = QTableWidgetItem("02-04")
         self.display_dimmer_tx_busy_parm_name = QTableWidgetItem("DIMMER TX/BUSY")
 
-        self.display_dimmer_tx_busy_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_dimmer_tx_busy_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.display_dimmer_tx_busy_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.display_dimmer_tx_busy_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_dimmer_tx_busy_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.display_dimmer_tx_busy_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.display_dimmer_tx_busy_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.display_dimmer_tx_busy_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.display_dimmer_tx_busy_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.display_dimmer_tx_busy_spin = QSpinBox()
         self.display_dimmer_tx_busy_spin.setAlignment(Qt.AlignCenter)
         self.display_dimmer_tx_busy_spin.setMaximum(15)
@@ -295,16 +237,6 @@ class MainWindow(QMainWindow):
         self.peak_hold_menu_name = QTableWidgetItem("DISPLAY")
         self.peak_hold_menu_nb = QTableWidgetItem("02-05")
         self.peak_hold_parm_name = QTableWidgetItem("PEAK HOLD")
-
-        self.peak_hold_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.peak_hold_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.peak_hold_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.peak_hold_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.peak_hold_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.peak_hold_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.peak_hold_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.peak_hold_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.peak_hold_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.peak_hold_combo = QComboBox()
         self.peak_hold_combo.setEditable(True)
@@ -324,16 +256,6 @@ class MainWindow(QMainWindow):
         self.zin_led_menu_nb = QTableWidgetItem("02-06")
         self.zin_led_parm_name = QTableWidgetItem("ZIN LED")
 
-        self.zin_led_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.zin_led_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.zin_led_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.zin_led_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.zin_led_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.zin_led_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.zin_led_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.zin_led_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.zin_led_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.zin_led_combo = QComboBox()
         self.zin_led_combo.setEditable(True)
         self.zin_led_combo.lineEdit().setReadOnly(True)
@@ -351,16 +273,6 @@ class MainWindow(QMainWindow):
         self.pop_up_menu_name = QTableWidgetItem("DISPLAY")
         self.pop_up_menu_nb = QTableWidgetItem("02-07")
         self.pop_up_parm_name = QTableWidgetItem("POP-UP MENU")
-
-        self.pop_up_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.pop_up_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.pop_up_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.pop_up_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.pop_up_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.pop_up_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.pop_up_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.pop_up_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.pop_up_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.pop_up_combo = QComboBox()
         self.pop_up_combo.setEditable(True)
@@ -381,16 +293,6 @@ class MainWindow(QMainWindow):
         self.dvs_rx_out_lvl_menu_nb = QTableWidgetItem("03-01")
         self.dvs_rx_out_lvl_parm_name = QTableWidgetItem("DVS RX OUT LVL")
 
-        self.dvs_rx_out_lvl_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.dvs_rx_out_lvl_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.dvs_rx_out_lvl_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.dvs_rx_out_lvl_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.dvs_rx_out_lvl_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.dvs_rx_out_lvl_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.dvs_rx_out_lvl_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.dvs_rx_out_lvl_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.dvs_rx_out_lvl_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.dvs_rx_out_lvl_spin = QSpinBox()
         self.dvs_rx_out_lvl_spin.setAlignment(Qt.AlignCenter)
         self.dvs_rx_out_lvl_spin.setMaximum(100)
@@ -406,16 +308,6 @@ class MainWindow(QMainWindow):
         self.dvs_tx_out_lvl_menu_name = QTableWidgetItem("DVS")
         self.dvs_tx_out_lvl_menu_nb = QTableWidgetItem("03-02")
         self.dvs_tx_out_lvl_parm_name = QTableWidgetItem("DVS TX OUT LVL")
-
-        self.dvs_tx_out_lvl_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.dvs_tx_out_lvl_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.dvs_tx_out_lvl_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.dvs_tx_out_lvl_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.dvs_tx_out_lvl_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.dvs_tx_out_lvl_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.dvs_tx_out_lvl_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.dvs_tx_out_lvl_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.dvs_tx_out_lvl_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.dvs_tx_out_lvl_spin = QSpinBox()
         self.dvs_tx_out_lvl_spin.setAlignment(Qt.AlignCenter)
@@ -433,16 +325,6 @@ class MainWindow(QMainWindow):
         self.keyer_type_menu_name = QTableWidgetItem("KEYER")
         self.keyer_type_menu_nb = QTableWidgetItem("04-01")
         self.keyer_type_parm_name = QTableWidgetItem("KEYER TYPE")
-
-        self.keyer_type_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.keyer_type_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.keyer_type_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.keyer_type_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.keyer_type_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.keyer_type_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.keyer_type_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.keyer_type_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.keyer_type_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.keyer_type_combo = QComboBox()
         self.keyer_type_combo.setEditable(True)
@@ -462,16 +344,6 @@ class MainWindow(QMainWindow):
         self.keyer_dot_dash_menu_nb = QTableWidgetItem("04-02")
         self.keyer_dot_dash_parm_name = QTableWidgetItem("KEYER DOT/DASH")
 
-        self.keyer_dot_dash_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.keyer_dot_dash_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.keyer_dot_dash_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.keyer_dot_dash_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.keyer_dot_dash_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.keyer_dot_dash_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.keyer_dot_dash_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.keyer_dot_dash_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.keyer_dot_dash_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.keyer_dot_dash_combo = QComboBox()
         self.keyer_dot_dash_combo.setEditable(True)
         self.keyer_dot_dash_combo.lineEdit().setReadOnly(True)
@@ -489,16 +361,6 @@ class MainWindow(QMainWindow):
         self.cw_weight_menu_name = QTableWidgetItem("KEYER")
         self.cw_weight_menu_nb = QTableWidgetItem("04-03")
         self.cw_weight_parm_name = QTableWidgetItem("CW WEIGHT")
-
-        self.cw_weight_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_weight_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_weight_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_weight_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_weight_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.cw_weight_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_weight_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_weight_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_weight_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.cw_weight_spin = QDoubleSpinBox()
         self.cw_weight_spin.setSingleStep(0.1)
@@ -518,22 +380,12 @@ class MainWindow(QMainWindow):
         self.beacon_interval_menu_nb = QTableWidgetItem("04-04")
         self.beacon_interval_parm_name = QTableWidgetItem("BEACON INTERVAL")
 
-        self.beacon_interval_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.beacon_interval_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.beacon_interval_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.beacon_interval_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.beacon_interval_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.beacon_interval_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.beacon_interval_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.beacon_interval_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.beacon_interval_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.beacon_interval_spin = QSpinBox()
         self.beacon_interval_spin.setAlignment(Qt.AlignCenter)
         self.beacon_interval_spin.setMaximum(690)
         self.beacon_interval_spin.setMinimum(0)
         self.beacon_interval_spin.setSingleStep(1)
-        self.beacon_interval_spin.setValue(0)
+        self.beacon_interval_spin.setSpecialValueText("OFF")
         self.beacon_interval_spin.setSuffix(" sec")
         self.beacon_interval_spin.valueChanged.connect(self.set_beacon_interval)
 
@@ -546,16 +398,6 @@ class MainWindow(QMainWindow):
         self.number_style_menu_name = QTableWidgetItem("KEYER")
         self.number_style_menu_nb = QTableWidgetItem("04-05")
         self.number_style_parm_name = QTableWidgetItem("NUMBER STYLE")
-
-        self.number_style_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.number_style_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.number_style_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.number_style_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.number_style_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.number_style_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.number_style_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.number_style_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.number_style_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.number_style_combo = QComboBox()
         self.number_style_combo.setEditable(True)
@@ -575,16 +417,6 @@ class MainWindow(QMainWindow):
         self.contest_number_menu_nb = QTableWidgetItem("04-06")
         self.contest_number_parm_name = QTableWidgetItem("CONTEST NUMBER")
 
-        self.contest_number_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.contest_number_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.contest_number_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.contest_number_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.contest_number_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.contest_number_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.contest_number_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.contest_number_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.contest_number_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.contest_number_spin = QSpinBox()
         self.contest_number_spin.setAlignment(Qt.AlignCenter)
         self.contest_number_spin.setMaximum(9999)
@@ -601,16 +433,6 @@ class MainWindow(QMainWindow):
         self.cw_memory_1_menu_name = QTableWidgetItem("KEYER")
         self.cw_memory_1_menu_nb = QTableWidgetItem("04-07")
         self.cw_memory_1_parm_name = QTableWidgetItem("CW MEMORY 1")
-
-        self.cw_memory_1_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_1_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_1_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_memory_1_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_1_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_1_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_memory_1_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_1_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_1_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.cw_memory_1_combo = QComboBox()
         self.cw_memory_1_combo.setEditable(True)
@@ -630,16 +452,6 @@ class MainWindow(QMainWindow):
         self.cw_memory_2_menu_nb = QTableWidgetItem("04-08")
         self.cw_memory_2_parm_name = QTableWidgetItem("CW MEMORY 2")
 
-        self.cw_memory_2_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_2_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_2_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_memory_2_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_2_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_2_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_memory_2_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_2_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_2_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.cw_memory_2_combo = QComboBox()
         self.cw_memory_2_combo.setEditable(True)
         self.cw_memory_2_combo.lineEdit().setReadOnly(True)
@@ -657,16 +469,6 @@ class MainWindow(QMainWindow):
         self.cw_memory_3_menu_name = QTableWidgetItem("KEYER")
         self.cw_memory_3_menu_nb = QTableWidgetItem("04-09")
         self.cw_memory_3_parm_name = QTableWidgetItem("CW MEMORY 3")
-
-        self.cw_memory_3_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_3_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_3_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_memory_3_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_3_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_3_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_memory_3_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_3_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_3_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.cw_memory_3_combo = QComboBox()
         self.cw_memory_3_combo.setEditable(True)
@@ -686,16 +488,6 @@ class MainWindow(QMainWindow):
         self.cw_memory_4_menu_nb = QTableWidgetItem("04-10")
         self.cw_memory_4_parm_name = QTableWidgetItem("CW MEMORY 4")
 
-        self.cw_memory_4_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_4_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_4_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_memory_4_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_4_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_4_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_memory_4_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_4_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_4_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.cw_memory_4_combo = QComboBox()
         self.cw_memory_4_combo.setEditable(True)
         self.cw_memory_4_combo.lineEdit().setReadOnly(True)
@@ -713,16 +505,6 @@ class MainWindow(QMainWindow):
         self.cw_memory_5_menu_name = QTableWidgetItem("KEYER")
         self.cw_memory_5_menu_nb = QTableWidgetItem("04-11")
         self.cw_memory_5_parm_name = QTableWidgetItem("CW MEMORY 5")
-
-        self.cw_memory_5_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_5_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_5_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_memory_5_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_5_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_5_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cw_memory_5_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cw_memory_5_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.cw_memory_5_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.cw_memory_5_combo = QComboBox()
         self.cw_memory_5_combo.setEditable(True)
@@ -743,16 +525,6 @@ class MainWindow(QMainWindow):
         self.nb_width_menu_nb = QTableWidgetItem("05-01")
         self.nb_width_parm_name = QTableWidgetItem("NB WIDTH")
 
-        self.nb_width_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.nb_width_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.nb_width_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.nb_width_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.nb_width_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.nb_width_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.nb_width_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.nb_width_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.nb_width_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.nb_width_combo = QComboBox()
         self.nb_width_combo.setEditable(True)
         self.nb_width_combo.lineEdit().setReadOnly(True)
@@ -770,16 +542,6 @@ class MainWindow(QMainWindow):
         self.nb_rejection_menu_name = QTableWidgetItem("GENERAL")
         self.nb_rejection_menu_nb = QTableWidgetItem("05-02")
         self.nb_rejection_parm_name = QTableWidgetItem("NB REJECTION")
-
-        self.nb_rejection_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.nb_rejection_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.nb_rejection_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.nb_rejection_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.nb_rejection_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.nb_rejection_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.nb_rejection_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.nb_rejection_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.nb_rejection_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.nb_rejection_combo = QComboBox()
         self.nb_rejection_combo.setEditable(True)
@@ -799,16 +561,6 @@ class MainWindow(QMainWindow):
         self.nb_level_menu_nb = QTableWidgetItem("05-03")
         self.nb_level_parm_name = QTableWidgetItem("NB LEVEL")
 
-        self.nb_level_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.nb_level_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.nb_level_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.nb_level_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.nb_level_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.nb_level_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.nb_level_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.nb_level_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.nb_level_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.nb_level_spin = QSpinBox()
         self.nb_level_spin.setAlignment(Qt.AlignCenter)
         self.nb_level_spin.setMaximum(10)
@@ -826,16 +578,6 @@ class MainWindow(QMainWindow):
         self.beep_level_menu_nb = QTableWidgetItem("05-04")
         self.beep_level_parm_name = QTableWidgetItem("BEEP LEVEL")
 
-        self.beep_level_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.beep_level_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.beep_level_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.beep_level_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.beep_level_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.beep_level_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.beep_level_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.beep_level_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.beep_level_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.beep_level_spin = QSpinBox()
         self.beep_level_spin.setAlignment(Qt.AlignCenter)
         self.beep_level_spin.setMaximum(100)
@@ -852,16 +594,6 @@ class MainWindow(QMainWindow):
         self.rf_sql_vr_menu_name = QTableWidgetItem("GENERAL")
         self.rf_sql_vr_menu_nb = QTableWidgetItem("05-05")
         self.rf_sql_vr_parm_name = QTableWidgetItem("RF/SQL VR")
-
-        self.rf_sql_vr_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.rf_sql_vr_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.rf_sql_vr_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.rf_sql_vr_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.rf_sql_vr_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.rf_sql_vr_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.rf_sql_vr_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.rf_sql_vr_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.rf_sql_vr_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.rf_sql_vr_combo = QComboBox()
         self.rf_sql_vr_combo.setEditable(True)
@@ -881,16 +613,6 @@ class MainWindow(QMainWindow):
         self.cat_rate_menu_nb = QTableWidgetItem("05-06")
         self.cat_rate_parm_name = QTableWidgetItem("CAT RATE")
 
-        self.cat_rate_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cat_rate_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.cat_rate_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cat_rate_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cat_rate_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.cat_rate_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cat_rate_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cat_rate_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.cat_rate_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.cat_rate_combo = QComboBox()
         self.cat_rate_combo.setEditable(True)
         self.cat_rate_combo.lineEdit().setReadOnly(True)
@@ -908,16 +630,6 @@ class MainWindow(QMainWindow):
         self.cat_tot_menu_name = QTableWidgetItem("GENERAL")
         self.cat_tot_menu_nb = QTableWidgetItem("05-07")
         self.cat_tot_parm_name = QTableWidgetItem("CAT TOT")
-
-        self.cat_tot_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cat_tot_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.cat_tot_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cat_tot_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cat_tot_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.cat_tot_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cat_tot_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cat_tot_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.cat_tot_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
 
         self.cat_tot_combo = QComboBox()
         self.cat_tot_combo.setEditable(True)
@@ -937,28 +649,287 @@ class MainWindow(QMainWindow):
         self.cat_rts_menu_nb = QTableWidgetItem("05-08")
         self.cat_rts_parm_name = QTableWidgetItem("CAT RTS")
 
-        self.cat_rts_menu_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cat_rts_menu_name.setTextAlignment(Qt.AlignCenter)
-        self.cat_rts_menu_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cat_rts_menu_nb.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cat_rts_menu_nb.setTextAlignment(Qt.AlignCenter)
-        self.cat_rts_menu_nb.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-        self.cat_rts_parm_name.setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
-        self.cat_rts_parm_name.setTextAlignment(Qt.AlignCenter)
-        self.cat_rts_parm_name.setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
-
         self.cat_rts_combo = QComboBox()
         self.cat_rts_combo.setEditable(True)
         self.cat_rts_combo.lineEdit().setReadOnly(True)
         self.cat_rts_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cat_rts_combo.addItems([i for i in CAT_RTS.keys()])
         format_combo(self.cat_rts_combo)
-        self.cat_rts_combo.setCurrentIndex(0)
+        self.cat_rts_combo.setCurrentIndex(1)
 
         self.menu_table.setItem(30, 0, self.cat_rts_menu_name)
         self.menu_table.setItem(30, 1, self.cat_rts_menu_nb)
         self.menu_table.setItem(30, 2, self.cat_rts_parm_name)
         self.menu_table.setCellWidget(30, 3, self.cat_rts_combo)
+
+        # 05-09
+        self.meme_group_menu_name = QTableWidgetItem("GENERAL")
+        self.meme_group_menu_nb = QTableWidgetItem("05-09")
+        self.meme_group_parm_name = QTableWidgetItem("MEMORY GROUP")
+
+        self.meme_group_combo = QComboBox()
+        self.meme_group_combo.setEditable(True)
+        self.meme_group_combo.lineEdit().setReadOnly(True)
+        self.meme_group_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.meme_group_combo.addItems([i for i in MEMORY_GROUP.keys()])
+        format_combo(self.meme_group_combo)
+        self.meme_group_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(31, 0, self.meme_group_menu_name)
+        self.menu_table.setItem(31, 1, self.meme_group_menu_nb)
+        self.menu_table.setItem(31, 2, self.meme_group_parm_name)
+        self.menu_table.setCellWidget(31, 3, self.meme_group_combo)
+
+        # 05-10
+        self.fm_setting_menu_name = QTableWidgetItem("GENERAL")
+        self.fm_setting_menu_nb = QTableWidgetItem("05-10")
+        self.fm_setting_parm_name = QTableWidgetItem("FM SETTING")
+
+        self.fm_setting_combo = QComboBox()
+        self.fm_setting_combo.setEditable(True)
+        self.fm_setting_combo.lineEdit().setReadOnly(True)
+        self.fm_setting_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.fm_setting_combo.addItems([i for i in FM_SETTING.keys()])
+        format_combo(self.fm_setting_combo)
+        self.fm_setting_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(32, 0, self.fm_setting_menu_name)
+        self.menu_table.setItem(32, 1, self.fm_setting_menu_nb)
+        self.menu_table.setItem(32, 2, self.fm_setting_parm_name)
+        self.menu_table.setCellWidget(32, 3, self.fm_setting_combo)
+
+        # 05-11
+        self.rec_setting_menu_name = QTableWidgetItem("GENERAL")
+        self.rec_setting_menu_nb = QTableWidgetItem("05-11")
+        self.rec_setting_parm_name = QTableWidgetItem("REC SETTING")
+
+        self.rec_setting_combo = QComboBox()
+        self.rec_setting_combo.setEditable(True)
+        self.rec_setting_combo.lineEdit().setReadOnly(True)
+        self.rec_setting_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.rec_setting_combo.addItems([i for i in REC_SETTING.keys()])
+        format_combo(self.rec_setting_combo)
+        self.rec_setting_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(33, 0, self.rec_setting_menu_name)
+        self.menu_table.setItem(33, 1, self.rec_setting_menu_nb)
+        self.menu_table.setItem(33, 2, self.rec_setting_parm_name)
+        self.menu_table.setCellWidget(33, 3, self.rec_setting_combo)
+
+        # 05-12
+        self.atas_setting_menu_name = QTableWidgetItem("GENERAL")
+        self.atas_setting_menu_nb = QTableWidgetItem("05-12")
+        self.atas_setting_parm_name = QTableWidgetItem("ATAS SETTING")
+
+        self.atas_setting_combo = QComboBox()
+        self.atas_setting_combo.setEditable(True)
+        self.atas_setting_combo.lineEdit().setReadOnly(True)
+        self.atas_setting_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.atas_setting_combo.addItems([i for i in ATAS_SETTING.keys()])
+        format_combo(self.atas_setting_combo)
+        self.atas_setting_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(34, 0, self.atas_setting_menu_name)
+        self.menu_table.setItem(34, 1, self.atas_setting_menu_nb)
+        self.menu_table.setItem(34, 2, self.atas_setting_parm_name)
+        self.menu_table.setCellWidget(34, 3, self.atas_setting_combo)
+
+        # 05-13
+        self.quick_spl_freq_menu_name = QTableWidgetItem("GENERAL")
+        self.quick_spl_freq_menu_nb = QTableWidgetItem("05-13")
+        self.quick_spl_freq_parm_name = QTableWidgetItem("QUICK SPL FREQ")
+
+        self.quick_spl_freq_spin = QSpinBox()
+        self.quick_spl_freq_spin.setAlignment(Qt.AlignCenter)
+        self.quick_spl_freq_spin.setMaximum(20)
+        self.quick_spl_freq_spin.setMinimum(-20)
+        self.quick_spl_freq_spin.setSingleStep(1)
+        self.quick_spl_freq_spin.setValue(5)
+        self.quick_spl_freq_spin.setSuffix(" kHz")
+
+        self.menu_table.setItem(35, 0, self.quick_spl_freq_menu_name)
+        self.menu_table.setItem(35, 1, self.quick_spl_freq_menu_nb)
+        self.menu_table.setItem(35, 2, self.quick_spl_freq_parm_name)
+        self.menu_table.setCellWidget(35, 3, self.quick_spl_freq_spin)
+
+        # 05-14
+        self.tx_tot_menu_name = QTableWidgetItem("GENERAL")
+        self.tx_tot_menu_nb = QTableWidgetItem("05-14")
+        self.tx_tot_parm_name = QTableWidgetItem("TX TOT")
+
+        self.tx_tot_spin = QSpinBox()
+        self.tx_tot_spin.setAlignment(Qt.AlignCenter)
+        self.tx_tot_spin.setMaximum(30)
+        self.tx_tot_spin.setMinimum(0)
+        self.tx_tot_spin.setSingleStep(1)
+        self.tx_tot_spin.setValue(10)
+        self.tx_tot_spin.setSuffix(" min")
+
+        self.menu_table.setItem(36, 0, self.tx_tot_menu_name)
+        self.menu_table.setItem(36, 1, self.tx_tot_menu_nb)
+        self.menu_table.setItem(36, 2, self.tx_tot_parm_name)
+        self.menu_table.setCellWidget(36, 3, self.tx_tot_spin)
+
+        # 05-15
+        self.mic_scan_menu_name = QTableWidgetItem("GENERAL")
+        self.mic_scan_menu_nb = QTableWidgetItem("05-15")
+        self.mic_scan_parm_name = QTableWidgetItem("MIC SCAN")
+
+        self.mic_scan_combo = QComboBox()
+        self.mic_scan_combo.setEditable(True)
+        self.mic_scan_combo.lineEdit().setReadOnly(True)
+        self.mic_scan_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mic_scan_combo.addItems([i for i in MIC_SCAN.keys()])
+        format_combo(self.mic_scan_combo)
+        self.mic_scan_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(37, 0, self.mic_scan_menu_name)
+        self.menu_table.setItem(37, 1, self.mic_scan_menu_nb)
+        self.menu_table.setItem(37, 2, self.mic_scan_parm_name)
+        self.menu_table.setCellWidget(37, 3, self.mic_scan_combo)
+
+        # 05-16
+        self.mic_scan_resume_menu_name = QTableWidgetItem("GENERAL")
+        self.mic_scan_resume_menu_nb = QTableWidgetItem("05-16")
+        self.mic_scan_resume_parm_name = QTableWidgetItem("MIC SCAN RESUME")
+
+        self.mic_scan_resume_combo = QComboBox()
+        self.mic_scan_resume_combo.setEditable(True)
+        self.mic_scan_resume_combo.lineEdit().setReadOnly(True)
+        self.mic_scan_resume_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mic_scan_resume_combo.addItems([i for i in MIC_SCAN_RESUME.keys()])
+        format_combo(self.mic_scan_resume_combo)
+        self.mic_scan_resume_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(38, 0, self.mic_scan_resume_menu_name)
+        self.menu_table.setItem(38, 1, self.mic_scan_resume_menu_nb)
+        self.menu_table.setItem(38, 2, self.mic_scan_resume_parm_name)
+        self.menu_table.setCellWidget(38, 3, self.mic_scan_resume_combo)
+
+        # 05-17
+        self.ref_freq_adj_menu_name = QTableWidgetItem("GENERAL")
+        self.ref_freq_adj_menu_nb = QTableWidgetItem("05-17")
+        self.ref_freq_adj_parm_name = QTableWidgetItem("REF FREQ ADJ")
+
+        self.ref_freq_adj_spin = QSpinBox()
+        self.ref_freq_adj_spin.setAlignment(Qt.AlignCenter)
+        self.ref_freq_adj_spin.setMaximum(25)
+        self.ref_freq_adj_spin.setMinimum(-25)
+        self.ref_freq_adj_spin.setSingleStep(1)
+        self.ref_freq_adj_spin.setValue(0)
+
+        self.menu_table.setItem(39, 0, self.ref_freq_adj_menu_name)
+        self.menu_table.setItem(39, 1, self.ref_freq_adj_menu_nb)
+        self.menu_table.setItem(39, 2, self.ref_freq_adj_parm_name)
+        self.menu_table.setCellWidget(39, 3, self.ref_freq_adj_spin)
+
+        # 05-18
+        self.clar_select_menu_name = QTableWidgetItem("GENERAL")
+        self.clar_select_menu_nb = QTableWidgetItem("05-18")
+        self.clar_select_parm_name = QTableWidgetItem("CLAR SELECT")
+
+        self.clar_select_combo = QComboBox()
+        self.clar_select_combo.setEditable(True)
+        self.clar_select_combo.lineEdit().setReadOnly(True)
+        self.clar_select_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.clar_select_combo.addItems([i for i in CLAR_SELECT.keys()])
+        format_combo(self.clar_select_combo)
+        self.clar_select_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(40, 0, self.clar_select_menu_name)
+        self.menu_table.setItem(40, 1, self.clar_select_menu_nb)
+        self.menu_table.setItem(40, 2, self.clar_select_parm_name)
+        self.menu_table.setCellWidget(40, 3, self.clar_select_combo)
+
+        # 05-19
+        self.apo_menu_name = QTableWidgetItem("GENERAL")
+        self.apo_menu_nb = QTableWidgetItem("05-19")
+        self.apo_parm_name = QTableWidgetItem("APO")
+
+        self.apo_combo = QComboBox()
+        self.apo_combo.setEditable(True)
+        self.apo_combo.lineEdit().setReadOnly(True)
+        self.apo_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.apo_combo.addItems([i for i in APO.keys()])
+        format_combo(self.apo_combo)
+        self.apo_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(41, 0, self.apo_menu_name)
+        self.menu_table.setItem(41, 1, self.apo_menu_nb)
+        self.menu_table.setItem(41, 2, self.apo_parm_name)
+        self.menu_table.setCellWidget(41, 3, self.apo_combo)
+
+        # 05-20
+        self.fan_control_menu_name = QTableWidgetItem("GENERAL")
+        self.fan_control_menu_nb = QTableWidgetItem("05-20")
+        self.fan_control_parm_name = QTableWidgetItem("FAN CONTROL")
+
+        self.fan_control_combo = QComboBox()
+        self.fan_control_combo.setEditable(True)
+        self.fan_control_combo.lineEdit().setReadOnly(True)
+        self.fan_control_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.fan_control_combo.addItems([i for i in FAN_CONTROL.keys()])
+        format_combo(self.fan_control_combo)
+        self.fan_control_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(42, 0, self.fan_control_menu_name)
+        self.menu_table.setItem(42, 1, self.fan_control_menu_nb)
+        self.menu_table.setItem(42, 2, self.fan_control_parm_name)
+        self.menu_table.setCellWidget(42, 3, self.fan_control_combo)
+
+        # 06-01
+        self.am_lcut_freq_menu_name = QTableWidgetItem("MODE AM")
+        self.am_lcut_freq_menu_nb = QTableWidgetItem("06-01")
+        self.am_lcut_freq_parm_name = QTableWidgetItem("AM LCUT FREQ")
+
+        self.am_lcut_freq_spin = QSpinBox()
+        self.am_lcut_freq_spin.setAlignment(Qt.AlignCenter)
+        self.am_lcut_freq_spin.setMaximum(1000)
+        self.am_lcut_freq_spin.setMinimum(50)
+        self.am_lcut_freq_spin.setSingleStep(50)
+        self.am_lcut_freq_spin.setSpecialValueText("OFF")
+        self.am_lcut_freq_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(43, 0, self.am_lcut_freq_menu_name)
+        self.menu_table.setItem(43, 1, self.am_lcut_freq_menu_nb)
+        self.menu_table.setItem(43, 2, self.am_lcut_freq_parm_name)
+        self.menu_table.setCellWidget(43, 3, self.am_lcut_freq_spin)
+
+        # 06-02
+        self.am_lcut_slope_menu_name = QTableWidgetItem("MODE AM")
+        self.am_lcut_slope_menu_nb = QTableWidgetItem("06-02")
+        self.am_lcut_slope_parm_name = QTableWidgetItem("AM LCUT SLOPE")
+
+        self.am_lcut_slope_combo = QComboBox()
+        self.am_lcut_slope_combo.setEditable(True)
+        self.am_lcut_slope_combo.lineEdit().setReadOnly(True)
+        self.am_lcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.am_lcut_slope_combo.addItems([i for i in AM_LCUT_SLOPE.keys()])
+        format_combo(self.am_lcut_slope_combo)
+        self.am_lcut_slope_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(44, 0, self.am_lcut_slope_menu_name)
+        self.menu_table.setItem(44, 1, self.am_lcut_slope_menu_nb)
+        self.menu_table.setItem(44, 2, self.am_lcut_slope_parm_name)
+        self.menu_table.setCellWidget(44, 3, self.am_lcut_slope_combo)
+
+        # Table config
+        for row in range(0, self.menu_table.rowCount()):
+            try:
+                self.menu_table.item(row, 0).setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                self.menu_table.item(row, 0).setTextAlignment(Qt.AlignCenter)
+                self.menu_table.item(row, 0).setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
+
+                self.menu_table.item(row, 1).setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                self.menu_table.item(row, 1).setTextAlignment(Qt.AlignCenter)
+                self.menu_table.item(row, 1).setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
+
+                self.menu_table.item(row, 2).setFlags(Qt.ItemIsSelectable | Qt.ItemIsEnabled)
+                self.menu_table.item(row, 2).setTextAlignment(Qt.AlignCenter)
+                self.menu_table.item(row, 2).setFlags(Qt.NoItemFlags | Qt.ItemIsEnabled)
+
+            except AttributeError:
+                pass
 
         # ###### Memory tab
         self.memory_layout = QVBoxLayout()
@@ -969,11 +940,42 @@ class MainWindow(QMainWindow):
         self.setMenuBar(self.menu_bar)
 
         self.file_menu = QMenu("Files")
+        self.edit_menu = QMenu("Edit")
         self.menu_bar.addMenu(self.file_menu)
+        self.menu_bar.addMenu(self.edit_menu)
+
+        # Edit Actions
+        self.live_mode_action = QAction("Live Mode")
+        self.edit_menu.addAction(self.live_mode_action)
+        self.edit_menu.addSeparator()
+        self.live_mode_action.setCheckable(True)
+        self.live_mode_action.setChecked(True)
+        self.live_mode_action.triggered.connect(self.toggle_live_mode)
+
+        self.send_to_radio_action = QAction("Send config to FT-891")
+        self.edit_menu.addAction(self.send_to_radio_action)
+        self.send_to_radio_action.setDisabled(True)
+        self.send_to_radio_action.triggered.connect(self.send_config_2_radio)
 
         # ###### Status Bar
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
+
+    def send_config_2_radio(self):
+        self.set_dimmer_lcd()
+        self.set_dimmer_backlit()
+        self.set_beacon_interval()
+        self.set_acg_fast_delay()
+
+    def toggle_live_mode(self):
+        if self.live_mode:
+            self.live_mode_action.setChecked(False)
+            self.live_mode = False
+            self.send_to_radio_action.setEnabled(True)
+        else:
+            self.live_mode_action.setChecked(True)
+            self.live_mode = True
+            self.send_to_radio_action.setDisabled(True)
 
     def set_dimmer_backlit(self):
         if self.rig.isOpen():
