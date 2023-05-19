@@ -12,8 +12,8 @@ from PyQt5.Qt import *
 APP_NAME = "CPyS-891"
 APP_VERSION = datetime.strftime(datetime.now(), "%y%m%d")
 APP_TITLE = f"{APP_NAME} - v{APP_VERSION}"
-ICON = "../images/icon.png"
-FONT = "../fonts/Quicksand-Regular.ttf"
+ICON = "./images/icon.png"
+FONT = "./fonts/Quicksand-Regular.ttf"
 FONT_FAMILY = "Quicksand"
 FONT_SIZE = 11
 ENCODER = "utf-8"
@@ -77,7 +77,7 @@ class MainWindow(QMainWindow):
 
         # ######
         self.app = appli
-        self.live_mode = True
+        self.trasnfert = True
         self.old_beacon_interval = int()
 
         # ###### Main Window config
@@ -87,13 +87,39 @@ class MainWindow(QMainWindow):
         # self.setAttribute(Qt.WA_TranslucentBackground)
         # self.setMouseTracking(True)
 
+        # ###### Menu Bar
+        self.menu_bar = QMenuBar(self)
+        self.setMenuBar(self.menu_bar)
+
+        self.file_menu = QMenu("Files")
+        self.edit_menu = QMenu("Edit")
+        self.menu_bar.addMenu(self.file_menu)
+        self.menu_bar.addMenu(self.edit_menu)
+
+        # Edit Actions
+        self.live_mode_action = QAction("Live Mode")
+        self.edit_menu.addAction(self.live_mode_action)
+        self.edit_menu.addSeparator()
+        self.live_mode_action.setCheckable(True)
+        self.live_mode_action.setChecked(True)
+        self.live_mode_action.triggered.connect(self.toggle_live_mode)
+
+        self.send_to_radio_action = QAction("Send config to FT-891")
+        self.edit_menu.addAction(self.send_to_radio_action)
+        self.send_to_radio_action.setDisabled(True)
+        self.send_to_radio_action.triggered.connect(self.send_config_2_radio)
+
+        # ###### Status Bar
+        self.status_bar = QStatusBar()
+        self.setStatusBar(self.status_bar)
+
         self.central_Widget = QWidget()
         self.setCentralWidget(self.central_Widget)
 
         self.main_layout = QVBoxLayout()
         self.central_Widget.setLayout(self.main_layout)
 
-        # Rig
+        # ###### Rig
         self.rig = Serial(baudrate=38400, write_timeout=1)
         self.rig.setPort("/dev/ttyUSB0")
         # self.rig.open()
@@ -157,6 +183,7 @@ class MainWindow(QMainWindow):
         self.acg_mid_spin.setMinimum(20)
         self.acg_mid_spin.setValue(700)
         self.acg_mid_spin.setSuffix(" msec")
+        self.acg_mid_spin.valueChanged.connect(self.set_acg_mid_delay)
 
         self.menu_table.setItem(1, 0, self.acg_mid_menu_name)
         self.menu_table.setItem(1, 1, self.acg_mid_menu_number)
@@ -174,6 +201,7 @@ class MainWindow(QMainWindow):
         self.acg_slow_spin.setMinimum(20)
         self.acg_slow_spin.setValue(3000)
         self.acg_slow_spin.setSuffix(" msec")
+        self.acg_slow_spin.valueChanged.connect(self.set_acg_slow_delay)
 
         self.menu_table.setItem(2, 0, self.acg_slow_menu_name)
         self.menu_table.setItem(2, 1, self.acg_slow_menu_number)
@@ -191,6 +219,7 @@ class MainWindow(QMainWindow):
         self.display_lcd_contrast_spin.setMaximum(15)
         self.display_lcd_contrast_spin.setMinimum(1)
         self.display_lcd_contrast_spin.setValue(8)
+        self.display_lcd_contrast_spin.valueChanged.connect(self.set_lcd_contrast)
 
         self.menu_table.setItem(3, 0, self.display_lcd_contrast_menu_name)
         self.menu_table.setItem(3, 1, self.display_lcd_contrast_menu_nb)
@@ -241,6 +270,7 @@ class MainWindow(QMainWindow):
         self.display_dimmer_tx_busy_spin.setMaximum(15)
         self.display_dimmer_tx_busy_spin.setMinimum(1)
         self.display_dimmer_tx_busy_spin.setValue(8)
+        self.display_dimmer_tx_busy_spin.valueChanged.connect(self.set_dimmer_tx_busy)
 
         self.menu_table.setItem(6, 0, self.display_dimmer_tx_busy_menu_name)
         self.menu_table.setItem(6, 1, self.display_dimmer_tx_busy_menu_nb)
@@ -259,6 +289,7 @@ class MainWindow(QMainWindow):
         self.peak_hold_combo.addItems([i for i in PEAK_HOLD.keys()])
         format_combo(self.peak_hold_combo)
         self.peak_hold_combo.setCurrentIndex(0)
+        self.peak_hold_combo.currentTextChanged.connect(self.set_peak_hold)
 
         self.menu_table.setItem(7, 0, self.peak_hold_menu_name)
         self.menu_table.setItem(7, 1, self.peak_hold_menu_nb)
@@ -277,6 +308,7 @@ class MainWindow(QMainWindow):
         self.zin_led_combo.addItems([i for i in ZIN_LED.keys()])
         format_combo(self.zin_led_combo)
         self.zin_led_combo.setCurrentIndex(0)
+        self.zin_led_combo.currentTextChanged.connect(self.set_zin_led)
 
         self.menu_table.setItem(8, 0, self.zin_led_menu_name)
         self.menu_table.setItem(8, 1, self.zin_led_menu_nb)
@@ -295,6 +327,7 @@ class MainWindow(QMainWindow):
         self.pop_up_combo.addItems([i for i in POPUP_MENU.keys()])
         format_combo(self.pop_up_combo)
         self.pop_up_combo.setCurrentIndex(1)
+        self.pop_up_combo.currentTextChanged.connect(self.set_pop_up_menu)
 
         self.menu_table.setItem(9, 0, self.pop_up_menu_name)
         self.menu_table.setItem(9, 1, self.pop_up_menu_nb)
@@ -1273,51 +1306,80 @@ class MainWindow(QMainWindow):
         self.memory_layout = QVBoxLayout()
         self.memory_tab.setLayout(self.memory_layout)
 
-        # ###### Menu Bar
-        self.menu_bar = QMenuBar(self)
-        self.setMenuBar(self.menu_bar)
-
-        self.file_menu = QMenu("Files")
-        self.edit_menu = QMenu("Edit")
-        self.menu_bar.addMenu(self.file_menu)
-        self.menu_bar.addMenu(self.edit_menu)
-
-        # Edit Actions
-        self.live_mode_action = QAction("Live Mode")
-        self.edit_menu.addAction(self.live_mode_action)
-        self.edit_menu.addSeparator()
-        self.live_mode_action.setCheckable(True)
-        self.live_mode_action.setChecked(True)
-        self.live_mode_action.triggered.connect(self.toggle_live_mode)
-
-        self.send_to_radio_action = QAction("Send config to FT-891")
-        self.edit_menu.addAction(self.send_to_radio_action)
-        self.send_to_radio_action.setDisabled(True)
-        self.send_to_radio_action.triggered.connect(self.send_config_2_radio)
-
-        # ###### Status Bar
-        self.status_bar = QStatusBar()
-        self.setStatusBar(self.status_bar)
-
     def send_config_2_radio(self):
-        self.set_dimmer_lcd()
-        self.set_dimmer_backlit()
-        self.set_beacon_interval()
+        """Send the config to the Radio"""
+        self.trasnfert = True
+
         self.set_acg_fast_delay()
+        self.set_acg_mid_delay()
+        self.set_acg_slow_delay()
+        self.set_lcd_contrast()
+        self.set_dimmer_backlit()
+        self.set_dimmer_lcd()
+
+        self.set_beacon_interval()
+
+        self.trasnfert = False
 
     def toggle_live_mode(self):
-        if self.live_mode:
+        """Toggle Live Mode"""
+        if self.trasnfert:
             self.live_mode_action.setChecked(False)
-            self.live_mode = False
+            self.trasnfert = False
             self.send_to_radio_action.setEnabled(True)
         else:
             self.live_mode_action.setChecked(True)
-            self.live_mode = True
+            self.trasnfert = True
             self.send_to_radio_action.setDisabled(True)
 
-    def set_dimmer_backlit(self):
+    def set_acg_fast_delay(self):
+        """Set ACG FAST DELAY"""
         if self.rig.isOpen():
-            if self.live_mode:
+            if self.trasnfert:
+                value = str(self.acg_fast_spin.value())
+                while len(value) < 4:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0101" + value + b";"
+                self.rig.write(cmd)
+
+    def set_acg_mid_delay(self):
+        """Set ACG MID DELAY"""
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.acg_mid_spin.value())
+                while len(value) < 4:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0102" + value + b";"
+                self.rig.write(cmd)
+
+    def set_acg_slow_delay(self):
+        """Set ACG SLOW DELAY"""
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.acg_slow_spin.value())
+                while len(value) < 4:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0103" + value + b";"
+                self.rig.write(cmd)
+
+    def set_lcd_contrast(self):
+        """Set LCD CONTRAST"""
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.display_dimmer_lcd_spin.value())
+                while len(value) < 2:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0201" + value + b";"
+                self.rig.write(cmd)
+
+    def set_dimmer_backlit(self):
+        """Set DIMMER BACKLIT"""
+        if self.rig.isOpen():
+            if self.trasnfert:
                 value = str(self.display_dimmer_backlit_spin.value())
                 while len(value) < 2:
                     value = "0" + value
@@ -1326,8 +1388,9 @@ class MainWindow(QMainWindow):
                 self.rig.write(cmd)
 
     def set_dimmer_lcd(self):
+        """Set DIMMER LCD"""
         if self.rig.isOpen():
-            if self.live_mode:
+            if self.trasnfert:
                 value = str(self.display_dimmer_lcd_spin.value())
                 while len(value) < 2:
                     value = "0" + value
@@ -1335,7 +1398,43 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0203" + value + b";"
                 self.rig.write(cmd)
 
+    def set_dimmer_tx_busy(self):
+        """Set DIMMER TX/BUSY"""
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.display_dimmer_tx_busy_spin.value())
+                while len(value) < 2:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0204" + value + b";"
+                self.rig.write(cmd)
+
+    def set_peak_hold(self):
+        """Set PEAK HOLD"""
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = PEAK_HOLD[self.peak_hold_combo.currentText()]
+                cmd = b"EX0205" + value + b";"
+                self.rig.write(cmd)
+
+    def set_zin_led(self):
+        """Set ZIN LED"""
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = ZIN_LED[self.zin_led_combo.currentText()]
+                cmd = b"EX0206" + value + b";"
+                self.rig.write(cmd)
+
+    def set_pop_up_menu(self):
+        """Set POP-UP MENU"""
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = POPUP_MENU[self.pop_up_combo.currentText()]
+                cmd = b"EX0207" + value + b";"
+                self.rig.write(cmd)
+
     def set_beacon_interval(self):
+        """Set BEACON INTERVAL"""
         if self.old_beacon_interval == 240 and self.beacon_interval_spin.value() == 241:
             self.beacon_interval_spin.setSingleStep(30)
             self.beacon_interval_spin.setValue(270)
@@ -1346,17 +1445,11 @@ class MainWindow(QMainWindow):
         self.old_beacon_interval = self.beacon_interval_spin.value()
 
         if self.rig.isOpen():
-            if self.live_mode:
-                pass
-
-    def set_acg_fast_delay(self):
-        if self.rig.isOpen():
-            if self.live_mode:
-                value = str(self.acg_fast_spin.value())
-                while len(value) < 4:
+            if self.trasnfert:
+                value = str(self.beacon_interval_spin.value())
+                while len(value) < 3:
                     value = "0" + value
-                value = bytes(value, ENCODER)
-                cmd = b"EX0101" + value + b";"
+                cmd = b"EX0404" + bytes(value) + b";"
                 self.rig.write(cmd)
 
     def closeEvent(self, a0: QCloseEvent):
