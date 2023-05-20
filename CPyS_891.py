@@ -44,15 +44,11 @@ ATAS_SETTING = {"DISABLE": b"0", "ENABLE": b"1"}
 MIC_SCAN = {"DISABLE": b"0", "ENABLE": b"1"}
 MIC_SCAN_RESUME = {"PAUSE": b"0", "TIME": b"1"}
 CLAR_SELECT = {"RX": b"0", "TX": b"1", "TRX": b"2"}
-APO = {"OFF": 0, "1 h": 1, "2 h": 2, "4 h": 3,
-       "6 h": 4, "8 h": 5, "10 h": 6, "12 h": 7}
+APO = {"OFF": b"0", "1 h": b"1", "2 h": b"2", "4 h": b"3",
+       "6 h": b"4", "8 h": b"5", "10 h": b"6", "12 h": b"7"}
 FAN_CONTROL = {"NORMAL": b"0", "CONTEST": b"1"}
-AM_LCUT_SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
-AM_HCUT_SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
 AM_MIC_SELECT = {"MIC": b"0", "REAR": b"1"}
 AM_PTT_SELECT = {"DAKY": b"0", "RTS": b"1", "DTR": b"2"}
-CW_LCUT_SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
-CW_HCUT_SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
 CW_AUTO_MODE = {"OFF": b"0", "50M": b"1", "ON": b"2"}
 CW_BFO = {"USB": b"0", "LSB": b"1", "AUTO": b"2"}
 CW_BK_IN_TYPE = {"SEMI": b"0", "FULL": b"1"}
@@ -62,6 +58,12 @@ PC_KEYING = {"OFF": b"0", "DAKY": b"1",
              "RTS": b"2", "DTR": b"3"}
 QSK_DELAY_TIME = {"15 msec": b"0", "20 msec": b"1",
                   "25 msec": b"2", "30 msec": b"3"}
+DATA_MODE = {"PSK": b"0", "OTHER": b"1"}
+PSK_TONE = {"1000 Hz": b"0", "1500 Hz": b"1", "2000 Hz": b"2"}
+SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
+DATA_IN_SELECT = {"MIC": b"0", "REAR": b"1"}
+DATA_PTT_SELECT = {"DAKY": b"0", "RTS": b"1", "DTR": b"2"}
+DATA_BFO = {"USB": b"0", "LSB": b"1"}
 
 
 def format_combo(combobox):
@@ -951,7 +953,7 @@ class MainWindow(QMainWindow):
         self.am_lcut_slope_combo.setEditable(True)
         self.am_lcut_slope_combo.lineEdit().setReadOnly(True)
         self.am_lcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.am_lcut_slope_combo.addItems([i for i in AM_LCUT_SLOPE.keys()])
+        self.am_lcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.am_lcut_slope_combo)
         self.am_lcut_slope_combo.setCurrentIndex(0)
 
@@ -987,7 +989,7 @@ class MainWindow(QMainWindow):
         self.am_hcut_slope_combo.setEditable(True)
         self.am_hcut_slope_combo.lineEdit().setReadOnly(True)
         self.am_hcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.am_hcut_slope_combo.addItems([i for i in AM_HCUT_SLOPE.keys()])
+        self.am_hcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.am_hcut_slope_combo)
         self.am_hcut_slope_combo.setCurrentIndex(0)
 
@@ -1077,7 +1079,7 @@ class MainWindow(QMainWindow):
         self.cw_lcut_slope_combo.setEditable(True)
         self.cw_lcut_slope_combo.lineEdit().setReadOnly(True)
         self.cw_lcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.cw_lcut_slope_combo.addItems([i for i in CW_LCUT_SLOPE.keys()])
+        self.cw_lcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.cw_lcut_slope_combo)
         self.cw_lcut_slope_combo.setCurrentIndex(1)
 
@@ -1114,7 +1116,7 @@ class MainWindow(QMainWindow):
         self.cw_hcut_slope_combo.setEditable(True)
         self.cw_hcut_slope_combo.lineEdit().setReadOnly(True)
         self.cw_hcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.cw_hcut_slope_combo.addItems([i for i in CW_HCUT_SLOPE.keys()])
+        self.cw_hcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.cw_hcut_slope_combo)
         self.cw_hcut_slope_combo.setCurrentIndex(1)
 
@@ -1283,6 +1285,223 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(62, 1, self.qsk_delay_time_menu_nb)
         self.menu_table.setItem(62, 2, self.qsk_delay_time_parm_name)
         self.menu_table.setCellWidget(62, 3, self.qsk_delay_time_combo)
+
+        # 08-01
+        self.data_mode_menu_name = QTableWidgetItem("MODE DAT")
+        self.data_mode_menu_nb = QTableWidgetItem("08-01")
+        self.data_mode_parm_name = QTableWidgetItem("DATA MODE")
+
+        self.data_mode_combo = QComboBox()
+        self.data_mode_combo.setEditable(True)
+        self.data_mode_combo.lineEdit().setReadOnly(True)
+        self.data_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.data_mode_combo.addItems([i for i in DATA_MODE.keys()])
+        format_combo(self.data_mode_combo)
+        self.data_mode_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(63, 0, self.data_mode_menu_name)
+        self.menu_table.setItem(63, 1, self.data_mode_menu_nb)
+        self.menu_table.setItem(63, 2, self.data_mode_parm_name)
+        self.menu_table.setCellWidget(63, 3, self.data_mode_combo)
+
+        # 08-02
+        self.psk_tone_menu_name = QTableWidgetItem("MODE DAT")
+        self.psk_tone_menu_nb = QTableWidgetItem("08-02")
+        self.psk_tone_parm_name = QTableWidgetItem("PSK TONE")
+
+        self.psk_tone_combo = QComboBox()
+        self.psk_tone_combo.setEditable(True)
+        self.psk_tone_combo.lineEdit().setReadOnly(True)
+        self.psk_tone_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.psk_tone_combo.addItems([i for i in PSK_TONE.keys()])
+        format_combo(self.psk_tone_combo)
+        self.psk_tone_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(64, 0, self.psk_tone_menu_name)
+        self.menu_table.setItem(64, 1, self.psk_tone_menu_nb)
+        self.menu_table.setItem(64, 2, self.psk_tone_parm_name)
+        self.menu_table.setCellWidget(64, 3, self.psk_tone_combo)
+
+        # 08-03
+        self.other_disp_menu_name = QTableWidgetItem("MODE DAT")
+        self.other_disp_menu_nb = QTableWidgetItem("08-03")
+        self.other_disp_parm_name = QTableWidgetItem("OTHER DISP")
+
+        self.other_disp_spin = QSpinBox()
+        self.other_disp_spin.setAlignment(Qt.AlignCenter)
+        self.other_disp_spin.setMaximum(3000)
+        self.other_disp_spin.setMinimum(-3000)
+        self.other_disp_spin.setSingleStep(10)
+        self.other_disp_spin.setValue(0)
+        self.other_disp_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(65, 0, self.other_disp_menu_name)
+        self.menu_table.setItem(65, 1, self.other_disp_menu_nb)
+        self.menu_table.setItem(65, 2, self.other_disp_parm_name)
+        self.menu_table.setCellWidget(65, 3, self.other_disp_spin)
+
+        # 08-04
+        self.other_shift_menu_name = QTableWidgetItem("MODE DAT")
+        self.other_shift_menu_nb = QTableWidgetItem("08-04")
+        self.other_shift_parm_name = QTableWidgetItem("OTHER SHIFT")
+
+        self.other_shift_spin = QSpinBox()
+        self.other_shift_spin.setAlignment(Qt.AlignCenter)
+        self.other_shift_spin.setMaximum(3000)
+        self.other_shift_spin.setMinimum(-3000)
+        self.other_shift_spin.setSingleStep(10)
+        self.other_shift_spin.setValue(0)
+        self.other_shift_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(66, 0, self.other_shift_menu_name)
+        self.menu_table.setItem(66, 1, self.other_shift_menu_nb)
+        self.menu_table.setItem(66, 2, self.other_shift_parm_name)
+        self.menu_table.setCellWidget(66, 3, self.other_shift_spin)
+
+        # 08-05
+        self.data_lcut_freq_menu_name = QTableWidgetItem("MODE DAT")
+        self.data_lcut_freq_menu_nb = QTableWidgetItem("08-05")
+        self.data_lcut_freq_parm_name = QTableWidgetItem("DATA LCUT FREQ")
+
+        self.data_lcut_freq_spin = QSpinBox()
+        self.data_lcut_freq_spin.setAlignment(Qt.AlignCenter)
+        self.data_lcut_freq_spin.setMaximum(1000)
+        self.data_lcut_freq_spin.setMinimum(50)
+        self.data_lcut_freq_spin.setSingleStep(50)
+        self.data_lcut_freq_spin.setValue(300)
+        self.data_lcut_freq_spin.setSpecialValueText("OFF")
+        self.data_lcut_freq_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(67, 0, self.data_lcut_freq_menu_name)
+        self.menu_table.setItem(67, 1, self.data_lcut_freq_menu_nb)
+        self.menu_table.setItem(67, 2, self.data_lcut_freq_parm_name)
+        self.menu_table.setCellWidget(67, 3, self.data_lcut_freq_spin)
+
+        # 08-06
+        self.data_lcut_slope_menu_name = QTableWidgetItem("MODE DAT")
+        self.data_lcut_slope_menu_nb = QTableWidgetItem("08-06")
+        self.data_lcut_slope_parm_name = QTableWidgetItem("DATA LCUT SLOPE")
+
+        self.data_lcut_slope_combo = QComboBox()
+        self.data_lcut_slope_combo.setEditable(True)
+        self.data_lcut_slope_combo.lineEdit().setReadOnly(True)
+        self.data_lcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.data_lcut_slope_combo.addItems([i for i in SLOPE.keys()])
+        format_combo(self.data_lcut_slope_combo)
+        self.data_lcut_slope_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(68, 0, self.data_lcut_slope_menu_name)
+        self.menu_table.setItem(68, 1, self.data_lcut_slope_menu_nb)
+        self.menu_table.setItem(68, 2, self.data_lcut_slope_parm_name)
+        self.menu_table.setCellWidget(68, 3, self.data_lcut_slope_combo)
+
+        # 08-07
+        self.data_hcut_freq_menu_name = QTableWidgetItem("MODE DAT")
+        self.data_hcut_freq_menu_nb = QTableWidgetItem("08-07")
+        self.data_hcut_freq_parm_name = QTableWidgetItem("DATA HCUT FREQ")
+
+        self.data_hcut_freq_spin = QSpinBox()
+        self.data_hcut_freq_spin.setAlignment(Qt.AlignCenter)
+        self.data_hcut_freq_spin.setMaximum(4000)
+        self.data_hcut_freq_spin.setMinimum(650)
+        self.data_hcut_freq_spin.setSingleStep(50)
+        self.data_hcut_freq_spin.setValue(3000)
+        self.data_hcut_freq_spin.setSpecialValueText("OFF")
+        self.data_hcut_freq_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(69, 0, self.data_hcut_freq_menu_name)
+        self.menu_table.setItem(69, 1, self.data_hcut_freq_menu_nb)
+        self.menu_table.setItem(69, 2, self.data_hcut_freq_parm_name)
+        self.menu_table.setCellWidget(69, 3, self.data_hcut_freq_spin)
+
+        # 08-08
+        self.data_hcut_slope_menu_name = QTableWidgetItem("MODE DAT")
+        self.data_hcut_slope_menu_nb = QTableWidgetItem("08-08")
+        self.data_hcut_slope_parm_name = QTableWidgetItem("DATA HCUT SLOPE")
+
+        self.data_hcut_slope_combo = QComboBox()
+        self.data_hcut_slope_combo.setEditable(True)
+        self.data_hcut_slope_combo.lineEdit().setReadOnly(True)
+        self.data_hcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.data_hcut_slope_combo.addItems([i for i in SLOPE.keys()])
+        format_combo(self.data_hcut_slope_combo)
+        self.data_hcut_slope_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(70, 0, self.data_hcut_slope_menu_name)
+        self.menu_table.setItem(70, 1, self.data_hcut_slope_menu_nb)
+        self.menu_table.setItem(70, 2, self.data_hcut_slope_parm_name)
+        self.menu_table.setCellWidget(70, 3, self.data_hcut_slope_combo)
+
+        # 08-09
+        self.data_in_select_menu_name = QTableWidgetItem("MODE DAT")
+        self.data_in_select_menu_nb = QTableWidgetItem("08-09")
+        self.data_in_select_parm_name = QTableWidgetItem("DATA IN SELECT")
+
+        self.data_in_select_combo = QComboBox()
+        self.data_in_select_combo.setEditable(True)
+        self.data_in_select_combo.lineEdit().setReadOnly(True)
+        self.data_in_select_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.data_in_select_combo.addItems([i for i in DATA_IN_SELECT.keys()])
+        format_combo(self.data_in_select_combo)
+        self.data_in_select_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(71, 0, self.data_in_select_menu_name)
+        self.menu_table.setItem(71, 1, self.data_in_select_menu_nb)
+        self.menu_table.setItem(71, 2, self.data_in_select_parm_name)
+        self.menu_table.setCellWidget(71, 3, self.data_in_select_combo)
+
+        # 08-10
+        self.data_ptt_select_menu_name = QTableWidgetItem("MODE DAT")
+        self.data_ptt_select_menu_nb = QTableWidgetItem("08-10")
+        self.data_ptt_select_parm_name = QTableWidgetItem("DATA PTT SELECT")
+
+        self.data_ptt_select_combo = QComboBox()
+        self.data_ptt_select_combo.setEditable(True)
+        self.data_ptt_select_combo.lineEdit().setReadOnly(True)
+        self.data_ptt_select_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.data_ptt_select_combo.addItems([i for i in DATA_PTT_SELECT.keys()])
+        format_combo(self.data_ptt_select_combo)
+        self.data_ptt_select_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(72, 0, self.data_ptt_select_menu_name)
+        self.menu_table.setItem(72, 1, self.data_ptt_select_menu_nb)
+        self.menu_table.setItem(72, 2, self.data_ptt_select_parm_name)
+        self.menu_table.setCellWidget(72, 3, self.data_ptt_select_combo)
+
+        # 08-11
+        self.data_out_level_menu_name = QTableWidgetItem("MODE DAT")
+        self.data_out_level_menu_nb = QTableWidgetItem("08-11")
+        self.data_out_level_parm_name = QTableWidgetItem("DATA OUT LEVEL")
+
+        self.data_out_level_spin = QSpinBox()
+        self.data_out_level_spin.setAlignment(Qt.AlignCenter)
+        self.data_out_level_spin.setMaximum(100)
+        self.data_out_level_spin.setMinimum(0)
+        self.data_out_level_spin.setSingleStep(1)
+        self.data_out_level_spin.setValue(50)
+
+        self.menu_table.setItem(73, 0, self.data_out_level_menu_name)
+        self.menu_table.setItem(73, 1, self.data_out_level_menu_nb)
+        self.menu_table.setItem(73, 2, self.data_out_level_parm_name)
+        self.menu_table.setCellWidget(73, 3, self.data_out_level_spin)
+
+        # 08-12
+        self.data_bfo_menu_name = QTableWidgetItem("MODE DAT")
+        self.data_bfo_menu_nb = QTableWidgetItem("08-12")
+        self.data_bfo_parm_name = QTableWidgetItem("DATA BFO")
+
+        self.data_bfo_combo = QComboBox()
+        self.data_bfo_combo.setEditable(True)
+        self.data_bfo_combo.lineEdit().setReadOnly(True)
+        self.data_bfo_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.data_bfo_combo.addItems([i for i in DATA_BFO.keys()])
+        format_combo(self.data_bfo_combo)
+        self.data_bfo_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(74, 0, self.data_bfo_menu_name)
+        self.menu_table.setItem(74, 1, self.data_bfo_menu_nb)
+        self.menu_table.setItem(74, 2, self.data_bfo_parm_name)
+        self.menu_table.setCellWidget(74, 3, self.data_bfo_combo)
 
         # Table config
         for row in range(0, self.menu_table.rowCount()):
