@@ -81,6 +81,19 @@ RTTY_SHIFT_FREQ = {"170 Hz": b"0", "200 Hz": b"1",
                    "425 Hz": b"2", "850 Hz": b"3"}
 RTTY_MARK_FREQ = {"1275 Hz": b"0", "2125 Hz": b"1"}
 RTTY_BFO = {"USB": b"0", "LSB": b"1"}
+SSB_MIC_SELECT = {"MIC": b"0", "REAR": b"1"}
+SSB_BFO = {"USB": b"0", "LSB": b"1", "AUTO": b"2"}
+SSB_PTT_SELECT = {"DAKY": b"0", "RTS": b"1", "DTR": b"2"}
+SSB_TX_BPF = {"100-3000": b"0", "100-2900": b"1",
+              "200-2800": b"2", "300-2700": b"3",
+              "400-2600": b"4"}
+APF_WIDTH = {"NARROW": b"0", "MEDIUM": b"1", "WIDE": b"2"}
+IF_NOTCH_WIDTH = {"NARROW": b"0", "WIDE": b"1"}
+SCP_START_CYCLE = {"OFF": b"0", "3 sec": b"1",
+                   "2.5 sec": b"2", "10 sec": b"3"}
+SCP_SPAN_FREQ = {"37.5 kHz": b"0", "75 kHz": b"1",
+                 "150 kHz": b"2", "375 kHz": b"3",
+                 "750 kHz": b"4"}
 
 
 def format_combo(combobox):
@@ -1714,6 +1727,269 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(101, 0, self.rtty_bfo_menu_nb)
         self.menu_table.setItem(101, 1, self.rtty_bfo_parm_name)
         self.menu_table.setCellWidget(101, 2, self.rtty_bfo_combo)
+
+        # Mode SSB
+        self.mode_ssb_separator = QTableWidgetItem("MODE SSB")
+        self.mode_ssb_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
+        self.menu_table.setItem(102, 0, self.mode_ssb_separator)
+        self.menu_table.setSpan(102, 0, 1, 3)
+
+        # 11-01
+        self.ssb_lcut_freq_menu_nb = QTableWidgetItem("11-01")
+        self.ssb_lcut_freq_parm_name = QTableWidgetItem("SSB LCUT FREQ")
+
+        self.ssb_lcut_freq_spin = QSpinBox()
+        self.ssb_lcut_freq_spin.setAlignment(Qt.AlignCenter)
+        self.ssb_lcut_freq_spin.setMaximum(1000)
+        self.ssb_lcut_freq_spin.setMinimum(50)
+        self.ssb_lcut_freq_spin.setSingleStep(50)
+        self.ssb_lcut_freq_spin.setValue(100)
+        self.ssb_lcut_freq_spin.setSpecialValueText("OFF")
+        self.ssb_lcut_freq_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(103, 0, self.ssb_lcut_freq_menu_nb)
+        self.menu_table.setItem(103, 1, self.ssb_lcut_freq_parm_name)
+        self.menu_table.setCellWidget(103, 2, self.ssb_lcut_freq_spin)
+
+        # 11-02
+        self.ssb_lcut_slope_menu_nb = QTableWidgetItem("11-02")
+        self.ssb_lcut_slope_parm_name = QTableWidgetItem("SSB LCUT SLOPE")
+
+        self.ssb_lcut_slope_combo = QComboBox()
+        self.ssb_lcut_slope_combo.setEditable(True)
+        self.ssb_lcut_slope_combo.lineEdit().setReadOnly(True)
+        self.ssb_lcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.ssb_lcut_slope_combo.addItems([i for i in SLOPE.keys()])
+        format_combo(self.ssb_lcut_slope_combo)
+        self.ssb_lcut_slope_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(104, 0, self.ssb_lcut_slope_menu_nb)
+        self.menu_table.setItem(104, 1, self.ssb_lcut_slope_parm_name)
+        self.menu_table.setCellWidget(104, 2, self.ssb_lcut_slope_combo)
+
+        # 11-03
+        self.ssb_hcut_freq_menu_nb = QTableWidgetItem("11-03")
+        self.ssb_hcut_freq_parm_name = QTableWidgetItem("SSB HCUT FREQ")
+
+        self.ssb_hcut_freq_spin = QSpinBox()
+        self.ssb_hcut_freq_spin.setAlignment(Qt.AlignCenter)
+        self.ssb_hcut_freq_spin.setMaximum(4000)
+        self.ssb_hcut_freq_spin.setMinimum(650)
+        self.ssb_hcut_freq_spin.setSingleStep(50)
+        self.ssb_hcut_freq_spin.setValue(3000)
+        self.ssb_hcut_freq_spin.setSpecialValueText("OFF")
+        self.ssb_hcut_freq_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(105, 0, self.ssb_hcut_freq_menu_nb)
+        self.menu_table.setItem(105, 1, self.ssb_hcut_freq_parm_name)
+        self.menu_table.setCellWidget(105, 2, self.ssb_hcut_freq_spin)
+
+        # 11-04
+        self.ssb_hcut_slope_menu_nb = QTableWidgetItem("11-04")
+        self.ssb_hcut_slope_parm_name = QTableWidgetItem("SSB HCUT SLOPE")
+
+        self.ssb_hcut_slope_combo = QComboBox()
+        self.ssb_hcut_slope_combo.setEditable(True)
+        self.ssb_hcut_slope_combo.lineEdit().setReadOnly(True)
+        self.ssb_hcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.ssb_hcut_slope_combo.addItems([i for i in SLOPE.keys()])
+        format_combo(self.ssb_hcut_slope_combo)
+        self.ssb_hcut_slope_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(106, 0, self.ssb_hcut_slope_menu_nb)
+        self.menu_table.setItem(106, 1, self.ssb_hcut_slope_parm_name)
+        self.menu_table.setCellWidget(106, 2, self.ssb_hcut_slope_combo)
+
+        # 11-05
+        self.ssb_mic_select_menu_nb = QTableWidgetItem("11-05")
+        self.ssb_mic_select_parm_name = QTableWidgetItem("SSB MIC SELECT")
+
+        self.ssb_mic_select_combo = QComboBox()
+        self.ssb_mic_select_combo.setEditable(True)
+        self.ssb_mic_select_combo.lineEdit().setReadOnly(True)
+        self.ssb_mic_select_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.ssb_mic_select_combo.addItems([i for i in SSB_MIC_SELECT.keys()])
+        format_combo(self.ssb_mic_select_combo)
+        self.ssb_mic_select_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(107, 0, self.ssb_mic_select_menu_nb)
+        self.menu_table.setItem(107, 1, self.ssb_mic_select_parm_name)
+        self.menu_table.setCellWidget(107, 2, self.ssb_mic_select_combo)
+
+        # 11-06
+        self.ssb_out_level_menu_nb = QTableWidgetItem("11-06")
+        self.ssb_out_level_parm_name = QTableWidgetItem("SSB OUT LEVEL")
+
+        self.ssb_out_level_spin = QSpinBox()
+        self.ssb_out_level_spin.setAlignment(Qt.AlignCenter)
+        self.ssb_out_level_spin.setMaximum(100)
+        self.ssb_out_level_spin.setMinimum(0)
+        self.ssb_out_level_spin.setSingleStep(1)
+        self.ssb_out_level_spin.setValue(50)
+
+        self.menu_table.setItem(108, 0, self.ssb_out_level_menu_nb)
+        self.menu_table.setItem(108, 1, self.ssb_out_level_parm_name)
+        self.menu_table.setCellWidget(108, 2, self.ssb_out_level_spin)
+
+        # 11-07
+        self.ssb_bfo_menu_nb = QTableWidgetItem("11-07")
+        self.ssb_bfo_parm_name = QTableWidgetItem("SSB BFO")
+
+        self.ssb_bfo_combo = QComboBox()
+        self.ssb_bfo_combo.setEditable(True)
+        self.ssb_bfo_combo.lineEdit().setReadOnly(True)
+        self.ssb_bfo_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.ssb_bfo_combo.addItems([i for i in SSB_BFO.keys()])
+        format_combo(self.ssb_bfo_combo)
+        self.ssb_bfo_combo.setCurrentIndex(2)
+
+        self.menu_table.setItem(109, 0, self.ssb_bfo_menu_nb)
+        self.menu_table.setItem(109, 1, self.ssb_bfo_parm_name)
+        self.menu_table.setCellWidget(109, 2, self.ssb_bfo_combo)
+
+        # 11-08
+        self.ssb_ptt_select_menu_nb = QTableWidgetItem("11-08")
+        self.ssb_ptt_select_parm_name = QTableWidgetItem("SSB PTT SELECT")
+
+        self.ssb_ptt_select_combo = QComboBox()
+        self.ssb_ptt_select_combo.setEditable(True)
+        self.ssb_ptt_select_combo.lineEdit().setReadOnly(True)
+        self.ssb_ptt_select_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.ssb_ptt_select_combo.addItems([i for i in SSB_PTT_SELECT.keys()])
+        format_combo(self.ssb_ptt_select_combo)
+        self.ssb_ptt_select_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(110, 0, self.ssb_ptt_select_menu_nb)
+        self.menu_table.setItem(110, 1, self.ssb_ptt_select_parm_name)
+        self.menu_table.setCellWidget(110, 2, self.ssb_ptt_select_combo)
+
+        # 11-09
+        self.ssb_tx_bpf_menu_nb = QTableWidgetItem("11-09")
+        self.ssb_tx_bpf_parm_name = QTableWidgetItem("SSB TX BPF")
+
+        self.ssb_tx_bpf_combo = QComboBox()
+        self.ssb_tx_bpf_combo.setEditable(True)
+        self.ssb_tx_bpf_combo.lineEdit().setReadOnly(True)
+        self.ssb_tx_bpf_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.ssb_tx_bpf_combo.addItems([i for i in SSB_TX_BPF.keys()])
+        format_combo(self.ssb_tx_bpf_combo)
+        self.ssb_tx_bpf_combo.setCurrentIndex(3)
+
+        self.menu_table.setItem(111, 0, self.ssb_tx_bpf_menu_nb)
+        self.menu_table.setItem(111, 1, self.ssb_tx_bpf_parm_name)
+        self.menu_table.setCellWidget(111, 2, self.ssb_tx_bpf_combo)
+
+        # RX DSP
+        self.rx_dsp_separator = QTableWidgetItem("RX DSP")
+        self.rx_dsp_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
+        self.menu_table.setItem(112, 0, self.rx_dsp_separator)
+        self.menu_table.setSpan(112, 0, 1, 3)
+
+        # 12-01
+        self.apf_width_menu_nb = QTableWidgetItem("12-01")
+        self.apf_width_parm_name = QTableWidgetItem("APF WIDTH")
+
+        self.apf_width_combo = QComboBox()
+        self.apf_width_combo.setEditable(True)
+        self.apf_width_combo.lineEdit().setReadOnly(True)
+        self.apf_width_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.apf_width_combo.addItems([i for i in APF_WIDTH.keys()])
+        format_combo(self.apf_width_combo)
+        self.apf_width_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(113, 0, self.apf_width_menu_nb)
+        self.menu_table.setItem(113, 1, self.apf_width_parm_name)
+        self.menu_table.setCellWidget(113, 2, self.apf_width_combo)
+
+        # 12-02
+        self.contour_level_menu_nb = QTableWidgetItem("12-02")
+        self.contour_level_parm_name = QTableWidgetItem("CONTOUR LEVEL")
+
+        self.contour_level_spin = QSpinBox()
+        self.contour_level_spin.setAlignment(Qt.AlignCenter)
+        self.contour_level_spin.setMaximum(20)
+        self.contour_level_spin.setMinimum(-40)
+        self.contour_level_spin.setSingleStep(1)
+        self.contour_level_spin.setValue(-15)
+
+        self.menu_table.setItem(114, 0, self.contour_level_menu_nb)
+        self.menu_table.setItem(114, 1, self.contour_level_parm_name)
+        self.menu_table.setCellWidget(114, 2, self.contour_level_spin)
+
+        # 12-03
+        self.contour_width_menu_nb = QTableWidgetItem("12-03")
+        self.contour_width_parm_name = QTableWidgetItem("CONTOUR WIDTH")
+
+        self.contour_width_spin = QSpinBox()
+        self.contour_width_spin.setAlignment(Qt.AlignCenter)
+        self.contour_width_spin.setMaximum(11)
+        self.contour_width_spin.setMinimum(1)
+        self.contour_width_spin.setSingleStep(1)
+        self.contour_width_spin.setValue(10)
+
+        self.menu_table.setItem(115, 0, self.contour_width_menu_nb)
+        self.menu_table.setItem(115, 1, self.contour_width_parm_name)
+        self.menu_table.setCellWidget(115, 2, self.contour_width_spin)
+
+        # 12-04
+        self.if_notch_width_menu_nb = QTableWidgetItem("12-04")
+        self.if_notch_width_parm_name = QTableWidgetItem("IF NOTCH WIDTH")
+
+        self.if_notch_width_combo = QComboBox()
+        self.if_notch_width_combo.setEditable(True)
+        self.if_notch_width_combo.lineEdit().setReadOnly(True)
+        self.if_notch_width_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.if_notch_width_combo.addItems([i for i in IF_NOTCH_WIDTH.keys()])
+        format_combo(self.if_notch_width_combo)
+        self.if_notch_width_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(116, 0, self.if_notch_width_menu_nb)
+        self.menu_table.setItem(116, 1, self.if_notch_width_parm_name)
+        self.menu_table.setCellWidget(116, 2, self.if_notch_width_combo)
+
+        # SCOPE
+        self.scope_separator = QTableWidgetItem("SCOPE")
+        self.scope_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
+        self.menu_table.setItem(117, 0, self.scope_separator)
+        self.menu_table.setSpan(117, 0, 1, 3)
+
+        # 13-01
+        self.scp_start_cycle_menu_nb = QTableWidgetItem("13-01")
+        self.scp_start_cycle_parm_name = QTableWidgetItem("SCP START CYCLE")
+
+        self.scp_start_cycle_combo = QComboBox()
+        self.scp_start_cycle_combo.setEditable(True)
+        self.scp_start_cycle_combo.lineEdit().setReadOnly(True)
+        self.scp_start_cycle_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.scp_start_cycle_combo.addItems([i for i in SCP_START_CYCLE.keys()])
+        format_combo(self.scp_start_cycle_combo)
+        self.scp_start_cycle_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(118, 0, self.scp_start_cycle_menu_nb)
+        self.menu_table.setItem(118, 1, self.scp_start_cycle_parm_name)
+        self.menu_table.setCellWidget(118, 2, self.scp_start_cycle_combo)
+
+        # 13-02
+        self.scp_span_freq_menu_nb = QTableWidgetItem("13-02")
+        self.scp_span_freq_parm_name = QTableWidgetItem("SCP SPAN FREQ")
+
+        self.scp_span_freq_combo = QComboBox()
+        self.scp_span_freq_combo.setEditable(True)
+        self.scp_span_freq_combo.lineEdit().setReadOnly(True)
+        self.scp_span_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.scp_span_freq_combo.addItems([i for i in SCP_SPAN_FREQ.keys()])
+        format_combo(self.scp_span_freq_combo)
+        self.scp_span_freq_combo.setCurrentIndex(4)
+
+        self.menu_table.setItem(119, 0, self.scp_span_freq_menu_nb)
+        self.menu_table.setItem(119, 1, self.scp_span_freq_parm_name)
+        self.menu_table.setCellWidget(119, 2, self.scp_span_freq_combo)
+
+        # TUNING
+        self.tuning_separator = QTableWidgetItem("TUNING")
+        self.tuning_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
+        self.menu_table.setItem(120, 0, self.tuning_separator)
+        self.menu_table.setSpan(120, 0, 1, 3)
 
         # Table config
         for row in range(0, self.menu_table.rowCount()):
