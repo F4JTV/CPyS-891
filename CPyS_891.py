@@ -1,8 +1,15 @@
 #!/usr/bin/python3
 ##########################################################################
 #   CPyS-891 is a CPS for the Yaesu FT-891 made with Python3 and PyQt5   #
-# It doesn't use Hamlib, it uses serial module with CAT protocol instead #
+#       It uses serial module for CAT protocol in place of Hamlib        #
+#                                                                        #
+#                  ___ ___      ___     ___ ___ _                        #
+#                 / __| _ \_  _/ __|___( _ / _ / |                       #
+#                | (__|  _| || \__ |___/ _ \_, | |                       #
+#                 \___|_|  \_, |___/   \___//_/|_|                       #
+#                          |__/                                          #
 ##########################################################################
+
 import sys
 from datetime import datetime
 
@@ -64,6 +71,16 @@ SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
 DATA_IN_SELECT = {"MIC": b"0", "REAR": b"1"}
 DATA_PTT_SELECT = {"DAKY": b"0", "RTS": b"1", "DTR": b"2"}
 DATA_BFO = {"USB": b"0", "LSB": b"1"}
+FM_MIC_SELECT = {"MIC": b"0", "REAR": b"1"}
+PKT_PTT_SELECT = {"DAKY": b"0", "RTS": b"1", "DTR": b"2"}
+DCS_POLARITY = {"Tn-Rn": b"0", "Tn-Riv": b"1",
+                "Tiv-Rn": b"2", "Tiv-Riv": b"3"}
+RTTY_SHIT_PORT = {"SHIFT": b"0", "DTR": b"1", "RTS": b"2"}
+RTTY_POLARITY = {"NOR": b"0", "REV": b"1"}
+RTTY_SHIFT_FREQ = {"170 Hz": b"0", "200 Hz": b"1",
+                   "425 Hz": b"2", "850 Hz": b"3"}
+RTTY_MARK_FREQ = {"1275 Hz": b"0", "2125 Hz": b"1"}
+RTTY_BFO = {"USB": b"0", "LSB": b"1"}
 
 
 def format_combo(combobox):
@@ -94,20 +111,20 @@ class MainWindow(QMainWindow):
         self.menu_bar = QMenuBar(self)
         self.setMenuBar(self.menu_bar)
 
-        self.file_menu = QMenu("Files")
-        self.edit_menu = QMenu("Edit")
+        self.file_menu = QMenu("&Files")
+        self.edit_menu = QMenu("&Edit")
         self.menu_bar.addMenu(self.file_menu)
         self.menu_bar.addMenu(self.edit_menu)
 
         # Files Actions
-        self.save_config_action = QAction("Save config")
+        self.save_config_action = QAction("&Save config")
         self.file_menu.addAction(self.save_config_action)
 
-        self.open_config_action = QAction("Open config file")
+        self.open_config_action = QAction("&Open config file")
         self.file_menu.addAction(self.open_config_action)
         self.file_menu.addSeparator()
 
-        self.settings_action = QAction("Setting")
+        self.settings_action = QAction("Se&tting")
         self.settings_action.triggered.connect(self.display_settings_win)
         self.file_menu.addAction(self.settings_action)
         self.file_menu.addSeparator()
@@ -118,7 +135,7 @@ class MainWindow(QMainWindow):
         self.exit_action.triggered.connect(self.close)
 
         # Edit Actions
-        self.live_mode_action = QAction("Live Mode")
+        self.live_mode_action = QAction("&Live Mode")
         self.edit_menu.addAction(self.live_mode_action)
         self.edit_menu.addSeparator()
         self.live_mode_action.setCheckable(True)
@@ -152,7 +169,7 @@ class MainWindow(QMainWindow):
         self.menu_tab = QWidget()
         self.memory_tab = QWidget()
 
-        self.tab.addTab(self.menu_tab, "Menu & Functions")
+        self.tab.addTab(self.menu_tab, "Menu / Functions")
         self.tab.addTab(self.memory_tab, "Memory")
 
         # ###### Menu tab
@@ -161,8 +178,8 @@ class MainWindow(QMainWindow):
 
         self.menu_table = QTableWidget(200, 3)
         self.function_layout = QScrollArea()
-        self.menu_layout.addWidget(self.menu_table)
-        self.menu_layout.addWidget(self.function_layout)
+        self.menu_layout.addWidget(self.menu_table, 1)
+        self.menu_layout.addWidget(self.function_layout, 3)
 
         # Menu Table
         self.menu_table.verticalHeader().setVisible(False)
@@ -358,6 +375,7 @@ class MainWindow(QMainWindow):
         self.dvs_rx_out_lvl_spin.setMaximum(100)
         self.dvs_rx_out_lvl_spin.setMinimum(0)
         self.dvs_rx_out_lvl_spin.setValue(50)
+        self.dvs_rx_out_lvl_spin.valueChanged.connect(self.set_dvs_rx_out_lvl)
 
         self.menu_table.setItem(13, 0, self.dvs_rx_out_lvl_menu_nb)
         self.menu_table.setItem(13, 1, self.dvs_rx_out_lvl_parm_name)
@@ -393,6 +411,7 @@ class MainWindow(QMainWindow):
         self.keyer_type_combo.addItems([i for i in KEYER_TYPE.keys()])
         format_combo(self.keyer_type_combo)
         self.keyer_type_combo.setCurrentIndex(3)
+        self.keyer_type_combo.currentTextChanged.connect(self.set_keyer_type)
 
         self.menu_table.setItem(16, 0, self.keyer_type_menu_nb)
         self.menu_table.setItem(16, 1, self.keyer_type_parm_name)
@@ -409,6 +428,7 @@ class MainWindow(QMainWindow):
         self.keyer_dot_dash_combo.addItems([i for i in KEYER_DOT_DASH.keys()])
         format_combo(self.keyer_dot_dash_combo)
         self.keyer_dot_dash_combo.setCurrentIndex(0)
+        self.keyer_dot_dash_combo.currentTextChanged.connect(self.set_keyer_dot_dash)
 
         self.menu_table.setItem(17, 0, self.keyer_dot_dash_menu_nb)
         self.menu_table.setItem(17, 1, self.keyer_dot_dash_parm_name)
@@ -425,6 +445,7 @@ class MainWindow(QMainWindow):
         self.cw_weight_spin.setMaximum(4.5)
         self.cw_weight_spin.setMinimum(2.5)
         self.cw_weight_spin.setValue(3.0)
+        self.cw_weight_spin.valueChanged.connect(self.set_cw_weight)
 
         self.menu_table.setItem(18, 0, self.cw_weight_menu_nb)
         self.menu_table.setItem(18, 1, self.cw_weight_parm_name)
@@ -473,6 +494,7 @@ class MainWindow(QMainWindow):
         self.contest_number_spin.setMinimum(0)
         self.contest_number_spin.setSingleStep(1)
         self.contest_number_spin.setValue(1)
+        self.contest_number_spin.valueChanged.connect(self.set_contest_number)
 
         self.menu_table.setItem(21, 0, self.contest_number_menu_nb)
         self.menu_table.setItem(21, 1, self.contest_number_parm_name)
@@ -636,6 +658,7 @@ class MainWindow(QMainWindow):
         self.rf_sql_vr_combo.addItems([i for i in RF_SQL_VR.keys()])
         format_combo(self.rf_sql_vr_combo)
         self.rf_sql_vr_combo.setCurrentIndex(0)
+        self.rf_sql_vr_combo.currentTextChanged.connect(self.set_number_style)
 
         self.menu_table.setItem(32, 0, self.rf_sql_vr_menu_nb)
         self.menu_table.setItem(32, 1, self.rf_sql_vr_parm_name)
@@ -1408,6 +1431,290 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(82, 1, self.data_bfo_parm_name)
         self.menu_table.setCellWidget(82, 2, self.data_bfo_combo)
 
+        # MODE FM
+        self.mode_fm_separator = QTableWidgetItem("MODE FM")
+        self.mode_fm_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
+        self.menu_table.setItem(83, 0, self.mode_fm_separator)
+        self.menu_table.setSpan(83, 0, 1, 3)
+
+        # 09-01
+        self.fm_mic_select_menu_nb = QTableWidgetItem("09-01")
+        self.fm_mic_select_parm_name = QTableWidgetItem("FM MIC SELECT")
+
+        self.fm_mic_select_combo = QComboBox()
+        self.fm_mic_select_combo.setEditable(True)
+        self.fm_mic_select_combo.lineEdit().setReadOnly(True)
+        self.fm_mic_select_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.fm_mic_select_combo.addItems([i for i in FM_MIC_SELECT.keys()])
+        format_combo(self.fm_mic_select_combo)
+        self.fm_mic_select_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(84, 0, self.fm_mic_select_menu_nb)
+        self.menu_table.setItem(84, 1, self.fm_mic_select_parm_name)
+        self.menu_table.setCellWidget(84, 2, self.fm_mic_select_combo)
+
+        # 09-02
+        self.fm_out_level_menu_nb = QTableWidgetItem("09-02")
+        self.fm_out_level_parm_name = QTableWidgetItem("FM OUT LEVEL")
+
+        self.fm_out_level_spin = QSpinBox()
+        self.fm_out_level_spin.setAlignment(Qt.AlignCenter)
+        self.fm_out_level_spin.setMaximum(100)
+        self.fm_out_level_spin.setMinimum(0)
+        self.fm_out_level_spin.setSingleStep(1)
+        self.fm_out_level_spin.setValue(50)
+
+        self.menu_table.setItem(85, 0, self.fm_out_level_menu_nb)
+        self.menu_table.setItem(85, 1, self.fm_out_level_parm_name)
+        self.menu_table.setCellWidget(85, 2, self.fm_out_level_spin)
+
+        # 09-03
+        self.pkt_ptt_select_menu_nb = QTableWidgetItem("09-03")
+        self.pkt_ptt_select_parm_name = QTableWidgetItem("PKT PTT SELECT")
+
+        self.pkt_ptt_select_combo = QComboBox()
+        self.pkt_ptt_select_combo.setEditable(True)
+        self.pkt_ptt_select_combo.lineEdit().setReadOnly(True)
+        self.pkt_ptt_select_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.pkt_ptt_select_combo.addItems([i for i in PKT_PTT_SELECT.keys()])
+        format_combo(self.pkt_ptt_select_combo)
+        self.pkt_ptt_select_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(86, 0, self.pkt_ptt_select_menu_nb)
+        self.menu_table.setItem(86, 1, self.pkt_ptt_select_parm_name)
+        self.menu_table.setCellWidget(86, 2, self.pkt_ptt_select_combo)
+
+        # 09-04
+        self.rpt_shift_28_menu_nb = QTableWidgetItem("09-04")
+        self.rpt_shift_28_parm_name = QTableWidgetItem("RPT SHIFT 28 MHz")
+
+        self.rpt_shift_28_spin = QSpinBox()
+        self.rpt_shift_28_spin.setAlignment(Qt.AlignCenter)
+        self.rpt_shift_28_spin.setMaximum(1000)
+        self.rpt_shift_28_spin.setMinimum(0)
+        self.rpt_shift_28_spin.setSingleStep(10)
+        self.rpt_shift_28_spin.setValue(100)
+        self.rpt_shift_28_spin.setSuffix(" kHz")
+
+        self.menu_table.setItem(87, 0, self.rpt_shift_28_menu_nb)
+        self.menu_table.setItem(87, 1, self.rpt_shift_28_parm_name)
+        self.menu_table.setCellWidget(87, 2, self.rpt_shift_28_spin)
+
+        # 09-05
+        self.rpt_shift_50_menu_nb = QTableWidgetItem("09-05")
+        self.rpt_shift_50_parm_name = QTableWidgetItem("RPT SHIFT 50 MHz")
+
+        self.rpt_shift_50_spin = QSpinBox()
+        self.rpt_shift_50_spin.setAlignment(Qt.AlignCenter)
+        self.rpt_shift_50_spin.setMaximum(4000)
+        self.rpt_shift_50_spin.setMinimum(0)
+        self.rpt_shift_50_spin.setSingleStep(10)
+        self.rpt_shift_50_spin.setValue(1000)
+        self.rpt_shift_50_spin.setSuffix(" kHz")
+
+        self.menu_table.setItem(88, 0, self.rpt_shift_50_menu_nb)
+        self.menu_table.setItem(88, 1, self.rpt_shift_50_parm_name)
+        self.menu_table.setCellWidget(88, 2, self.rpt_shift_50_spin)
+
+        # 09-06
+        self.dcs_polarity_menu_nb = QTableWidgetItem("09-06")
+        self.dcs_polarity_parm_name = QTableWidgetItem("DCS POLARITY")
+
+        self.dcs_polarity_combo = QComboBox()
+        self.dcs_polarity_combo.setEditable(True)
+        self.dcs_polarity_combo.lineEdit().setReadOnly(True)
+        self.dcs_polarity_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.dcs_polarity_combo.addItems([i for i in DCS_POLARITY.keys()])
+        format_combo(self.dcs_polarity_combo)
+        self.dcs_polarity_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(89, 0, self.dcs_polarity_menu_nb)
+        self.menu_table.setItem(89, 1, self.dcs_polarity_parm_name)
+        self.menu_table.setCellWidget(89, 2, self.dcs_polarity_combo)
+
+        # Mode RTTY
+        self.mode_rtty_separator = QTableWidgetItem("MODE RTY")
+        self.mode_rtty_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
+        self.menu_table.setItem(90, 0, self.mode_rtty_separator)
+        self.menu_table.setSpan(90, 0, 1, 3)
+
+        # 10-01
+        self.rtty_lcut_freq_menu_nb = QTableWidgetItem("10-01")
+        self.rtty_lcut_freq_parm_name = QTableWidgetItem("RTTY LCUT FREQ")
+
+        self.rtty_lcut_freq_spin = QSpinBox()
+        self.rtty_lcut_freq_spin.setAlignment(Qt.AlignCenter)
+        self.rtty_lcut_freq_spin.setMaximum(1000)
+        self.rtty_lcut_freq_spin.setMinimum(50)
+        self.rtty_lcut_freq_spin.setSingleStep(50)
+        self.rtty_lcut_freq_spin.setValue(300)
+        self.rtty_lcut_freq_spin.setSpecialValueText("OFF")
+        self.rtty_lcut_freq_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(91, 0, self.rtty_lcut_freq_menu_nb)
+        self.menu_table.setItem(91, 1, self.rtty_lcut_freq_parm_name)
+        self.menu_table.setCellWidget(91, 2, self.rtty_lcut_freq_spin)
+
+        # 10-02
+        self.rtty_lcut_slope_menu_nb = QTableWidgetItem("10-02")
+        self.rtty_lcut_slope_parm_name = QTableWidgetItem("RTTY LCUT SLOPE")
+
+        self.rtty_lcut_slope_combo = QComboBox()
+        self.rtty_lcut_slope_combo.setEditable(True)
+        self.rtty_lcut_slope_combo.lineEdit().setReadOnly(True)
+        self.rtty_lcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.rtty_lcut_slope_combo.addItems([i for i in SLOPE.keys()])
+        format_combo(self.rtty_lcut_slope_combo)
+        self.rtty_lcut_slope_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(92, 0, self.rtty_lcut_slope_menu_nb)
+        self.menu_table.setItem(92, 1, self.rtty_lcut_slope_parm_name)
+        self.menu_table.setCellWidget(92, 2, self.rtty_lcut_slope_combo)
+
+        # 10-03
+        self.rtty_hcut_freq_menu_nb = QTableWidgetItem("10-03")
+        self.rtty_hcut_freq_parm_name = QTableWidgetItem("RTTY HCUT FREQ")
+
+        self.rtty_hcut_freq_spin = QSpinBox()
+        self.rtty_hcut_freq_spin.setAlignment(Qt.AlignCenter)
+        self.rtty_hcut_freq_spin.setMaximum(4000)
+        self.rtty_hcut_freq_spin.setMinimum(650)
+        self.rtty_hcut_freq_spin.setSingleStep(50)
+        self.rtty_hcut_freq_spin.setValue(3000)
+        self.rtty_hcut_freq_spin.setSpecialValueText("OFF")
+        self.rtty_hcut_freq_spin.setSuffix(" Hz")
+
+        self.menu_table.setItem(93, 0, self.rtty_hcut_freq_menu_nb)
+        self.menu_table.setItem(93, 1, self.rtty_hcut_freq_parm_name)
+        self.menu_table.setCellWidget(93, 2, self.rtty_hcut_freq_spin)
+
+        # 10-04
+        self.rtty_hcut_slope_menu_nb = QTableWidgetItem("10-04")
+        self.rtty_hcut_slope_parm_name = QTableWidgetItem("RTTY HCUT SLOPE")
+
+        self.rtty_hcut_slope_combo = QComboBox()
+        self.rtty_hcut_slope_combo.setEditable(True)
+        self.rtty_hcut_slope_combo.lineEdit().setReadOnly(True)
+        self.rtty_hcut_slope_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.rtty_hcut_slope_combo.addItems([i for i in SLOPE.keys()])
+        format_combo(self.rtty_hcut_slope_combo)
+        self.rtty_hcut_slope_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(94, 0, self.rtty_hcut_slope_menu_nb)
+        self.menu_table.setItem(94, 1, self.rtty_hcut_slope_parm_name)
+        self.menu_table.setCellWidget(94, 2, self.rtty_hcut_slope_combo)
+
+        # 10-05
+        self.rtty_shift_port_menu_nb = QTableWidgetItem("10-05")
+        self.rtty_shift_port_parm_name = QTableWidgetItem("RTTY SHIFT PORT")
+
+        self.rtty_shift_port_combo = QComboBox()
+        self.rtty_shift_port_combo.setEditable(True)
+        self.rtty_shift_port_combo.lineEdit().setReadOnly(True)
+        self.rtty_shift_port_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.rtty_shift_port_combo.addItems([i for i in RTTY_SHIT_PORT.keys()])
+        format_combo(self.rtty_shift_port_combo)
+        self.rtty_shift_port_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(95, 0, self.rtty_shift_port_menu_nb)
+        self.menu_table.setItem(95, 1, self.rtty_shift_port_parm_name)
+        self.menu_table.setCellWidget(95, 2, self.rtty_shift_port_combo)
+
+        # 10-06
+        self.rtty_polarity_r_menu_nb = QTableWidgetItem("10-06")
+        self.rtty_polarity_r_parm_name = QTableWidgetItem("RTTY POLARITY-R")
+
+        self.rtty_polarity_r_combo = QComboBox()
+        self.rtty_polarity_r_combo.setEditable(True)
+        self.rtty_polarity_r_combo.lineEdit().setReadOnly(True)
+        self.rtty_polarity_r_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.rtty_polarity_r_combo.addItems([i for i in RTTY_POLARITY.keys()])
+        format_combo(self.rtty_polarity_r_combo)
+        self.rtty_polarity_r_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(96, 0, self.rtty_polarity_r_menu_nb)
+        self.menu_table.setItem(96, 1, self.rtty_polarity_r_parm_name)
+        self.menu_table.setCellWidget(96, 2, self.rtty_polarity_r_combo)
+
+        # 10-07
+        self.rtty_polarity_t_menu_nb = QTableWidgetItem("10-07")
+        self.rtty_polarity_t_parm_name = QTableWidgetItem("RTTY POLARITY-T")
+
+        self.rtty_polarity_t_combo = QComboBox()
+        self.rtty_polarity_t_combo.setEditable(True)
+        self.rtty_polarity_t_combo.lineEdit().setReadOnly(True)
+        self.rtty_polarity_t_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.rtty_polarity_t_combo.addItems([i for i in RTTY_POLARITY.keys()])
+        format_combo(self.rtty_polarity_t_combo)
+        self.rtty_polarity_t_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(97, 0, self.rtty_polarity_t_menu_nb)
+        self.menu_table.setItem(97, 1, self.rtty_polarity_t_parm_name)
+        self.menu_table.setCellWidget(97, 2, self.rtty_polarity_t_combo)
+
+        # 10-08
+        self.rtty_out_level_menu_nb = QTableWidgetItem("10-08")
+        self.rtty_out_level_parm_name = QTableWidgetItem("RTTY OUT LEVEL")
+
+        self.rtty_out_level_spin = QSpinBox()
+        self.rtty_out_level_spin.setAlignment(Qt.AlignCenter)
+        self.rtty_out_level_spin.setMaximum(100)
+        self.rtty_out_level_spin.setMinimum(0)
+        self.rtty_out_level_spin.setSingleStep(1)
+        self.rtty_out_level_spin.setValue(50)
+
+        self.menu_table.setItem(98, 0, self.rtty_out_level_menu_nb)
+        self.menu_table.setItem(98, 1, self.rtty_out_level_parm_name)
+        self.menu_table.setCellWidget(98, 2, self.rtty_out_level_spin)
+
+        # 10-09
+        self.rtty_shift_freq_menu_nb = QTableWidgetItem("10-09")
+        self.rtty_shift_freq_parm_name = QTableWidgetItem("RTTY SHIFT FREQ")
+
+        self.rtty_shift_freq_combo = QComboBox()
+        self.rtty_shift_freq_combo.setEditable(True)
+        self.rtty_shift_freq_combo.lineEdit().setReadOnly(True)
+        self.rtty_shift_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.rtty_shift_freq_combo.addItems([i for i in RTTY_SHIFT_FREQ.keys()])
+        format_combo(self.rtty_shift_freq_combo)
+        self.rtty_shift_freq_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(99, 0, self.rtty_shift_freq_menu_nb)
+        self.menu_table.setItem(99, 1, self.rtty_shift_freq_parm_name)
+        self.menu_table.setCellWidget(99, 2, self.rtty_shift_freq_combo)
+
+        # 10-10
+        self.rtty_mark_freq_menu_nb = QTableWidgetItem("10-10")
+        self.rtty_mark_freq_parm_name = QTableWidgetItem("RTTY MARK FREQ")
+
+        self.rtty_mark_freq_combo = QComboBox()
+        self.rtty_mark_freq_combo.setEditable(True)
+        self.rtty_mark_freq_combo.lineEdit().setReadOnly(True)
+        self.rtty_mark_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.rtty_mark_freq_combo.addItems([i for i in RTTY_MARK_FREQ.keys()])
+        format_combo(self.rtty_mark_freq_combo)
+        self.rtty_mark_freq_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(100, 0, self.rtty_mark_freq_menu_nb)
+        self.menu_table.setItem(100, 1, self.rtty_mark_freq_parm_name)
+        self.menu_table.setCellWidget(100, 2, self.rtty_mark_freq_combo)
+
+        # 10-11
+        self.rtty_bfo_menu_nb = QTableWidgetItem("10-11")
+        self.rtty_bfo_parm_name = QTableWidgetItem("RTTY BFO")
+
+        self.rtty_bfo_combo = QComboBox()
+        self.rtty_bfo_combo.setEditable(True)
+        self.rtty_bfo_combo.lineEdit().setReadOnly(True)
+        self.rtty_bfo_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.rtty_bfo_combo.addItems([i for i in RTTY_BFO.keys()])
+        format_combo(self.rtty_bfo_combo)
+        self.rtty_bfo_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(101, 0, self.rtty_bfo_menu_nb)
+        self.menu_table.setItem(101, 1, self.rtty_bfo_parm_name)
+        self.menu_table.setCellWidget(101, 2, self.rtty_bfo_combo)
+
         # Table config
         for row in range(0, self.menu_table.rowCount()):
             try:
@@ -1564,6 +1871,49 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0207" + value + b";"
                 self.rig.write(cmd)
 
+    def set_dvs_rx_out_lvl(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.dvs_rx_out_lvl_spin.value())
+                while len(value) < 3:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0301" + value + b";"
+                self.rig.write(cmd)
+
+    def set_dvs_tx_out_lvl(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.dvs_tx_out_lvl_spin.value())
+                while len(value) < 3:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0302" + value + b";"
+                self.rig.write(cmd)
+
+    def set_keyer_type(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = KEYER_TYPE[self.keyer_type_combo.currentText()]
+                cmd = b"EX0401" + value + b";"
+                self.rig.write(cmd)
+
+    def set_keyer_dot_dash(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = KEYER_DOT_DASH[self.keyer_dot_dash_combo.currentText()]
+                cmd = b"EX0402" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_weight(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.cw_weight_spin.value())
+                value = value.replace(",", "")
+                value = bytes(value, ENCODER)
+                cmd = b"EX0403" + value + b";"
+                self.rig.write(cmd)
+
     def set_beacon_interval(self):
         """Set BEACON INTERVAL"""
         if self.old_beacon_interval == 240 and self.beacon_interval_spin.value() == 241:
@@ -1581,6 +1931,58 @@ class MainWindow(QMainWindow):
                 while len(value) < 3:
                     value = "0" + value
                 cmd = b"EX0404" + bytes(value) + b";"
+                self.rig.write(cmd)
+
+    def set_number_style(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = NUMBER_STYLE[self.number_style_combo.currentText()]
+                cmd = b"EX0405" + value + b";"
+                self.rig.write(cmd)
+
+    def set_contest_number(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.contest_number_spin.value())
+                while len(value) < 4:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0406" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_memory_1(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CW_MEMORY[self.cw_memory_1_combo.currentText()]
+                cmd = b"EX0407" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_memory_2(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CW_MEMORY[self.cw_memory_2_combo.currentText()]
+                cmd = b"EX0408" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_memory_3(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CW_MEMORY[self.cw_memory_3_combo.currentText()]
+                cmd = b"EX0409" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_memory_4(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CW_MEMORY[self.cw_memory_4_combo.currentText()]
+                cmd = b"EX0410" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_memory_5(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CW_MEMORY[self.cw_memory_5_combo.currentText()]
+                cmd = b"EX0411" + value + b";"
                 self.rig.write(cmd)
 
     def closeEvent(self, event):
