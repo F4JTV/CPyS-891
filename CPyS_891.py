@@ -835,6 +835,7 @@ class MainWindow(QMainWindow):
         self.quick_spl_freq_spin.setSingleStep(1)
         self.quick_spl_freq_spin.setValue(5)
         self.quick_spl_freq_spin.setSuffix(" kHz")
+        self.quick_spl_freq_spin.valueChanged.connect(self.set_quick_spl_freq)
 
         self.menu_table.setItem(40, 0, self.quick_spl_freq_menu_nb)
         self.menu_table.setItem(40, 1, self.quick_spl_freq_parm_name)
@@ -3044,6 +3045,111 @@ class MainWindow(QMainWindow):
             if self.trasnfert:
                 value = CW_MEMORY[self.cw_memory_5_combo.currentText()]
                 cmd = b"EX0411" + value + b";"
+                self.rig.write(cmd)
+
+    def set_nb_width(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = NB_WIDHT[self.nb_width_combo.currentText()]
+                cmd = b"EX0501" + value + b";"
+                self.rig.write(cmd)
+
+    def set_nb_rejection(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = NB_REJECTION[self.nb_rejection_combo.currentText()]
+                cmd = b"EX0502" + value + b";"
+                self.rig.write(cmd)
+
+    def set_nb_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.nb_level_spin.value())
+                while len(value) < 2:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0503" + value + b";"
+                self.rig.write(cmd)
+
+    def set_beep_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.beep_level_spin.value())
+                while len(value) < 3:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0504" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rf_sql_vr(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = RF_SQL_VR[self.rf_sql_vr_combo.currentText()]
+                cmd = b"EX0505" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cat_rate(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CAT_RATE[self.cat_rate_combo.currentText()]
+                cmd = b"EX0506" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cat_tot(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CAT_TOT[self.cat_tot_combo.currentText()]
+                cmd = b"EX0507" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cat_rts(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CAT_RTS[self.cat_rts_combo.currentText()]
+                cmd = b"EX0508" + value + b";"
+                self.rig.write(cmd)
+
+    def set_mem_group(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = MEMORY_GROUP[self.meme_group_combo.currentText()]
+                cmd = b"EX0509" + value + b";"
+                self.rig.write(cmd)
+
+    def set_fm_setting(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = FM_SETTING[self.fm_setting_combo.currentText()]
+                cmd = b"EX0510" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rec_setting(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = REC_SETTING[self.rec_setting_combo.currentText()]
+                cmd = b"EX0511" + value + b";"
+                self.rig.write(cmd)
+
+    def set_atas_setting(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = ATAS_SETTING[self.atas_setting_combo.currentText()]
+                cmd = b"EX0512" + value + b";"
+                self.rig.write(cmd)
+
+    def set_quick_spl_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.quick_spl_freq_spin.value())
+                if -10 < self.quick_spl_freq_spin.value() < 0:
+                    value = value[0] + "0" + value[1]
+                elif 0 <= self.quick_spl_freq_spin.value() < 10:
+                    value = "+" + "0" + value[0]
+                elif self.quick_spl_freq_spin.value() >= 10:
+                    value = "+" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX0513" + value + b";"
                 self.rig.write(cmd)
 
     def closeEvent(self, event):
