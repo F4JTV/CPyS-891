@@ -94,6 +94,32 @@ SCP_START_CYCLE = {"OFF": b"0", "3 sec": b"1",
 SCP_SPAN_FREQ = {"37.5 kHz": b"0", "75 kHz": b"1",
                  "150 kHz": b"2", "375 kHz": b"3",
                  "750 kHz": b"4"}
+QUICK_DIAL = {"50 kHz": b"0", "100 kHz": b"1", "500 kHz": b"2"}
+SSB_DIAL_STEP = {"2 Hz": b"0", "5 Hz": b"1", "10 Hz": b"2"}
+AM_DIAL_STEP = {"10 Hz": b"0", "100 Hz": b"1"}
+FM_DIAL_STEP = {"10 Hz": b"0", "100 Hz": b"1"}
+DIAL_STEP = {"2 Hz": b"0", "5 Hz": b"1", "10 Hz": b"2"}
+AM_CH_STEP = {"2.5 kHz": b"0", "5 kHz": b"1",
+              "9 kHz": b"2", "10 kHz": b"3",
+              "12.5 kHz": b"4", "25 kHz": b"5"}
+FM_CH_STEP = {"5 kHz": b"0", "6.25 kHz": b"1",
+              "10 kHz": b"2", "12.5 kHz": b"3",
+              "15 kHz": b"4", "20 kHz": b"5",
+              "25 kHz": b"6"}
+EQ_1_FREQ = {"OFF": b"00", "100 Hz": b"01", "200 Hz": b"02",
+             "300 Hz": b"03", "400 Hz": b"04", "500 Hz": b"05",
+             "600 Hz": b"06", "700 Hz": b"07"}
+EQ_2_FREQ = {"OFF": b"00", "700 Hz": b"01", "800 Hz": b"02",
+             "900 Hz": b"03", "1000 Hz": b"04", "1100 Hz": b"05",
+             "1200 Hz": b"06", "1300 Hz": b"07", "1400 Hz": b"08",
+             "1500 Hz": b"09"}
+EQ_3_FREQ = {"OFF": b"00", "1500 Hz": b"01", "1600 Hz": b"02",
+             "1700 Hz": b"03", "1800 Hz": b"04", "1900 Hz": b"05",
+             "2000 Hz": b"06", "2100 Hz": b"07", "2200 Hz": b"08",
+             "2300 Hz": b"09", "2400 Hz": b"10", "2500 Hz": b"11",
+             "2600 Hz": b"12", "2700 Hz": b"13", "2800 Hz": b"14",
+             "2900 Hz": b"15", "3000 Hz": b"16", "3100 Hz": b"17",
+             "3200 Hz": b"18"}
 
 
 def format_combo(combobox):
@@ -1990,6 +2016,406 @@ class MainWindow(QMainWindow):
         self.tuning_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(120, 0, self.tuning_separator)
         self.menu_table.setSpan(120, 0, 1, 3)
+
+        # 14-01
+        self.quick_dial_menu_nb = QTableWidgetItem("14-01")
+        self.quick_dial_parm_name = QTableWidgetItem("QUICK DIAL")
+
+        self.quick_dial_combo = QComboBox()
+        self.quick_dial_combo.setEditable(True)
+        self.quick_dial_combo.lineEdit().setReadOnly(True)
+        self.quick_dial_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.quick_dial_combo.addItems([i for i in QUICK_DIAL.keys()])
+        format_combo(self.quick_dial_combo)
+        self.quick_dial_combo.setCurrentIndex(2)
+
+        self.menu_table.setItem(121, 0, self.quick_dial_menu_nb)
+        self.menu_table.setItem(121, 1, self.quick_dial_parm_name)
+        self.menu_table.setCellWidget(121, 2, self.quick_dial_combo)
+
+        # 14-02
+        self.ssb_dial_step_menu_nb = QTableWidgetItem("14-02")
+        self.ssb_dial_step_parm_name = QTableWidgetItem("SSB DIAL STEP")
+
+        self.ssb_dial_step_combo = QComboBox()
+        self.ssb_dial_step_combo.setEditable(True)
+        self.ssb_dial_step_combo.lineEdit().setReadOnly(True)
+        self.ssb_dial_step_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.ssb_dial_step_combo.addItems([i for i in SSB_DIAL_STEP.keys()])
+        format_combo(self.ssb_dial_step_combo)
+        self.ssb_dial_step_combo.setCurrentIndex(2)
+
+        self.menu_table.setItem(122, 0, self.ssb_dial_step_menu_nb)
+        self.menu_table.setItem(122, 1, self.ssb_dial_step_parm_name)
+        self.menu_table.setCellWidget(122, 2, self.ssb_dial_step_combo)
+
+        # 14-03
+        self.am_dial_step_menu_nb = QTableWidgetItem("14-03")
+        self.am_dial_step_parm_name = QTableWidgetItem("AM DIAL STEP")
+
+        self.am_dial_step_combo = QComboBox()
+        self.am_dial_step_combo.setEditable(True)
+        self.am_dial_step_combo.lineEdit().setReadOnly(True)
+        self.am_dial_step_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.am_dial_step_combo.addItems([i for i in AM_DIAL_STEP.keys()])
+        format_combo(self.am_dial_step_combo)
+        self.am_dial_step_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(123, 0, self.am_dial_step_menu_nb)
+        self.menu_table.setItem(123, 1, self.am_dial_step_parm_name)
+        self.menu_table.setCellWidget(123, 2, self.am_dial_step_combo)
+
+        # 14-04
+        self.fm_dial_step_menu_nb = QTableWidgetItem("14-04")
+        self.fm_dial_step_parm_name = QTableWidgetItem("FM DIAL STEP")
+
+        self.fm_dial_step_combo = QComboBox()
+        self.fm_dial_step_combo.setEditable(True)
+        self.fm_dial_step_combo.lineEdit().setReadOnly(True)
+        self.fm_dial_step_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.fm_dial_step_combo.addItems([i for i in FM_DIAL_STEP.keys()])
+        format_combo(self.fm_dial_step_combo)
+        self.fm_dial_step_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(124, 0, self.fm_dial_step_menu_nb)
+        self.menu_table.setItem(124, 1, self.fm_dial_step_parm_name)
+        self.menu_table.setCellWidget(124, 2, self.fm_dial_step_combo)
+
+        # 14-05
+        self.dial_step_menu_nb = QTableWidgetItem("14-05")
+        self.dial_step_parm_name = QTableWidgetItem("DIAL STEP")
+
+        self.dial_step_combo = QComboBox()
+        self.dial_step_combo.setEditable(True)
+        self.dial_step_combo.lineEdit().setReadOnly(True)
+        self.dial_step_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.dial_step_combo.addItems([i for i in DIAL_STEP.keys()])
+        format_combo(self.dial_step_combo)
+        self.dial_step_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(125, 0, self.dial_step_menu_nb)
+        self.menu_table.setItem(125, 1, self.dial_step_parm_name)
+        self.menu_table.setCellWidget(125, 2, self.dial_step_combo)
+
+        # 14-06
+        self.am_ch_step_menu_nb = QTableWidgetItem("14-06")
+        self.am_ch_step_parm_name = QTableWidgetItem("AM CH STEP")
+
+        self.am_ch_step_combo = QComboBox()
+        self.am_ch_step_combo.setEditable(True)
+        self.am_ch_step_combo.lineEdit().setReadOnly(True)
+        self.am_ch_step_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.am_ch_step_combo.addItems([i for i in AM_CH_STEP.keys()])
+        format_combo(self.am_ch_step_combo)
+        self.am_ch_step_combo.setCurrentIndex(1)
+
+        self.menu_table.setItem(126, 0, self.am_ch_step_menu_nb)
+        self.menu_table.setItem(126, 1, self.am_ch_step_parm_name)
+        self.menu_table.setCellWidget(126, 2, self.am_ch_step_combo)
+
+        # 14-07
+        self.fm_ch_step_menu_nb = QTableWidgetItem("14-07")
+        self.fm_ch_step_parm_name = QTableWidgetItem("FM CH STEP")
+
+        self.fm_ch_step_combo = QComboBox()
+        self.fm_ch_step_combo.setEditable(True)
+        self.fm_ch_step_combo.lineEdit().setReadOnly(True)
+        self.fm_ch_step_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.fm_ch_step_combo.addItems([i for i in FM_CH_STEP.keys()])
+        format_combo(self.fm_ch_step_combo)
+        self.fm_ch_step_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(127, 0, self.fm_ch_step_menu_nb)
+        self.menu_table.setItem(127, 1, self.fm_ch_step_parm_name)
+        self.menu_table.setCellWidget(127, 2, self.fm_ch_step_combo)
+
+        # TX AUDIO
+        self.tx_audio_separator = QTableWidgetItem("TX AUDIO")
+        self.tx_audio_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
+        self.menu_table.setItem(128, 0, self.tx_audio_separator)
+        self.menu_table.setSpan(128, 0, 1, 3)
+
+        # 15-01
+        self.eq_1_freq_menu_nb = QTableWidgetItem("15-01")
+        self.eq_1_freq_parm_name = QTableWidgetItem("EQ1 FREQ")
+
+        self.eq_1_freq_combo = QComboBox()
+        self.eq_1_freq_combo.setEditable(True)
+        self.eq_1_freq_combo.lineEdit().setReadOnly(True)
+        self.eq_1_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.eq_1_freq_combo.addItems([i for i in EQ_1_FREQ.keys()])
+        format_combo(self.eq_1_freq_combo)
+        self.eq_1_freq_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(129, 0, self.eq_1_freq_menu_nb)
+        self.menu_table.setItem(129, 1, self.eq_1_freq_parm_name)
+        self.menu_table.setCellWidget(129, 2, self.eq_1_freq_combo)
+
+        # 15-02
+        self.eq_1_level_menu_nb = QTableWidgetItem("15-02")
+        self.eq_1_level_parm_name = QTableWidgetItem("EQ1 LEVEL")
+
+        self.eq_1_level_spin = QSpinBox()
+        self.eq_1_level_spin.setAlignment(Qt.AlignCenter)
+        self.eq_1_level_spin.setMaximum(10)
+        self.eq_1_level_spin.setMinimum(-20)
+        self.eq_1_level_spin.setSingleStep(1)
+        self.eq_1_level_spin.setValue(5)
+
+        self.menu_table.setItem(130, 0, self.eq_1_level_menu_nb)
+        self.menu_table.setItem(130, 1, self.eq_1_level_parm_name)
+        self.menu_table.setCellWidget(130, 2, self.eq_1_level_spin)
+
+        # 15-03
+        self.eq_1_bwth_menu_nb = QTableWidgetItem("15-03")
+        self.eq_1_bwth_parm_name = QTableWidgetItem("EQ1 BWTH")
+
+        self.eq_1_bwth_spin = QSpinBox()
+        self.eq_1_bwth_spin.setAlignment(Qt.AlignCenter)
+        self.eq_1_bwth_spin.setMaximum(10)
+        self.eq_1_bwth_spin.setMinimum(1)
+        self.eq_1_bwth_spin.setSingleStep(1)
+        self.eq_1_bwth_spin.setValue(10)
+
+        self.menu_table.setItem(131, 0, self.eq_1_bwth_menu_nb)
+        self.menu_table.setItem(131, 1, self.eq_1_bwth_parm_name)
+        self.menu_table.setCellWidget(131, 2, self.eq_1_bwth_spin)
+
+        # 15-04
+        self.eq_2_freq_menu_nb = QTableWidgetItem("15-04")
+        self.eq_2_freq_parm_name = QTableWidgetItem("EQ2 FREQ")
+
+        self.eq_2_freq_combo = QComboBox()
+        self.eq_2_freq_combo.setEditable(True)
+        self.eq_2_freq_combo.lineEdit().setReadOnly(True)
+        self.eq_2_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.eq_2_freq_combo.addItems([i for i in EQ_2_FREQ.keys()])
+        format_combo(self.eq_2_freq_combo)
+        self.eq_2_freq_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(132, 0, self.eq_2_freq_menu_nb)
+        self.menu_table.setItem(132, 1, self.eq_2_freq_parm_name)
+        self.menu_table.setCellWidget(132, 2, self.eq_2_freq_combo)
+
+        # 15-05
+        self.eq_2_level_menu_nb = QTableWidgetItem("15-05")
+        self.eq_2_level_parm_name = QTableWidgetItem("EQ2 LEVEL")
+
+        self.eq_2_level_spin = QSpinBox()
+        self.eq_2_level_spin.setAlignment(Qt.AlignCenter)
+        self.eq_2_level_spin.setMaximum(10)
+        self.eq_2_level_spin.setMinimum(-20)
+        self.eq_2_level_spin.setSingleStep(1)
+        self.eq_2_level_spin.setValue(5)
+
+        self.menu_table.setItem(133, 0, self.eq_2_level_menu_nb)
+        self.menu_table.setItem(133, 1, self.eq_2_level_parm_name)
+        self.menu_table.setCellWidget(133, 2, self.eq_2_level_spin)
+
+        # 15-06
+        self.eq_2_bwth_menu_nb = QTableWidgetItem("15-06")
+        self.eq_2_bwth_parm_name = QTableWidgetItem("EQ2 BWTH")
+
+        self.eq_2_bwth_spin = QSpinBox()
+        self.eq_2_bwth_spin.setAlignment(Qt.AlignCenter)
+        self.eq_2_bwth_spin.setMaximum(10)
+        self.eq_2_bwth_spin.setMinimum(1)
+        self.eq_2_bwth_spin.setSingleStep(1)
+        self.eq_2_bwth_spin.setValue(10)
+
+        self.menu_table.setItem(134, 0, self.eq_2_bwth_menu_nb)
+        self.menu_table.setItem(134, 1, self.eq_2_bwth_parm_name)
+        self.menu_table.setCellWidget(134, 2, self.eq_2_bwth_spin)
+
+        # 15-07
+        self.eq_3_freq_menu_nb = QTableWidgetItem("15-07")
+        self.eq_3_freq_parm_name = QTableWidgetItem("EQ3 FREQ")
+
+        self.eq_3_freq_combo = QComboBox()
+        self.eq_3_freq_combo.setEditable(True)
+        self.eq_3_freq_combo.lineEdit().setReadOnly(True)
+        self.eq_3_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.eq_3_freq_combo.addItems([i for i in EQ_3_FREQ.keys()])
+        format_combo(self.eq_3_freq_combo)
+        self.eq_3_freq_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(135, 0, self.eq_3_freq_menu_nb)
+        self.menu_table.setItem(135, 1, self.eq_3_freq_parm_name)
+        self.menu_table.setCellWidget(135, 2, self.eq_3_freq_combo)
+
+        # 15-08
+        self.eq_3_level_menu_nb = QTableWidgetItem("15-08")
+        self.eq_3_level_parm_name = QTableWidgetItem("EQ3 LEVEL")
+
+        self.eq_3_level_spin = QSpinBox()
+        self.eq_3_level_spin.setAlignment(Qt.AlignCenter)
+        self.eq_3_level_spin.setMaximum(10)
+        self.eq_3_level_spin.setMinimum(-20)
+        self.eq_3_level_spin.setSingleStep(1)
+        self.eq_3_level_spin.setValue(5)
+
+        self.menu_table.setItem(136, 0, self.eq_3_level_menu_nb)
+        self.menu_table.setItem(136, 1, self.eq_3_level_parm_name)
+        self.menu_table.setCellWidget(136, 2, self.eq_3_level_spin)
+
+        # 15-09
+        self.eq_3_bwth_menu_nb = QTableWidgetItem("15-09")
+        self.eq_3_bwth_parm_name = QTableWidgetItem("EQ3 BWTH")
+
+        self.eq_3_bwth_spin = QSpinBox()
+        self.eq_3_bwth_spin.setAlignment(Qt.AlignCenter)
+        self.eq_3_bwth_spin.setMaximum(10)
+        self.eq_3_bwth_spin.setMinimum(1)
+        self.eq_3_bwth_spin.setSingleStep(1)
+        self.eq_3_bwth_spin.setValue(10)
+
+        self.menu_table.setItem(137, 0, self.eq_3_bwth_menu_nb)
+        self.menu_table.setItem(137, 1, self.eq_3_bwth_parm_name)
+        self.menu_table.setCellWidget(137, 2, self.eq_3_bwth_spin)
+
+        # 15-10
+        self.p_eq_1_freq_menu_nb = QTableWidgetItem("15-10")
+        self.p_eq_1_freq_parm_name = QTableWidgetItem("P-EQ1 FREQ")
+
+        self.p_eq_1_freq_combo = QComboBox()
+        self.p_eq_1_freq_combo.setEditable(True)
+        self.p_eq_1_freq_combo.lineEdit().setReadOnly(True)
+        self.p_eq_1_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.p_eq_1_freq_combo.addItems([i for i in EQ_1_FREQ.keys()])
+        format_combo(self.p_eq_1_freq_combo)
+        self.p_eq_1_freq_combo.setCurrentIndex(2)
+
+        self.menu_table.setItem(138, 0, self.p_eq_1_freq_menu_nb)
+        self.menu_table.setItem(138, 1, self.p_eq_1_freq_parm_name)
+        self.menu_table.setCellWidget(138, 2, self.p_eq_1_freq_combo)
+
+        # 15-11
+        self.p_eq_1_level_menu_nb = QTableWidgetItem("15-11")
+        self.p_eq_1_level_parm_name = QTableWidgetItem("P-EQ1 LEVEL")
+
+        self.p_eq_1_level_spin = QSpinBox()
+        self.p_eq_1_level_spin.setAlignment(Qt.AlignCenter)
+        self.p_eq_1_level_spin.setMaximum(10)
+        self.p_eq_1_level_spin.setMinimum(-20)
+        self.p_eq_1_level_spin.setSingleStep(1)
+        self.p_eq_1_level_spin.setValue(0)
+
+        self.menu_table.setItem(139, 0, self.p_eq_1_level_menu_nb)
+        self.menu_table.setItem(139, 1, self.p_eq_1_level_parm_name)
+        self.menu_table.setCellWidget(139, 2, self.p_eq_1_level_spin)
+
+        # 15-12
+        self.p_eq_1_bwth_menu_nb = QTableWidgetItem("15-12")
+        self.p_eq_1_bwth_parm_name = QTableWidgetItem("P-EQ1 BWTH")
+
+        self.p_eq_1_bwth_spin = QSpinBox()
+        self.p_eq_1_bwth_spin.setAlignment(Qt.AlignCenter)
+        self.p_eq_1_bwth_spin.setMaximum(10)
+        self.p_eq_1_bwth_spin.setMinimum(1)
+        self.p_eq_1_bwth_spin.setSingleStep(1)
+        self.p_eq_1_bwth_spin.setValue(2)
+
+        self.menu_table.setItem(140, 0, self.p_eq_1_bwth_menu_nb)
+        self.menu_table.setItem(140, 1, self.p_eq_1_bwth_parm_name)
+        self.menu_table.setCellWidget(140, 2, self.p_eq_1_bwth_spin)
+
+        # 15-13
+        self.p_eq_2_freq_menu_nb = QTableWidgetItem("15-13")
+        self.p_eq_2_freq_parm_name = QTableWidgetItem("P-EQ2 FREQ")
+
+        self.p_eq_2_freq_combo = QComboBox()
+        self.p_eq_2_freq_combo.setEditable(True)
+        self.p_eq_2_freq_combo.lineEdit().setReadOnly(True)
+        self.p_eq_2_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.p_eq_2_freq_combo.addItems([i for i in EQ_2_FREQ.keys()])
+        format_combo(self.p_eq_2_freq_combo)
+        self.p_eq_2_freq_combo.setCurrentIndex(2)
+
+        self.menu_table.setItem(141, 0, self.p_eq_2_freq_menu_nb)
+        self.menu_table.setItem(141, 1, self.p_eq_2_freq_parm_name)
+        self.menu_table.setCellWidget(141, 2, self.p_eq_2_freq_combo)
+
+        # 15-14
+        self.p_eq_2_level_menu_nb = QTableWidgetItem("15-14")
+        self.p_eq_2_level_parm_name = QTableWidgetItem("P-EQ2 LEVEL")
+
+        self.p_eq_2_level_spin = QSpinBox()
+        self.p_eq_2_level_spin.setAlignment(Qt.AlignCenter)
+        self.p_eq_2_level_spin.setMaximum(10)
+        self.p_eq_2_level_spin.setMinimum(-20)
+        self.p_eq_2_level_spin.setSingleStep(1)
+        self.p_eq_2_level_spin.setValue(0)
+
+        self.menu_table.setItem(142, 0, self.p_eq_2_level_menu_nb)
+        self.menu_table.setItem(142, 1, self.p_eq_2_level_parm_name)
+        self.menu_table.setCellWidget(142, 2, self.p_eq_2_level_spin)
+
+        # 15-15
+        self.p_eq_2_bwth_menu_nb = QTableWidgetItem("15-15")
+        self.p_eq_2_bwth_parm_name = QTableWidgetItem("P-EQ2 BWTH")
+
+        self.p_eq_2_bwth_spin = QSpinBox()
+        self.p_eq_2_bwth_spin.setAlignment(Qt.AlignCenter)
+        self.p_eq_2_bwth_spin.setMaximum(10)
+        self.p_eq_2_bwth_spin.setMinimum(1)
+        self.p_eq_2_bwth_spin.setSingleStep(1)
+        self.p_eq_2_bwth_spin.setValue(1)
+
+        self.menu_table.setItem(143, 0, self.p_eq_2_bwth_menu_nb)
+        self.menu_table.setItem(143, 1, self.p_eq_2_bwth_parm_name)
+        self.menu_table.setCellWidget(143, 2, self.p_eq_2_bwth_spin)
+
+        # 15-16
+        self.p_eq_3_freq_menu_nb = QTableWidgetItem("15-16")
+        self.p_eq_3_freq_parm_name = QTableWidgetItem("P-EQ3 FREQ")
+
+        self.p_eq_3_freq_combo = QComboBox()
+        self.p_eq_3_freq_combo.setEditable(True)
+        self.p_eq_3_freq_combo.lineEdit().setReadOnly(True)
+        self.p_eq_3_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.p_eq_3_freq_combo.addItems([i for i in EQ_3_FREQ.keys()])
+        format_combo(self.p_eq_3_freq_combo)
+        self.p_eq_3_freq_combo.setCurrentIndex(7)
+
+        self.menu_table.setItem(144, 0, self.p_eq_3_freq_menu_nb)
+        self.menu_table.setItem(144, 1, self.p_eq_3_freq_parm_name)
+        self.menu_table.setCellWidget(144, 2, self.p_eq_3_freq_combo)
+
+        # 15-17
+        self.p_eq_3_level_menu_nb = QTableWidgetItem("15-17")
+        self.p_eq_3_level_parm_name = QTableWidgetItem("P-EQ3 LEVEL")
+
+        self.p_eq_3_level_spin = QSpinBox()
+        self.p_eq_3_level_spin.setAlignment(Qt.AlignCenter)
+        self.p_eq_3_level_spin.setMaximum(10)
+        self.p_eq_3_level_spin.setMinimum(-20)
+        self.p_eq_3_level_spin.setSingleStep(1)
+        self.p_eq_3_level_spin.setValue(0)
+
+        self.menu_table.setItem(145, 0, self.p_eq_3_level_menu_nb)
+        self.menu_table.setItem(145, 1, self.p_eq_3_level_parm_name)
+        self.menu_table.setCellWidget(145, 2, self.p_eq_3_level_spin)
+
+        # 15-18
+        self.p_eq_3_bwth_menu_nb = QTableWidgetItem("15-18")
+        self.p_eq_3_bwth_parm_name = QTableWidgetItem("P-EQ3 BWTH")
+
+        self.p_eq_3_bwth_spin = QSpinBox()
+        self.p_eq_3_bwth_spin.setAlignment(Qt.AlignCenter)
+        self.p_eq_3_bwth_spin.setMaximum(10)
+        self.p_eq_3_bwth_spin.setMinimum(1)
+        self.p_eq_3_bwth_spin.setSingleStep(1)
+        self.p_eq_3_bwth_spin.setValue(1)
+
+        self.menu_table.setItem(146, 0, self.p_eq_3_bwth_menu_nb)
+        self.menu_table.setItem(146, 1, self.p_eq_3_bwth_parm_name)
+        self.menu_table.setCellWidget(146, 2, self.p_eq_3_bwth_spin)
+
+        # TX GNRL
+        self.tx_gnrl_separator = QTableWidgetItem("TX GNRL")
+        self.tx_gnrl_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
+        self.menu_table.setItem(147, 0, self.tx_gnrl_separator)
+        self.menu_table.setSpan(147, 0, 1, 3)
 
         # Table config
         for row in range(0, self.menu_table.rowCount()):
