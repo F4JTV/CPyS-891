@@ -120,6 +120,11 @@ EQ_3_FREQ = {"OFF": b"00", "1500 Hz": b"01", "1600 Hz": b"02",
              "2600 Hz": b"12", "2700 Hz": b"13", "2800 Hz": b"14",
              "2900 Hz": b"15", "3000 Hz": b"16", "3100 Hz": b"17",
              "3200 Hz": b"18"}
+TUNER_SELECT = {"OFF": b"0", "EXTERNAL": b"1",
+                "ATAS": b"2", "LAMP": b"3"}
+VOX_SELECT = {"MIC": b"0", "DATA": b"1"}
+EMERGENCY_FREQ = {"DISABLE": b"0", "ENABLE": b"1"}
+RESET = {"ALL": b"0", "DATA": b"1", "FUNC": b"2"}
 
 
 def format_combo(combobox):
@@ -186,6 +191,10 @@ class MainWindow(QMainWindow):
         self.send_to_radio_action.setDisabled(True)
         self.send_to_radio_action.triggered.connect(self.send_config_2_radio)
 
+        self.get_from_radio_action = QAction("Get config from FT-891")
+        self.edit_menu.addAction(self.get_from_radio_action)
+        self.get_from_radio_action.setDisabled(True)
+
         # ###### Status Bar
         self.status_bar = QStatusBar()
         self.setStatusBar(self.status_bar)
@@ -215,7 +224,7 @@ class MainWindow(QMainWindow):
         self.menu_layout = QHBoxLayout()
         self.menu_tab.setLayout(self.menu_layout)
 
-        self.menu_table = QTableWidget(200, 3)
+        self.menu_table = QTableWidget(171, 3)
         self.function_layout = QScrollArea()
         self.menu_layout.addWidget(self.menu_table, 1)
         self.menu_layout.addWidget(self.function_layout, 3)
@@ -2417,6 +2426,356 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(147, 0, self.tx_gnrl_separator)
         self.menu_table.setSpan(147, 0, 1, 3)
 
+        # 16-01
+        self.hf_ssb_pwr_menu_nb = QTableWidgetItem("16-01")
+        self.hf_ssb_pwr_parm_name = QTableWidgetItem("HF SSB PWR")
+
+        self.hf_ssb_pwr_spin = QSpinBox()
+        self.hf_ssb_pwr_spin.setAlignment(Qt.AlignCenter)
+        self.hf_ssb_pwr_spin.setMaximum(100)
+        self.hf_ssb_pwr_spin.setMinimum(5)
+        self.hf_ssb_pwr_spin.setSingleStep(1)
+        self.hf_ssb_pwr_spin.setValue(100)
+
+        self.menu_table.setItem(148, 0, self.hf_ssb_pwr_menu_nb)
+        self.menu_table.setItem(148, 1, self.hf_ssb_pwr_parm_name)
+        self.menu_table.setCellWidget(148, 2, self.hf_ssb_pwr_spin)
+
+        # 16-02
+        self.hf_am_pwr_menu_nb = QTableWidgetItem("16-02")
+        self.hf_am_pwr_parm_name = QTableWidgetItem("HF AM PWR")
+
+        self.hf_am_pwr_spin = QSpinBox()
+        self.hf_am_pwr_spin.setAlignment(Qt.AlignCenter)
+        self.hf_am_pwr_spin.setMaximum(40)
+        self.hf_am_pwr_spin.setMinimum(5)
+        self.hf_am_pwr_spin.setSingleStep(1)
+        self.hf_am_pwr_spin.setValue(25)
+
+        self.menu_table.setItem(149, 0, self.hf_am_pwr_menu_nb)
+        self.menu_table.setItem(149, 1, self.hf_am_pwr_parm_name)
+        self.menu_table.setCellWidget(149, 2, self.hf_am_pwr_spin)
+
+        # 16-03
+        self.hf_pwr_menu_nb = QTableWidgetItem("16-03")
+        self.hf_pwr_parm_name = QTableWidgetItem("HF PWR")
+
+        self.hf_pwr_spin = QSpinBox()
+        self.hf_pwr_spin.setAlignment(Qt.AlignCenter)
+        self.hf_pwr_spin.setMaximum(100)
+        self.hf_pwr_spin.setMinimum(5)
+        self.hf_pwr_spin.setSingleStep(1)
+        self.hf_pwr_spin.setValue(100)
+
+        self.menu_table.setItem(150, 0, self.hf_pwr_menu_nb)
+        self.menu_table.setItem(150, 1, self.hf_pwr_parm_name)
+        self.menu_table.setCellWidget(150, 2, self.hf_pwr_spin)
+
+        # 16-04
+        self.ssb_50m_pwr_menu_nb = QTableWidgetItem("16-04")
+        self.ssb_50m_pwr_parm_name = QTableWidgetItem("50M SSB PWR")
+
+        self.ssb_50m_pwr_spin = QSpinBox()
+        self.ssb_50m_pwr_spin.setAlignment(Qt.AlignCenter)
+        self.ssb_50m_pwr_spin.setMaximum(100)
+        self.ssb_50m_pwr_spin.setMinimum(5)
+        self.ssb_50m_pwr_spin.setSingleStep(1)
+        self.ssb_50m_pwr_spin.setValue(100)
+
+        self.menu_table.setItem(151, 0, self.ssb_50m_pwr_menu_nb)
+        self.menu_table.setItem(151, 1, self.ssb_50m_pwr_parm_name)
+        self.menu_table.setCellWidget(151, 2, self.ssb_50m_pwr_spin)
+
+        # 16-05
+        self.am_50m_pwr_menu_nb = QTableWidgetItem("16-05")
+        self.am_50m_pwr_parm_name = QTableWidgetItem("50M AM PWR")
+
+        self.am_50m_pwr_spin = QSpinBox()
+        self.am_50m_pwr_spin.setAlignment(Qt.AlignCenter)
+        self.am_50m_pwr_spin.setMaximum(40)
+        self.am_50m_pwr_spin.setMinimum(5)
+        self.am_50m_pwr_spin.setSingleStep(1)
+        self.am_50m_pwr_spin.setValue(25)
+
+        self.menu_table.setItem(152, 0, self.am_50m_pwr_menu_nb)
+        self.menu_table.setItem(152, 1, self.am_50m_pwr_parm_name)
+        self.menu_table.setCellWidget(152, 2, self.am_50m_pwr_spin)
+
+        # 16-06
+        self.pwr_50m_menu_nb = QTableWidgetItem("16-06")
+        self.pwr_50m_parm_name = QTableWidgetItem("50M PWR")
+
+        self.pwr_50m_spin = QSpinBox()
+        self.pwr_50m_spin.setAlignment(Qt.AlignCenter)
+        self.pwr_50m_spin.setMaximum(100)
+        self.pwr_50m_spin.setMinimum(5)
+        self.pwr_50m_spin.setSingleStep(1)
+        self.pwr_50m_spin.setValue(50)
+
+        self.menu_table.setItem(153, 0, self.pwr_50m_menu_nb)
+        self.menu_table.setItem(153, 1, self.pwr_50m_parm_name)
+        self.menu_table.setCellWidget(153, 2, self.pwr_50m_spin)
+
+        # 16-07
+        self.ssb_mic_gain_menu_nb = QTableWidgetItem("16-07")
+        self.ssb_mic_gain_parm_name = QTableWidgetItem("SSB MIC GAIN")
+
+        self.ssb_mic_gain_spin = QSpinBox()
+        self.ssb_mic_gain_spin.setAlignment(Qt.AlignCenter)
+        self.ssb_mic_gain_spin.setMaximum(100)
+        self.ssb_mic_gain_spin.setMinimum(0)
+        self.ssb_mic_gain_spin.setSingleStep(1)
+        self.ssb_mic_gain_spin.setValue(50)
+
+        self.menu_table.setItem(154, 0, self.ssb_mic_gain_menu_nb)
+        self.menu_table.setItem(154, 1, self.ssb_mic_gain_parm_name)
+        self.menu_table.setCellWidget(154, 2, self.ssb_mic_gain_spin)
+
+        # 16-08
+        self.am_mic_gain_menu_nb = QTableWidgetItem("16-08")
+        self.am_mic_gain_parm_name = QTableWidgetItem("AM MIC GAIN")
+
+        self.am_mic_gain_spin = QSpinBox()
+        self.am_mic_gain_spin.setAlignment(Qt.AlignCenter)
+        self.am_mic_gain_spin.setMaximum(100)
+        self.am_mic_gain_spin.setMinimum(0)
+        self.am_mic_gain_spin.setSingleStep(1)
+        self.am_mic_gain_spin.setValue(50)
+
+        self.menu_table.setItem(155, 0, self.am_mic_gain_menu_nb)
+        self.menu_table.setItem(155, 1, self.am_mic_gain_parm_name)
+        self.menu_table.setCellWidget(155, 2, self.am_mic_gain_spin)
+
+        # 16-09
+        self.fm_mic_gain_menu_nb = QTableWidgetItem("16-09")
+        self.fm_mic_gain_parm_name = QTableWidgetItem("FM MIC GAIN")
+
+        self.fm_mic_gain_spin = QSpinBox()
+        self.fm_mic_gain_spin.setAlignment(Qt.AlignCenter)
+        self.fm_mic_gain_spin.setMaximum(100)
+        self.fm_mic_gain_spin.setMinimum(0)
+        self.fm_mic_gain_spin.setSingleStep(1)
+        self.fm_mic_gain_spin.setValue(50)
+
+        self.menu_table.setItem(156, 0, self.fm_mic_gain_menu_nb)
+        self.menu_table.setItem(156, 1, self.fm_mic_gain_parm_name)
+        self.menu_table.setCellWidget(156, 2, self.fm_mic_gain_spin)
+
+        # 16-10
+        self.data_mic_gain_menu_nb = QTableWidgetItem("16-10")
+        self.data_mic_gain_parm_name = QTableWidgetItem("DATA MIC GAIN")
+
+        self.data_mic_gain_spin = QSpinBox()
+        self.data_mic_gain_spin.setAlignment(Qt.AlignCenter)
+        self.data_mic_gain_spin.setMaximum(100)
+        self.data_mic_gain_spin.setMinimum(0)
+        self.data_mic_gain_spin.setSingleStep(1)
+        self.data_mic_gain_spin.setValue(50)
+
+        self.menu_table.setItem(157, 0, self.data_mic_gain_menu_nb)
+        self.menu_table.setItem(157, 1, self.data_mic_gain_parm_name)
+        self.menu_table.setCellWidget(157, 2, self.data_mic_gain_spin)
+
+        # 16-11
+        self.ssb_data_gain_menu_nb = QTableWidgetItem("16-11")
+        self.ssb_data_gain_parm_name = QTableWidgetItem("SSB DATA GAIN")
+
+        self.ssb_data_gain_spin = QSpinBox()
+        self.ssb_data_gain_spin.setAlignment(Qt.AlignCenter)
+        self.ssb_data_gain_spin.setMaximum(100)
+        self.ssb_data_gain_spin.setMinimum(0)
+        self.ssb_data_gain_spin.setSingleStep(1)
+        self.ssb_data_gain_spin.setValue(50)
+
+        self.menu_table.setItem(158, 0, self.ssb_data_gain_menu_nb)
+        self.menu_table.setItem(158, 1, self.ssb_data_gain_parm_name)
+        self.menu_table.setCellWidget(158, 2, self.ssb_data_gain_spin)
+
+        # 16-12
+        self.am_data_gain_menu_nb = QTableWidgetItem("16-12")
+        self.am_data_gain_parm_name = QTableWidgetItem("AM DATA GAIN")
+
+        self.am_data_gain_spin = QSpinBox()
+        self.am_data_gain_spin.setAlignment(Qt.AlignCenter)
+        self.am_data_gain_spin.setMaximum(100)
+        self.am_data_gain_spin.setMinimum(0)
+        self.am_data_gain_spin.setSingleStep(1)
+        self.am_data_gain_spin.setValue(50)
+
+        self.menu_table.setItem(159, 0, self.am_data_gain_menu_nb)
+        self.menu_table.setItem(159, 1, self.am_data_gain_parm_name)
+        self.menu_table.setCellWidget(159, 2, self.am_data_gain_spin)
+
+        # 16-13
+        self.fm_data_gain_menu_nb = QTableWidgetItem("16-13")
+        self.fm_data_gain_parm_name = QTableWidgetItem("FM DATA GAIN")
+
+        self.fm_data_gain_spin = QSpinBox()
+        self.fm_data_gain_spin.setAlignment(Qt.AlignCenter)
+        self.fm_data_gain_spin.setMaximum(100)
+        self.fm_data_gain_spin.setMinimum(0)
+        self.fm_data_gain_spin.setSingleStep(1)
+        self.fm_data_gain_spin.setValue(50)
+
+        self.menu_table.setItem(160, 0, self.fm_data_gain_menu_nb)
+        self.menu_table.setItem(160, 1, self.fm_data_gain_parm_name)
+        self.menu_table.setCellWidget(160, 2, self.fm_data_gain_spin)
+
+        # 16-14
+        self.data_data_gain_menu_nb = QTableWidgetItem("16-14")
+        self.data_data_gain_parm_name = QTableWidgetItem("DATA DATA GAIN")
+
+        self.data_data_gain_spin = QSpinBox()
+        self.data_data_gain_spin.setAlignment(Qt.AlignCenter)
+        self.data_data_gain_spin.setMaximum(100)
+        self.data_data_gain_spin.setMinimum(0)
+        self.data_data_gain_spin.setSingleStep(1)
+        self.data_data_gain_spin.setValue(50)
+
+        self.menu_table.setItem(161, 0, self.data_data_gain_menu_nb)
+        self.menu_table.setItem(161, 1, self.data_data_gain_parm_name)
+        self.menu_table.setCellWidget(161, 2, self.data_data_gain_spin)
+
+        # 16-15
+        self.tuner_select_menu_nb = QTableWidgetItem("16-15")
+        self.tuner_select_parm_name = QTableWidgetItem("TUNER SELECT")
+
+        self.tuner_select_combo = QComboBox()
+        self.tuner_select_combo.setEditable(True)
+        self.tuner_select_combo.lineEdit().setReadOnly(True)
+        self.tuner_select_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.tuner_select_combo.addItems([i for i in TUNER_SELECT.keys()])
+        format_combo(self.tuner_select_combo)
+        self.tuner_select_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(162, 0, self.tuner_select_menu_nb)
+        self.menu_table.setItem(162, 1, self.tuner_select_parm_name)
+        self.menu_table.setCellWidget(162, 2, self.tuner_select_combo)
+
+        # 16-16
+        self.vox_select_menu_nb = QTableWidgetItem("16-16")
+        self.vox_select_parm_name = QTableWidgetItem("VOX SELECT")
+
+        self.vox_select_combo = QComboBox()
+        self.vox_select_combo.setEditable(True)
+        self.vox_select_combo.lineEdit().setReadOnly(True)
+        self.vox_select_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.vox_select_combo.addItems([i for i in VOX_SELECT.keys()])
+        format_combo(self.vox_select_combo)
+        self.vox_select_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(163, 0, self.vox_select_menu_nb)
+        self.menu_table.setItem(163, 1, self.vox_select_parm_name)
+        self.menu_table.setCellWidget(163, 2, self.vox_select_combo)
+
+        # 16-17
+        self.vox_gain_menu_nb = QTableWidgetItem("16-17")
+        self.vox_gain_parm_name = QTableWidgetItem("VOX GAIN")
+
+        self.vox_gain_spin = QSpinBox()
+        self.vox_gain_spin.setAlignment(Qt.AlignCenter)
+        self.vox_gain_spin.setMaximum(100)
+        self.vox_gain_spin.setMinimum(0)
+        self.vox_gain_spin.setSingleStep(1)
+        self.vox_gain_spin.setValue(50)
+
+        self.menu_table.setItem(164, 0, self.vox_gain_menu_nb)
+        self.menu_table.setItem(164, 1, self.vox_gain_parm_name)
+        self.menu_table.setCellWidget(164, 2, self.vox_gain_spin)
+
+        # 16-18
+        self.vox_delay_menu_nb = QTableWidgetItem("16-18")
+        self.vox_delay_parm_name = QTableWidgetItem("VOX DELAY")
+
+        self.vox_delay_spin = QSpinBox()
+        self.vox_delay_spin.setAlignment(Qt.AlignCenter)
+        self.vox_delay_spin.setMaximum(3000)
+        self.vox_delay_spin.setMinimum(30)
+        self.vox_delay_spin.setSingleStep(10)
+        self.vox_delay_spin.setValue(500)
+        self.vox_delay_spin.setSuffix(" msec")
+
+        self.menu_table.setItem(165, 0, self.vox_delay_menu_nb)
+        self.menu_table.setItem(165, 1, self.vox_delay_parm_name)
+        self.menu_table.setCellWidget(165, 2, self.vox_delay_spin)
+
+        # 16-19
+        self.anti_vox_gain_menu_nb = QTableWidgetItem("16-19")
+        self.anti_vox_gain_parm_name = QTableWidgetItem("ANTI VOX GAIN")
+
+        self.anti_vox_gain_spin = QSpinBox()
+        self.anti_vox_gain_spin.setAlignment(Qt.AlignCenter)
+        self.anti_vox_gain_spin.setMaximum(100)
+        self.anti_vox_gain_spin.setMinimum(0)
+        self.anti_vox_gain_spin.setSingleStep(1)
+        self.anti_vox_gain_spin.setValue(50)
+
+        self.menu_table.setItem(166, 0, self.anti_vox_gain_menu_nb)
+        self.menu_table.setItem(166, 1, self.anti_vox_gain_parm_name)
+        self.menu_table.setCellWidget(166, 2, self.anti_vox_gain_spin)
+
+        # 16-20
+        self.data_vox_gain_menu_nb = QTableWidgetItem("16-20")
+        self.data_vox_gain_parm_name = QTableWidgetItem("DATA VOX GAIN")
+
+        self.data_vox_gain_spin = QSpinBox()
+        self.data_vox_gain_spin.setAlignment(Qt.AlignCenter)
+        self.data_vox_gain_spin.setMaximum(100)
+        self.data_vox_gain_spin.setMinimum(0)
+        self.data_vox_gain_spin.setSingleStep(1)
+        self.data_vox_gain_spin.setValue(50)
+
+        self.menu_table.setItem(167, 0, self.data_vox_gain_menu_nb)
+        self.menu_table.setItem(167, 1, self.data_vox_gain_parm_name)
+        self.menu_table.setCellWidget(167, 2, self.data_vox_gain_spin)
+
+        # 16-21
+        self.data_vox_delay_menu_nb = QTableWidgetItem("16-21")
+        self.data_vox_delay_parm_name = QTableWidgetItem("DATA VOX DELAY")
+
+        self.data_vox_delay_spin = QSpinBox()
+        self.data_vox_delay_spin.setAlignment(Qt.AlignCenter)
+        self.data_vox_delay_spin.setMaximum(3000)
+        self.data_vox_delay_spin.setMinimum(30)
+        self.data_vox_delay_spin.setSingleStep(10)
+        self.data_vox_delay_spin.setValue(100)
+        self.data_vox_delay_spin.setSuffix(" msec")
+
+        self.menu_table.setItem(168, 0, self.data_vox_delay_menu_nb)
+        self.menu_table.setItem(168, 1, self.data_vox_delay_parm_name)
+        self.menu_table.setCellWidget(168, 2, self.data_vox_delay_spin)
+
+        # 16-22
+        self.anti_dvox_gain_menu_nb = QTableWidgetItem("16-22")
+        self.anti_dvox_gain_parm_name = QTableWidgetItem("ANTI DVOX GAIN")
+
+        self.anti_dvox_gain_spin = QSpinBox()
+        self.anti_dvox_gain_spin.setAlignment(Qt.AlignCenter)
+        self.anti_dvox_gain_spin.setMaximum(100)
+        self.anti_dvox_gain_spin.setMinimum(0)
+        self.anti_dvox_gain_spin.setSingleStep(1)
+        self.anti_dvox_gain_spin.setValue(0)
+
+        self.menu_table.setItem(169, 0, self.anti_dvox_gain_menu_nb)
+        self.menu_table.setItem(169, 1, self.anti_dvox_gain_parm_name)
+        self.menu_table.setCellWidget(169, 2, self.anti_dvox_gain_spin)
+
+        # 16-23
+        self.emergency_freq_menu_nb = QTableWidgetItem("16-23")
+        self.emergency_freq_parm_name = QTableWidgetItem("EMERGENCY FREQ")
+
+        self.emergency_freq_combo = QComboBox()
+        self.emergency_freq_combo.setEditable(True)
+        self.emergency_freq_combo.lineEdit().setReadOnly(True)
+        self.emergency_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.emergency_freq_combo.addItems([i for i in EMERGENCY_FREQ.keys()])
+        format_combo(self.emergency_freq_combo)
+        self.emergency_freq_combo.setCurrentIndex(0)
+
+        self.menu_table.setItem(170, 0, self.emergency_freq_menu_nb)
+        self.menu_table.setItem(170, 1, self.emergency_freq_parm_name)
+        self.menu_table.setCellWidget(170, 2, self.emergency_freq_combo)
+
         # Table config
         for row in range(0, self.menu_table.rowCount()):
             try:
@@ -2734,7 +3093,7 @@ if __name__ == "__main__":
     app.processEvents()
     window = MainWindow(app)
     splash.finish(window)
-    # window.showMaximized()
+    window.showMaximized()
     window.show()
     # window.resize(window.minimumSizeHint())
     sys.exit(app.exec_())
