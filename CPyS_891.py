@@ -557,6 +557,7 @@ class MainWindow(QMainWindow):
         self.number_style_combo.addItems([i for i in NUMBER_STYLE.keys()])
         format_combo(self.number_style_combo)
         self.number_style_combo.setCurrentIndex(0)
+        self.number_style_combo.currentTextChanged.connect(self.set_number_style)
 
         self.menu_table.setItem(20, 0, self.number_style_menu_nb)
         self.menu_table.setItem(20, 1, self.number_style_parm_name)
@@ -589,6 +590,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_1_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_1_combo)
         self.cw_memory_1_combo.setCurrentIndex(1)
+        self.cw_memory_1_combo.currentTextChanged.connect(self.set_cw_memory_1)
 
         self.menu_table.setItem(22, 0, self.cw_memory_1_menu_nb)
         self.menu_table.setItem(22, 1, self.cw_memory_1_parm_name)
@@ -605,6 +607,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_2_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_2_combo)
         self.cw_memory_2_combo.setCurrentIndex(1)
+        self.cw_memory_2_combo.currentTextChanged.connect(self.set_cw_memory_2)
 
         self.menu_table.setItem(23, 0, self.cw_memory_2_menu_nb)
         self.menu_table.setItem(23, 1, self.cw_memory_2_parm_name)
@@ -621,6 +624,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_3_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_3_combo)
         self.cw_memory_3_combo.setCurrentIndex(1)
+        self.cw_memory_3_combo.currentTextChanged.connect(self.set_cw_memory_3)
 
         self.menu_table.setItem(24, 0, self.cw_memory_3_menu_nb)
         self.menu_table.setItem(24, 1, self.cw_memory_3_parm_name)
@@ -637,6 +641,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_4_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_4_combo)
         self.cw_memory_4_combo.setCurrentIndex(1)
+        self.cw_memory_4_combo.currentTextChanged.connect(self.set_cw_memory_4)
 
         self.menu_table.setItem(25, 0, self.cw_memory_4_menu_nb)
         self.menu_table.setItem(25, 1, self.cw_memory_4_parm_name)
@@ -653,6 +658,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_5_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_5_combo)
         self.cw_memory_5_combo.setCurrentIndex(1)
+        self.cw_memory_5_combo.currentTextChanged.connect(self.set_cw_memory_5)
 
         self.menu_table.setItem(26, 0, self.cw_memory_5_menu_nb)
         self.menu_table.setItem(26, 1, self.cw_memory_5_parm_name)
@@ -674,6 +680,7 @@ class MainWindow(QMainWindow):
         self.nb_width_combo.addItems([i for i in NB_WIDHT.keys()])
         format_combo(self.nb_width_combo)
         self.nb_width_combo.setCurrentIndex(1)
+        self.nb_width_combo.currentTextChanged.connect(self.set_nb_width)
 
         self.menu_table.setItem(28, 0, self.nb_width_menu_nb)
         self.menu_table.setItem(28, 1, self.nb_width_parm_name)
@@ -690,6 +697,7 @@ class MainWindow(QMainWindow):
         self.nb_rejection_combo.addItems([i for i in NB_REJECTION.keys()])
         format_combo(self.nb_rejection_combo)
         self.nb_rejection_combo.setCurrentIndex(1)
+        self.nb_rejection_combo.currentTextChanged.connect(self.set_nb_rejection)
 
         self.menu_table.setItem(29, 0, self.nb_rejection_menu_nb)
         self.menu_table.setItem(29, 1, self.nb_rejection_parm_name)
@@ -705,6 +713,7 @@ class MainWindow(QMainWindow):
         self.nb_level_spin.setMinimum(0)
         self.nb_level_spin.setSingleStep(1)
         self.nb_level_spin.setValue(5)
+        self.nb_level_spin.valueChanged.connect(self.set_nb_level)
 
         self.menu_table.setItem(30, 0, self.nb_level_menu_nb)
         self.menu_table.setItem(30, 1, self.nb_level_parm_name)
@@ -720,6 +729,7 @@ class MainWindow(QMainWindow):
         self.beep_level_spin.setMinimum(0)
         self.beep_level_spin.setSingleStep(1)
         self.beep_level_spin.setValue(30)
+        self.beep_level_spin.valueChanged.connect(self.set_beep_level)
 
         self.menu_table.setItem(31, 0, self.beep_level_menu_nb)
         self.menu_table.setItem(31, 1, self.beep_level_parm_name)
@@ -736,7 +746,7 @@ class MainWindow(QMainWindow):
         self.rf_sql_vr_combo.addItems([i for i in RF_SQL_VR.keys()])
         format_combo(self.rf_sql_vr_combo)
         self.rf_sql_vr_combo.setCurrentIndex(0)
-        self.rf_sql_vr_combo.currentTextChanged.connect(self.set_number_style)
+        self.rf_sql_vr_combo.currentTextChanged.connect(self.set_rf_sql_vr)
 
         self.menu_table.setItem(32, 0, self.rf_sql_vr_menu_nb)
         self.menu_table.setItem(32, 1, self.rf_sql_vr_parm_name)
@@ -3733,7 +3743,6 @@ class MainWindow(QMainWindow):
         if self.rig.isOpen():
             if self.trasnfert:
                 value = str(self.contour_width_spin.value())
-                val = self.contour_width_spin.value()
 
                 while len(value) < 2:
                     value = "0" + value
@@ -3810,6 +3819,477 @@ class MainWindow(QMainWindow):
             if self.trasnfert:
                 value = FM_CH_STEP[self.fm_ch_step_combo.currentText()]
                 cmd = b"EX1407" + value + b";"
+                self.rig.write(cmd)
+
+    def set_eq_1_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = EQ_1_FREQ[self.eq_1_freq_combo.currentText()]
+                cmd = b"EX1501" + value + b";"
+                self.rig.write(cmd)
+
+    def set_eq_1_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.eq_1_level_spin.value())
+
+                if -10 < self.eq_1_level_spin.value() < 0:
+                    value = value[0] + "0" + value[1]
+                elif 0 <= self.eq_1_level_spin.value() < 10:
+                    value = "+0" + value[0]
+                elif self.eq_1_level_spin.value() >= 10:
+                    value = "+" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1502" + value + b";"
+                self.rig.write(cmd)
+
+    def set_eq_1_bwth(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.eq_1_bwth_spin.value())
+
+                while len(value) < 2:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1503" + value + b";"
+                self.rig.write(cmd)
+
+    def set_eq_2_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = EQ_2_FREQ[self.eq_2_freq_combo.currentText()]
+                cmd = b"EX1504" + value + b";"
+                self.rig.write(cmd)
+
+    def set_eq_2_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.eq_2_level_spin.value())
+
+                if -10 < self.eq_2_level_spin.value() < 0:
+                    value = value[0] + "0" + value[1]
+                elif 0 <= self.eq_2_level_spin.value() < 10:
+                    value = "+0" + value[0]
+                elif self.eq_2_level_spin.value() >= 10:
+                    value = "+" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1505" + value + b";"
+                self.rig.write(cmd)
+
+    def set_eq_2_bwth(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.eq_2_bwth_spin.value())
+
+                while len(value) < 2:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1506" + value + b";"
+                self.rig.write(cmd)
+
+    def set_eq_3_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = EQ_3_FREQ[self.eq_3_freq_combo.currentText()]
+                cmd = b"EX1507" + value + b";"
+                self.rig.write(cmd)
+
+    def set_eq_3_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.eq_3_level_spin.value())
+
+                if -10 < self.eq_3_level_spin.value() < 0:
+                    value = value[0] + "0" + value[1]
+                elif 0 <= self.eq_3_level_spin.value() < 10:
+                    value = "+0" + value[0]
+                elif self.eq_3_level_spin.value() >= 10:
+                    value = "+" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1508" + value + b";"
+                self.rig.write(cmd)
+
+    def set_eq_3_bwth(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.eq_3_bwth_spin.value())
+
+                while len(value) < 2:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1509" + value + b";"
+                self.rig.write(cmd)
+
+    def set_p_eq_1_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = EQ_1_FREQ[self.p_eq_1_freq_combo.currentText()]
+                cmd = b"EX1510" + value + b";"
+                self.rig.write(cmd)
+
+    def set_p_eq_1_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.p_eq_1_level_spin.value())
+
+                if -10 < self.p_eq_1_level_spin.value() < 0:
+                    value = value[0] + "0" + value[1]
+                elif 0 <= self.p_eq_1_level_spin.value() < 10:
+                    value = "+0" + value[0]
+                elif self.p_eq_1_level_spin.value() >= 10:
+                    value = "+" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1511" + value + b";"
+                self.rig.write(cmd)
+
+    def set_p_eq_1_bwth(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.p_eq_1_bwth_spin.value())
+
+                while len(value) < 2:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1512" + value + b";"
+                self.rig.write(cmd)
+
+    def set_p_eq_2_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = EQ_2_FREQ[self.p_eq_2_freq_combo.currentText()]
+                cmd = b"EX1513" + value + b";"
+                self.rig.write(cmd)
+
+    def set_p_eq_2_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.p_eq_2_level_spin.value())
+
+                if -10 < self.p_eq_2_level_spin.value() < 0:
+                    value = value[0] + "0" + value[1]
+                elif 0 <= self.p_eq_2_level_spin.value() < 10:
+                    value = "+0" + value[0]
+                elif self.p_eq_2_level_spin.value() >= 10:
+                    value = "+" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1514" + value + b";"
+                self.rig.write(cmd)
+
+    def set_p_eq_2_bwth(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.p_eq_2_bwth_spin.value())
+
+                while len(value) < 2:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1515" + value + b";"
+                self.rig.write(cmd)
+
+    def set_p_eq_3_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = EQ_3_FREQ[self.p_eq_3_freq_combo.currentText()]
+                cmd = b"EX1516" + value + b";"
+                self.rig.write(cmd)
+
+    def set_p_eq_3_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.p_eq_3_level_spin.value())
+
+                if -10 < self.p_eq_3_level_spin.value() < 0:
+                    value = value[0] + "0" + value[1]
+                elif 0 <= self.p_eq_3_level_spin.value() < 10:
+                    value = "+0" + value[0]
+                elif self.p_eq_3_level_spin.value() >= 10:
+                    value = "+" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1517" + value + b";"
+                self.rig.write(cmd)
+
+    def set_p_eq_3_bwth(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.p_eq_3_bwth_spin.value())
+
+                while len(value) < 2:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1518" + value + b";"
+                self.rig.write(cmd)
+
+    def set_hf_ssb_pwr(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.hf_ssb_pwr_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1601" + value + b";"
+                self.rig.write(cmd)
+
+    def set_hf_am_pwr(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.hf_am_pwr_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1602" + value + b";"
+                self.rig.write(cmd)
+
+    def set_hf_pwr(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.hf_pwr_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1603" + value + b";"
+                self.rig.write(cmd)
+
+    def set_50m_ssb_pwr(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.ssb_50m_pwr_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1604" + value + b";"
+                self.rig.write(cmd)
+
+    def set_50m_am_pwr(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.am_50m_pwr_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1605" + value + b";"
+                self.rig.write(cmd)
+
+    def set_50m_pwr(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.pwr_50m_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1606" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_mic_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.ssb_mic_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1607" + value + b";"
+                self.rig.write(cmd)
+
+    def set_am_mic_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.am_mic_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1608" + value + b";"
+                self.rig.write(cmd)
+
+    def set_fm_mic_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.fm_mic_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1609" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_mic_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.data_mic_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1610" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_data_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.ssb_data_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1611" + value + b";"
+                self.rig.write(cmd)
+
+    def set_am_data_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.am_data_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1612" + value + b";"
+                self.rig.write(cmd)
+
+    def set_fm_data_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.fm_data_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1613" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_data_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.data_data_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1614" + value + b";"
+                self.rig.write(cmd)
+
+    def set_tuner_select(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = TUNER_SELECT[self.tuner_select_combo.currentText()]
+                cmd = b"EX1615" + value + b";"
+                self.rig.write(cmd)
+
+    def set_vox_select(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = VOX_SELECT[self.vox_select_combo.currentText()]
+                cmd = b"EX1616" + value + b";"
+                self.rig.write(cmd)
+
+    def set_vox_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.vox_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1617" + value + b";"
+                self.rig.write(cmd)
+
+    def set_vox_delay(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.vox_delay_spin.value())
+
+                while len(value) < 4:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1618" + value + b";"
+                self.rig.write(cmd)
+
+    def set_anti_vox_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.anti_vox_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1619" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_vox_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.data_vox_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1620" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_vox_delay(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.data_vox_delay_spin.value())
+
+                while len(value) < 4:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1621" + value + b";"
+                self.rig.write(cmd)
+
+    def set_anti_dvox_gain(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.anti_dvox_gain_spin.value())
+
+                while len(value) < 3:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1622" + value + b";"
+                self.rig.write(cmd)
+
+    def set_emergency_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = EMERGENCY_FREQ[self.emergency_freq_combo.currentText()]
+                cmd = b"EX1623" + value + b";"
                 self.rig.write(cmd)
 
     def closeEvent(self, event):
