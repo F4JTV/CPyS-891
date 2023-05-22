@@ -54,6 +54,36 @@ CLAR_SELECT = {"RX": b"0", "TX": b"1", "TRX": b"2"}
 APO = {"OFF": b"0", "1 h": b"1", "2 h": b"2", "4 h": b"3",
        "6 h": b"4", "8 h": b"5", "10 h": b"6", "12 h": b"7"}
 FAN_CONTROL = {"NORMAL": b"0", "CONTEST": b"1"}
+LCUT_FREQ = {"OFF": b"00", "100 Hz": b"01", "150 Hz": b"02",
+             "200 Hz": b"03", "250 Hz": b"04", "300 Hz": b"05",
+             "350 Hz": b"06", "400 Hz": b"07", "450 Hz": b"08",
+             "500 Hz": b"09", "550 Hz": b"10", "600 Hz": b"11",
+             "650 Hz": b"12", "700 Hz": b"13", "750 Hz": b"14",
+             "800 Hz": b"15", "850 Hz": b"16", "900 Hz": b"17",
+             "950 Hz": b"18", "1000 Hz": b"19"}
+HCUT_FREQ = {"OFF": b"00", "700 Hz": b"01", "750 Hz": b"02",
+             "800 Hz": b"03", "850 Hz": b"04", "900 Hz": b"05",
+             "950 Hz": b"06", "1000 Hz": b"07", "1050 Hz": b"08",
+             "1100 Hz": b"09", "1150 Hz": b"10", "1200 Hz": b"11",
+             "1250 Hz": b"12", "1300 Hz": b"13", "1350 Hz": b"14",
+             "1400 Hz": b"15", "1450 Hz": b"16", "1500 Hz": b"17",
+             "1550 Hz": b"18", "1600 Hz": b"19", "1650 Hz": b"20",
+             "1700 Hz": b"21", "1750 Hz": b"22", "1800 Hz": b"23",
+             "1850 Hz": b"24", "1900 Hz": b"25", "1950 Hz": b"26",
+             "2000 Hz": b"27", "2050 Hz": b"28", "2100 Hz": b"29",
+             "2150 Hz": b"30", "2200 Hz": b"31", "2250 Hz": b"32",
+             "2300 Hz": b"33", "2350 Hz": b"34", "2400 Hz": b"35",
+             "2450 Hz": b"36", "2500 Hz": b"37", "2550 Hz": b"38",
+             "2600 Hz": b"39", "2650 Hz": b"40", "2700 Hz": b"41",
+             "2750 Hz": b"42", "2800 Hz": b"43", "2850 Hz": b"44",
+             "2900 Hz": b"45", "2950 Hz": b"46", "3000 Hz": b"47",
+             "3050 Hz": b"48", "3100 Hz": b"49", "3150 Hz": b"50",
+             "3200 Hz": b"51", "3250 Hz": b"52", "3300 Hz": b"53",
+             "3350 Hz": b"54", "3400 Hz": b"55", "3450 Hz": b"56",
+             "3500 Hz": b"57", "3550 Hz": b"58", "3600 Hz": b"59",
+             "3650 Hz": b"60", "3700 Hz": b"61", "3750 Hz": b"62",
+             "3800 Hz": b"63", "3850 Hz": b"64", "3900 Hz": b"65",
+             "3950 Hz": b"66", "4000 Hz": b"67"}
 AM_MIC_SELECT = {"MIC": b"0", "REAR": b"1"}
 AM_PTT_SELECT = {"DAKY": b"0", "RTS": b"1", "DTR": b"2"}
 CW_AUTO_MODE = {"OFF": b"0", "50M": b"1", "ON": b"2"}
@@ -961,17 +991,17 @@ class MainWindow(QMainWindow):
         self.am_lcut_freq_menu_nb = QTableWidgetItem("06-01")
         self.am_lcut_freq_parm_name = QTableWidgetItem("AM LCUT FREQ")
 
-        self.am_lcut_freq_spin = QSpinBox()
-        self.am_lcut_freq_spin.setAlignment(Qt.AlignCenter)
-        self.am_lcut_freq_spin.setMaximum(1000)
-        self.am_lcut_freq_spin.setMinimum(50)
-        self.am_lcut_freq_spin.setSingleStep(50)
-        self.am_lcut_freq_spin.setSpecialValueText("OFF")
-        self.am_lcut_freq_spin.setSuffix(" Hz")
+        self.am_lcut_freq_combo = QComboBox()
+        self.am_lcut_freq_combo.setEditable(True)
+        self.am_lcut_freq_combo.lineEdit().setReadOnly(True)
+        self.am_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.am_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
+        format_combo(self.am_lcut_freq_combo)
+        self.am_lcut_freq_combo.setCurrentIndex(0)
 
         self.menu_table.setItem(49, 0, self.am_lcut_freq_menu_nb)
         self.menu_table.setItem(49, 1, self.am_lcut_freq_parm_name)
-        self.menu_table.setCellWidget(49, 2, self.am_lcut_freq_spin)
+        self.menu_table.setCellWidget(49, 2, self.am_lcut_freq_combo)
 
         # 06-02
         self.am_lcut_slope_menu_nb = QTableWidgetItem("06-02")
@@ -3141,15 +3171,84 @@ class MainWindow(QMainWindow):
         if self.rig.isOpen():
             if self.trasnfert:
                 value = str(self.quick_spl_freq_spin.value())
+
                 if -10 < self.quick_spl_freq_spin.value() < 0:
                     value = value[0] + "0" + value[1]
                 elif 0 <= self.quick_spl_freq_spin.value() < 10:
-                    value = "+" + "0" + value[0]
+                    value = "+0" + value[0]
                 elif self.quick_spl_freq_spin.value() >= 10:
                     value = "+" + value
 
                 value = bytes(value, ENCODER)
                 cmd = b"EX0513" + value + b";"
+                self.rig.write(cmd)
+
+    def set_tx_tot(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.tx_tot_spin.value())
+                while len(value) < 2:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0514" + value + b";"
+                self.rig.write(cmd)
+
+    def set_mic_scan(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = MIC_SCAN[self.mic_scan_combo.currentText()]
+                cmd = b"EX0515" + value + b";"
+                self.rig.write(cmd)
+
+    def set_mic_scan_resume(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = MIC_SCAN_RESUME[self.mic_scan_resume_combo.currentText()]
+                cmd = b"EX0516" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ref_freq_adj(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.ref_freq_adj_spin.value())
+
+                if -10 < self.ref_freq_adj_spin.value() < 0:
+                    value = value[0] + "0" + value[1]
+                elif 0 <= self.ref_freq_adj_spin.value() < 10:
+                    value = "+0" + value[0]
+                elif self.ref_freq_adj_spin.value() >= 10:
+                    value = "+" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX0517" + value + b";"
+                self.rig.write(cmd)
+
+    def set_clar_select(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CLAR_SELECT[self.clar_select_combo.currentText()]
+                cmd = b"EX0518" + value + b";"
+                self.rig.write(cmd)
+
+    def set_apo(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = APO[self.apo_combo.currentText()]
+                cmd = b"EX0519" + value + b";"
+                self.rig.write(cmd)
+
+    def set_fan_control(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = FAN_CONTROL[self.fan_control_combo.currentText()]
+                cmd = b"EX0520" + value + b";"
+                self.rig.write(cmd)
+
+    def set_am_lcut_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = LCUT_FREQ[self.am_lcut_freq_combo.currentText()]
+                cmd = b"EX0601" + value + b";"
                 self.rig.write(cmd)
 
     def closeEvent(self, event):
