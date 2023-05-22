@@ -1023,17 +1023,17 @@ class MainWindow(QMainWindow):
         self.am_hcut_freq_menu_nb = QTableWidgetItem("06-03")
         self.am_hcut_freq_parm_name = QTableWidgetItem("AM HCUT FREQ")
 
-        self.am_hcut_freq_spin = QSpinBox()
-        self.am_hcut_freq_spin.setAlignment(Qt.AlignCenter)
-        self.am_hcut_freq_spin.setMaximum(4000)
-        self.am_hcut_freq_spin.setMinimum(650)
-        self.am_hcut_freq_spin.setSingleStep(50)
-        self.am_hcut_freq_spin.setSpecialValueText("OFF")
-        self.am_hcut_freq_spin.setSuffix(" Hz")
+        self.am_hcut_freq_combo = QComboBox()
+        self.am_hcut_freq_combo.setEditable(True)
+        self.am_hcut_freq_combo.lineEdit().setReadOnly(True)
+        self.am_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.am_hcut_freq_combo.addItems([i for i in SLOPE.keys()])
+        format_combo(self.am_hcut_freq_combo)
+        self.am_hcut_freq_combo.setCurrentIndex(0)
 
         self.menu_table.setItem(51, 0, self.am_hcut_freq_menu_nb)
         self.menu_table.setItem(51, 1, self.am_hcut_freq_parm_name)
-        self.menu_table.setCellWidget(51, 2, self.am_hcut_freq_spin)
+        self.menu_table.setCellWidget(51, 2, self.am_hcut_freq_combo)
 
         # 06-04
         self.am_hcut_slope_menu_nb = QTableWidgetItem("06-04")
@@ -1107,18 +1107,17 @@ class MainWindow(QMainWindow):
         self.cw_lcut_freq_menu_nb = QTableWidgetItem("07-01")
         self.cw_lcut_freq_parm_name = QTableWidgetItem("CW LCUT FREQ")
 
-        self.cw_lcut_freq_spin = QSpinBox()
-        self.cw_lcut_freq_spin.setAlignment(Qt.AlignCenter)
-        self.cw_lcut_freq_spin.setMaximum(1000)
-        self.cw_lcut_freq_spin.setMinimum(50)
-        self.cw_lcut_freq_spin.setSingleStep(50)
-        self.cw_lcut_freq_spin.setSpecialValueText("OFF")
-        self.cw_lcut_freq_spin.setValue(250)
-        self.cw_lcut_freq_spin.setSuffix(" Hz")
+        self.cw_lcut_freq_combo = QComboBox()
+        self.cw_lcut_freq_combo.setEditable(True)
+        self.cw_lcut_freq_combo.lineEdit().setReadOnly(True)
+        self.cw_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.cw_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
+        format_combo(self.cw_lcut_freq_combo)
+        self.cw_lcut_freq_combo.setCurrentIndex(1)
 
         self.menu_table.setItem(57, 0, self.cw_lcut_freq_menu_nb)
         self.menu_table.setItem(57, 1, self.cw_lcut_freq_parm_name)
-        self.menu_table.setCellWidget(57, 2, self.cw_lcut_freq_spin)
+        self.menu_table.setCellWidget(57, 2, self.cw_lcut_freq_combo)
 
         # 07-02
         self.cw_lcut_slope_menu_nb = QTableWidgetItem("07-02")
@@ -1140,18 +1139,17 @@ class MainWindow(QMainWindow):
         self.cw_hcut_freq_menu_nb = QTableWidgetItem("07-03")
         self.cw_hcut_freq_parm_name = QTableWidgetItem("CW HCUT FREQ")
 
-        self.cw_hcut_freq_spin = QSpinBox()
-        self.cw_hcut_freq_spin.setAlignment(Qt.AlignCenter)
-        self.cw_hcut_freq_spin.setMaximum(4000)
-        self.cw_hcut_freq_spin.setMinimum(650)
-        self.cw_hcut_freq_spin.setSingleStep(50)
-        self.cw_hcut_freq_spin.setSpecialValueText("OFF")
-        self.cw_hcut_freq_spin.setValue(1200)
-        self.cw_hcut_freq_spin.setSuffix(" Hz")
+        self.cw_hcut_freq_combo = QComboBox()
+        self.cw_hcut_freq_combo.setEditable(True)
+        self.cw_hcut_freq_combo.lineEdit().setReadOnly(True)
+        self.cw_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.cw_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
+        format_combo(self.cw_hcut_freq_combo)
+        self.cw_hcut_freq_combo.setCurrentIndex(1)
 
         self.menu_table.setItem(59, 0, self.cw_hcut_freq_menu_nb)
         self.menu_table.setItem(59, 1, self.cw_hcut_freq_parm_name)
-        self.menu_table.setCellWidget(59, 2, self.cw_hcut_freq_spin)
+        self.menu_table.setCellWidget(59, 2, self.cw_hcut_freq_combo)
 
         # 07-04
         self.cw_hcut_slope_menu_nb = QTableWidgetItem("07-04")
@@ -1385,18 +1383,17 @@ class MainWindow(QMainWindow):
         self.data_lcut_freq_menu_nb = QTableWidgetItem("08-05")
         self.data_lcut_freq_parm_name = QTableWidgetItem("DATA LCUT FREQ")
 
-        self.data_lcut_freq_spin = QSpinBox()
-        self.data_lcut_freq_spin.setAlignment(Qt.AlignCenter)
-        self.data_lcut_freq_spin.setMaximum(1000)
-        self.data_lcut_freq_spin.setMinimum(50)
-        self.data_lcut_freq_spin.setSingleStep(50)
-        self.data_lcut_freq_spin.setValue(300)
-        self.data_lcut_freq_spin.setSpecialValueText("OFF")
-        self.data_lcut_freq_spin.setSuffix(" Hz")
+        self.data_lcut_freq_combo = QComboBox()
+        self.data_lcut_freq_combo.setEditable(True)
+        self.data_lcut_freq_combo.lineEdit().setReadOnly(True)
+        self.data_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.data_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
+        format_combo(self.data_lcut_freq_combo)
+        self.data_lcut_freq_combo.setCurrentIndex(1)
 
         self.menu_table.setItem(75, 0, self.data_lcut_freq_menu_nb)
         self.menu_table.setItem(75, 1, self.data_lcut_freq_parm_name)
-        self.menu_table.setCellWidget(75, 2, self.data_lcut_freq_spin)
+        self.menu_table.setCellWidget(75, 2, self.data_lcut_freq_combo)
 
         # 08-06
         self.data_lcut_slope_menu_nb = QTableWidgetItem("08-06")
@@ -1418,18 +1415,17 @@ class MainWindow(QMainWindow):
         self.data_hcut_freq_menu_nb = QTableWidgetItem("08-07")
         self.data_hcut_freq_parm_name = QTableWidgetItem("DATA HCUT FREQ")
 
-        self.data_hcut_freq_spin = QSpinBox()
-        self.data_hcut_freq_spin.setAlignment(Qt.AlignCenter)
-        self.data_hcut_freq_spin.setMaximum(4000)
-        self.data_hcut_freq_spin.setMinimum(650)
-        self.data_hcut_freq_spin.setSingleStep(50)
-        self.data_hcut_freq_spin.setValue(3000)
-        self.data_hcut_freq_spin.setSpecialValueText("OFF")
-        self.data_hcut_freq_spin.setSuffix(" Hz")
+        self.data_hcut_freq_combo = QComboBox()
+        self.data_hcut_freq_combo.setEditable(True)
+        self.data_hcut_freq_combo.lineEdit().setReadOnly(True)
+        self.data_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.data_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
+        format_combo(self.data_hcut_freq_combo)
+        self.data_hcut_freq_combo.setCurrentIndex(1)
 
         self.menu_table.setItem(77, 0, self.data_hcut_freq_menu_nb)
         self.menu_table.setItem(77, 1, self.data_hcut_freq_parm_name)
-        self.menu_table.setCellWidget(77, 2, self.data_hcut_freq_spin)
+        self.menu_table.setCellWidget(77, 2, self.data_hcut_freq_combo)
 
         # 08-08
         self.data_hcut_slope_menu_nb = QTableWidgetItem("08-08")
@@ -1621,18 +1617,17 @@ class MainWindow(QMainWindow):
         self.rtty_lcut_freq_menu_nb = QTableWidgetItem("10-01")
         self.rtty_lcut_freq_parm_name = QTableWidgetItem("RTTY LCUT FREQ")
 
-        self.rtty_lcut_freq_spin = QSpinBox()
-        self.rtty_lcut_freq_spin.setAlignment(Qt.AlignCenter)
-        self.rtty_lcut_freq_spin.setMaximum(1000)
-        self.rtty_lcut_freq_spin.setMinimum(50)
-        self.rtty_lcut_freq_spin.setSingleStep(50)
-        self.rtty_lcut_freq_spin.setValue(300)
-        self.rtty_lcut_freq_spin.setSpecialValueText("OFF")
-        self.rtty_lcut_freq_spin.setSuffix(" Hz")
+        self.rtty_lcut_freq_combo = QComboBox()
+        self.rtty_lcut_freq_combo.setEditable(True)
+        self.rtty_lcut_freq_combo.lineEdit().setReadOnly(True)
+        self.rtty_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.rtty_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
+        format_combo(self.rtty_lcut_freq_combo)
+        self.rtty_lcut_freq_combo.setCurrentIndex(1)
 
         self.menu_table.setItem(91, 0, self.rtty_lcut_freq_menu_nb)
         self.menu_table.setItem(91, 1, self.rtty_lcut_freq_parm_name)
-        self.menu_table.setCellWidget(91, 2, self.rtty_lcut_freq_spin)
+        self.menu_table.setCellWidget(91, 2, self.rtty_lcut_freq_combo)
 
         # 10-02
         self.rtty_lcut_slope_menu_nb = QTableWidgetItem("10-02")
@@ -1654,18 +1649,17 @@ class MainWindow(QMainWindow):
         self.rtty_hcut_freq_menu_nb = QTableWidgetItem("10-03")
         self.rtty_hcut_freq_parm_name = QTableWidgetItem("RTTY HCUT FREQ")
 
-        self.rtty_hcut_freq_spin = QSpinBox()
-        self.rtty_hcut_freq_spin.setAlignment(Qt.AlignCenter)
-        self.rtty_hcut_freq_spin.setMaximum(4000)
-        self.rtty_hcut_freq_spin.setMinimum(650)
-        self.rtty_hcut_freq_spin.setSingleStep(50)
-        self.rtty_hcut_freq_spin.setValue(3000)
-        self.rtty_hcut_freq_spin.setSpecialValueText("OFF")
-        self.rtty_hcut_freq_spin.setSuffix(" Hz")
+        self.rtty_hcut_freq_combo = QComboBox()
+        self.rtty_hcut_freq_combo.setEditable(True)
+        self.rtty_hcut_freq_combo.lineEdit().setReadOnly(True)
+        self.rtty_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.rtty_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
+        format_combo(self.rtty_hcut_freq_combo)
+        self.rtty_hcut_freq_combo.setCurrentIndex(1)
 
         self.menu_table.setItem(93, 0, self.rtty_hcut_freq_menu_nb)
         self.menu_table.setItem(93, 1, self.rtty_hcut_freq_parm_name)
-        self.menu_table.setCellWidget(93, 2, self.rtty_hcut_freq_spin)
+        self.menu_table.setCellWidget(93, 2, self.rtty_hcut_freq_combo)
 
         # 10-04
         self.rtty_hcut_slope_menu_nb = QTableWidgetItem("10-04")
@@ -1804,18 +1798,17 @@ class MainWindow(QMainWindow):
         self.ssb_lcut_freq_menu_nb = QTableWidgetItem("11-01")
         self.ssb_lcut_freq_parm_name = QTableWidgetItem("SSB LCUT FREQ")
 
-        self.ssb_lcut_freq_spin = QSpinBox()
-        self.ssb_lcut_freq_spin.setAlignment(Qt.AlignCenter)
-        self.ssb_lcut_freq_spin.setMaximum(1000)
-        self.ssb_lcut_freq_spin.setMinimum(50)
-        self.ssb_lcut_freq_spin.setSingleStep(50)
-        self.ssb_lcut_freq_spin.setValue(100)
-        self.ssb_lcut_freq_spin.setSpecialValueText("OFF")
-        self.ssb_lcut_freq_spin.setSuffix(" Hz")
+        self.ssb_lcut_freq_combo = QComboBox()
+        self.ssb_lcut_freq_combo.setEditable(True)
+        self.ssb_lcut_freq_combo.lineEdit().setReadOnly(True)
+        self.ssb_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.ssb_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
+        format_combo(self.ssb_lcut_freq_combo)
+        self.ssb_lcut_freq_combo.setCurrentIndex(0)
 
         self.menu_table.setItem(103, 0, self.ssb_lcut_freq_menu_nb)
         self.menu_table.setItem(103, 1, self.ssb_lcut_freq_parm_name)
-        self.menu_table.setCellWidget(103, 2, self.ssb_lcut_freq_spin)
+        self.menu_table.setCellWidget(103, 2, self.ssb_lcut_freq_combo)
 
         # 11-02
         self.ssb_lcut_slope_menu_nb = QTableWidgetItem("11-02")
@@ -1837,18 +1830,17 @@ class MainWindow(QMainWindow):
         self.ssb_hcut_freq_menu_nb = QTableWidgetItem("11-03")
         self.ssb_hcut_freq_parm_name = QTableWidgetItem("SSB HCUT FREQ")
 
-        self.ssb_hcut_freq_spin = QSpinBox()
-        self.ssb_hcut_freq_spin.setAlignment(Qt.AlignCenter)
-        self.ssb_hcut_freq_spin.setMaximum(4000)
-        self.ssb_hcut_freq_spin.setMinimum(650)
-        self.ssb_hcut_freq_spin.setSingleStep(50)
-        self.ssb_hcut_freq_spin.setValue(3000)
-        self.ssb_hcut_freq_spin.setSpecialValueText("OFF")
-        self.ssb_hcut_freq_spin.setSuffix(" Hz")
+        self.ssb_hcut_freq_combo = QComboBox()
+        self.ssb_hcut_freq_combo.setEditable(True)
+        self.ssb_hcut_freq_combo.lineEdit().setReadOnly(True)
+        self.ssb_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.ssb_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
+        format_combo(self.ssb_hcut_freq_combo)
+        self.ssb_hcut_freq_combo.setCurrentIndex(0)
 
         self.menu_table.setItem(105, 0, self.ssb_hcut_freq_menu_nb)
         self.menu_table.setItem(105, 1, self.ssb_hcut_freq_parm_name)
-        self.menu_table.setCellWidget(105, 2, self.ssb_hcut_freq_spin)
+        self.menu_table.setCellWidget(105, 2, self.ssb_hcut_freq_combo)
 
         # 11-04
         self.ssb_hcut_slope_menu_nb = QTableWidgetItem("11-04")
@@ -3249,6 +3241,575 @@ class MainWindow(QMainWindow):
             if self.trasnfert:
                 value = LCUT_FREQ[self.am_lcut_freq_combo.currentText()]
                 cmd = b"EX0601" + value + b";"
+                self.rig.write(cmd)
+
+    def set_am_lcut_slope(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SLOPE[self.am_lcut_slope_combo.currentText()]
+                cmd = b"EX0602" + value + b";"
+                self.rig.write(cmd)
+
+    def set_am_hcut_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = HCUT_FREQ[self.am_hcut_freq_combo.currentText()]
+                cmd = b"EX0603" + value + b";"
+                self.rig.write(cmd)
+
+    def set_am_hcut_slope(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SLOPE[self.am_hcut_slope_combo.currentText()]
+                cmd = b"EX0604" + value + b";"
+                self.rig.write(cmd)
+
+    def set_am_mic_select(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = AM_MIC_SELECT[self.am_mic_select_combo.currentText()]
+                cmd = b"EX0605" + value + b";"
+                self.rig.write(cmd)
+
+    def set_am_out_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.am_out_level_spin.value())
+                while len(value) < 3:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0606" + value + b";"
+                self.rig.write(cmd)
+
+    def set_am_ptt_select(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = AM_PTT_SELECT[self.am_ptt_select_combo.currentText()]
+                cmd = b"EX0607" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_lcut_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = LCUT_FREQ[self.cw_lcut_freq_combo.currentText()]
+                cmd = b"EX0701" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_lcut_slope(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SLOPE[self.cw_lcut_slope_combo.currentText()]
+                cmd = b"EX0702" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_hcut_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = HCUT_FREQ[self.cw_hcut_freq_combo.currentText()]
+                cmd = b"EX0703" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_hcut_slope(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SLOPE[self.cw_hcut_slope_combo.currentText()]
+                cmd = b"EX0704" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_out_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.cw_out_level_spin.value())
+                while len(value) < 3:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0705" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_auto_mode(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CW_AUTO_MODE[self.cw_auto_mode_combo.currentText()]
+                cmd = b"EX0706" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_bfo(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CW_BFO[self.cw_bfo_combo.currentText()]
+                cmd = b"EX0707" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_bk_in_type(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CW_BK_IN_TYPE[self.cw_bk_in_type_combo.currentText()]
+                cmd = b"EX0708" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_bk_in_delay(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.cw_bk_in_delay_spin.value())
+                while len(value) < 4:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0709" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_wave_shape(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CW_WAVE_SHAPE[self.cw_wav_shape_combo.currentText()]
+                cmd = b"EX0710" + value + b";"
+                self.rig.write(cmd)
+
+    def set_cw_freq_display(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = CW_FREQ_DISPLAY[self.cw_freq_display_combo.currentText()]
+                cmd = b"EX0711" + value + b";"
+                self.rig.write(cmd)
+
+    def set_pc_keying(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = PC_KEYING[self.pc_keying_combo.currentText()]
+                cmd = b"EX0712" + value + b";"
+                self.rig.write(cmd)
+
+    def set_qsk_delay_time(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = QSK_DELAY_TIME[self.qsk_delay_time_combo.currentText()]
+                cmd = b"EX0713" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_mode(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = DATA_MODE[self.data_mode_combo.currentText()]
+                cmd = b"EX0801" + value + b";"
+                self.rig.write(cmd)
+
+    def set_psk_tone(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = PSK_TONE[self.psk_tone_combo.currentText()]
+                cmd = b"EX0802" + value + b";"
+                self.rig.write(cmd)
+
+    def set_other_disp(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.other_disp_spin.value())
+                val = self.other_disp_spin.value()
+
+                if -1000 < val <= -100:
+                    value = value[0] + "0" + value[1] + value[2] + value[3]
+                elif -100 < val <= -10:
+                    value = value[0] + "00" + value[1] + value[2]
+                elif -10 < val < 0:
+                    value = value[0] + "000" + value[1]
+                elif 0 <= val < 10:
+                    value = "+000" + value[0]
+                elif 10 <= val < 100:
+                    value = "+00" + value
+                elif 100 <= val < 1000:
+                    value = "+0" + value
+                elif 1000 <= val < 4000:
+                    value = "+" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX0803" + value + b";"
+                self.rig.write(cmd)
+
+    def set_other_shift(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.other_shift_spin.value())
+                val = self.other_shift_spin.value()
+
+                if -1000 < val <= -100:
+                    value = value[0] + "0" + value[1] + value[2] + value[3]
+                elif -100 < val <= -10:
+                    value = value[0] + "00" + value[1] + value[2]
+                elif -10 < val < 0:
+                    value = value[0] + "000" + value[1]
+                elif 0 <= val < 10:
+                    value = "+000" + value[0]
+                elif 10 <= val < 100:
+                    value = "+00" + value
+                elif 100 <= val < 1000:
+                    value = "+0" + value
+                elif 1000 <= val < 4000:
+                    value = "+" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX0804" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_lcut_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = LCUT_FREQ[self.data_lcut_freq_combo.currentText()]
+                cmd = b"EX0805" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_lcut_slope(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SLOPE[self.data_lcut_slope_combo.currentText()]
+                cmd = b"EX0806" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_hcut_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = HCUT_FREQ[self.data_hcut_freq_combo.currentText()]
+                cmd = b"EX0807" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_hcut_slope(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SLOPE[self.data_hcut_slope_combo.currentText()]
+                cmd = b"EX0808" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_in_select(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = DATA_IN_SELECT[self.data_in_select_combo.currentText()]
+                cmd = b"EX0809" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_ptt_select(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = DATA_PTT_SELECT[self.data_ptt_select_combo.currentText()]
+                cmd = b"EX0810" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_out_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.data_out_level_spin.value())
+                while len(value) < 3:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0811" + value + b";"
+                self.rig.write(cmd)
+
+    def set_data_bfo(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = DATA_BFO[self.data_bfo_combo.currentText()]
+                cmd = b"EX0812" + value + b";"
+                self.rig.write(cmd)
+
+    def set_fm_mic_select(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = FM_MIC_SELECT[self.fm_mic_select_combo.currentText()]
+                cmd = b"EX0901" + value + b";"
+                self.rig.write(cmd)
+
+    def set_fm_out_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.fm_out_level_spin.value())
+                while len(value) < 3:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0902" + value + b";"
+                self.rig.write(cmd)
+
+    def set_pkt_ptt_select(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = PKT_PTT_SELECT[self.pkt_ptt_select_combo.currentText()]
+                cmd = b"EX0903" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rpt_shift_28(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.rpt_shift_28_spin.value())
+                while len(value) < 4:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0904" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rpt_shift_50(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.rpt_shift_50_spin.value())
+                while len(value) < 4:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX0905" + value + b";"
+                self.rig.write(cmd)
+
+    def set_dcs_polarity(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = DCS_POLARITY[self.dcs_polarity_combo.currentText()]
+                cmd = b"EX0906" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rtty_lcut_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = LCUT_FREQ[self.rtty_lcut_freq_combo.currentText()]
+                cmd = b"EX1001" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rtty_lcut_slope(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SLOPE[self.rtty_lcut_slope_combo.currentText()]
+                cmd = b"EX1002" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rtty_hcut_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = HCUT_FREQ[self.rtty_hcut_freq_combo.currentText()]
+                cmd = b"EX1003" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rtty_hcut_slope(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SLOPE[self.rtty_hcut_slope_combo.currentText()]
+                cmd = b"EX1004" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rtty_shift_port(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = RTTY_SHIT_PORT[self.rtty_shift_port_combo.currentText()]
+                cmd = b"EX1005" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rtty_polarity_r(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = RTTY_POLARITY[self.rtty_polarity_r_combo.currentText()]
+                cmd = b"EX1006" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rtty_polarity_t(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = RTTY_POLARITY[self.rtty_polarity_t_combo.currentText()]
+                cmd = b"EX1007" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rtty_out_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.rtty_out_level_spin.value())
+                while len(value) < 3:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX1008" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rtty_shift_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = RTTY_SHIFT_FREQ[self.rtty_shift_freq_combo.currentText()]
+                cmd = b"EX1009" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rtty_mark_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = RTTY_MARK_FREQ[self.rtty_mark_freq_combo.currentText()]
+                cmd = b"EX1010" + value + b";"
+                self.rig.write(cmd)
+
+    def set_rtty_bfo(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = RTTY_BFO[self.rtty_bfo_combo.currentText()]
+                cmd = b"EX1011" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_lcut_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = LCUT_FREQ[self.ssb_lcut_freq_combo.currentText()]
+                cmd = b"EX1101" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_lcut_slope(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SLOPE[self.ssb_lcut_slope_combo.currentText()]
+                cmd = b"EX1102" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_hcut_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = HCUT_FREQ[self.ssb_hcut_freq_combo.currentText()]
+                cmd = b"EX1103" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_hcut_slope(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SLOPE[self.ssb_hcut_slope_combo.currentText()]
+                cmd = b"EX1104" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_mic_select(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SSB_MIC_SELECT[self.ssb_mic_select_combo.currentText()]
+                cmd = b"EX1105" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_out_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.ssb_out_level_spin.value())
+                while len(value) < 3:
+                    value = "0" + value
+                value = bytes(value, ENCODER)
+                cmd = b"EX1106" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_bfo(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SSB_BFO[self.ssb_bfo_combo.currentText()]
+                cmd = b"EX1107" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_ptt_select(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SSB_PTT_SELECT[self.ssb_ptt_select_combo.currentText()]
+                cmd = b"EX1108" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_tx_bpf(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SSB_TX_BPF[self.ssb_tx_bpf_combo.currentText()]
+                cmd = b"EX1109" + value + b";"
+                self.rig.write(cmd)
+
+    def set_apf_width(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = APF_WIDTH[self.apf_width_combo.currentText()]
+                cmd = b"EX1201" + value + b";"
+                self.rig.write(cmd)
+
+    def set_contour_level(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.contour_level_spin.value())
+                val = self.contour_level_spin.value()
+
+                if -10 < val < 0:
+                    value = value[0] + "0" + value[1]
+                elif 0 <= val < 10:
+                    value = "+0" + value[0]
+                elif val >= 10:
+                    value = "+" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1202" + value + b";"
+                self.rig.write(cmd)
+
+    def set_contour_width(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = str(self.contour_width_spin.value())
+                val = self.contour_width_spin.value()
+
+                while len(value) < 2:
+                    value = "0" + value
+
+                value = bytes(value, ENCODER)
+                cmd = b"EX1203" + value + b";"
+                self.rig.write(cmd)
+
+    def set_if_notch_width(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = IF_NOTCH_WIDTH[self.if_notch_width_combo.currentText()]
+                cmd = b"EX1204" + value + b";"
+                self.rig.write(cmd)
+
+    def set_scp_start_cycle(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SCP_START_CYCLE[self.scp_start_cycle_combo.currentText()]
+                cmd = b"EX1301" + value + b";"
+                self.rig.write(cmd)
+
+    def set_scp_span_freq(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SCP_SPAN_FREQ[self.scp_span_freq_combo.currentText()]
+                cmd = b"EX1302" + value + b";"
+                self.rig.write(cmd)
+
+    def set_quick_dial(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = QUICK_DIAL[self.quick_dial_combo.currentText()]
+                cmd = b"EX1401" + value + b";"
+                self.rig.write(cmd)
+
+    def set_ssb_dial_step(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = SSB_DIAL_STEP[self.ssb_dial_step_combo.currentText()]
+                cmd = b"EX1402" + value + b";"
+                self.rig.write(cmd)
+
+    def set_am_dial_step(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = AM_DIAL_STEP[self.am_dial_step_combo.currentText()]
+                cmd = b"EX1403" + value + b";"
+                self.rig.write(cmd)
+
+    def set_fm_dial_step(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = FM_DIAL_STEP[self.fm_dial_step_combo.currentText()]
+                cmd = b"EX1404" + value + b";"
+                self.rig.write(cmd)
+
+    def set_dial_step(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = DIAL_STEP[self.dial_step_combo.currentText()]
+                cmd = b"EX1405" + value + b";"
+                self.rig.write(cmd)
+
+    def set_am_ch_step(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = AM_CH_STEP[self.am_ch_step_combo.currentText()]
+                cmd = b"EX1406" + value + b";"
+                self.rig.write(cmd)
+
+    def set_fm_ch_step(self):
+        if self.rig.isOpen():
+            if self.trasnfert:
+                value = FM_CH_STEP[self.fm_ch_step_combo.currentText()]
+                cmd = b"EX1407" + value + b";"
                 self.rig.write(cmd)
 
     def closeEvent(self, event):
