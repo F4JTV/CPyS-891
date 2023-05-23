@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 ##########################################################################
 #   CPyS-891 is a CPS for the Yaesu FT-891 made with Python3 and PyQt5   #
-#       It uses serial module for CAT protocol in place of Hamlib        #
+#                 It uses serial module for CAT protocol                 #
 #                                                                        #
 #                  ___ ___      ___     ___ ___ _                        #
 #                 / __| _ \_  _/ __|___( _ / _ / |                       #
@@ -15,7 +15,13 @@ from datetime import datetime
 
 from serial import Serial
 from PyQt5.Qt import *
-
+# TODO: Functions
+# TODO: Memory
+# TODO: default data on open
+# TODO: save config to file
+# TODO: open config
+# TODO: Settings window
+# TODO: About window
 APP_NAME = "CPyS-891"
 APP_VERSION = datetime.strftime(datetime.now(), "%y%m%d")
 APP_TITLE = f"{APP_NAME} - v{APP_VERSION}"
@@ -223,7 +229,7 @@ class MainWindow(QMainWindow):
 
         self.get_from_radio_action = QAction("Get config from FT-891")
         self.edit_menu.addAction(self.get_from_radio_action)
-        self.get_from_radio_action.setDisabled(True)
+        # self.get_from_radio_action.setDisabled(True)
 
         # ###### Status Bar
         self.status_bar = QStatusBar()
@@ -264,7 +270,7 @@ class MainWindow(QMainWindow):
         self.menu_table.horizontalHeader().setVisible(False)
         self.menu_table.setSortingEnabled(False)
         self.menu_table.setMinimumSize(600, 450)
-        # self.menu_table.setAlternatingRowColors(True)
+        self.menu_table.setAlternatingRowColors(True)
         self.menu_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         self.menu_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
         self.menu_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
@@ -966,7 +972,7 @@ class MainWindow(QMainWindow):
         self.clar_select_combo.addItems([i for i in CLAR_SELECT.keys()])
         format_combo(self.clar_select_combo)
         self.clar_select_combo.setCurrentIndex(0)
-        self.clar_select_combo.currentTextChangedconnect(self.set_clar_select)
+        self.clar_select_combo.currentTextChanged.connect(self.set_clar_select)
 
         self.menu_table.setItem(45, 0, self.clar_select_menu_nb)
         self.menu_table.setItem(45, 1, self.clar_select_parm_name)
@@ -1053,7 +1059,7 @@ class MainWindow(QMainWindow):
         self.am_hcut_freq_combo.setEditable(True)
         self.am_hcut_freq_combo.lineEdit().setReadOnly(True)
         self.am_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.am_hcut_freq_combo.addItems([i for i in SLOPE.keys()])
+        self.am_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.am_hcut_freq_combo)
         self.am_hcut_freq_combo.setCurrentIndex(0)
         self.am_hcut_freq_combo.currentTextChanged.connect(self.set_am_hcut_freq)
