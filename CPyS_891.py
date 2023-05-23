@@ -15,6 +15,7 @@ from datetime import datetime
 
 from serial import Serial
 from PyQt5.Qt import *
+
 # TODO: Functions
 # TODO: Memory
 # TODO: default data on open
@@ -22,6 +23,7 @@ from PyQt5.Qt import *
 # TODO: open config
 # TODO: Settings window
 # TODO: About window
+
 APP_NAME = "CPyS-891"
 APP_VERSION = datetime.strftime(datetime.now(), "%y%m%d")
 APP_TITLE = f"{APP_NAME} - v{APP_VERSION}"
