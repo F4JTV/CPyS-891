@@ -763,6 +763,7 @@ class MainWindow(QMainWindow):
         self.cat_rate_combo.addItems([i for i in CAT_RATE.keys()])
         format_combo(self.cat_rate_combo)
         self.cat_rate_combo.setCurrentIndex(0)
+        self.cat_rate_combo.currentTextChanged.connect(self.set_cat_rate)
 
         self.menu_table.setItem(33, 0, self.cat_rate_menu_nb)
         self.menu_table.setItem(33, 1, self.cat_rate_parm_name)
@@ -779,6 +780,7 @@ class MainWindow(QMainWindow):
         self.cat_tot_combo.addItems([i for i in CAT_TOT.keys()])
         format_combo(self.cat_tot_combo)
         self.cat_tot_combo.setCurrentIndex(0)
+        self.cat_tot_combo.currentTextChanged.connect(self.set_cat_tot)
 
         self.menu_table.setItem(34, 0, self.cat_tot_menu_nb)
         self.menu_table.setItem(34, 1, self.cat_tot_parm_name)
@@ -795,6 +797,7 @@ class MainWindow(QMainWindow):
         self.cat_rts_combo.addItems([i for i in CAT_RTS.keys()])
         format_combo(self.cat_rts_combo)
         self.cat_rts_combo.setCurrentIndex(1)
+        self.cat_rts_combo.currentTextChanged.connect(self.set_cat_rts)
 
         self.menu_table.setItem(35, 0, self.cat_rts_menu_nb)
         self.menu_table.setItem(35, 1, self.cat_rts_parm_name)
@@ -811,6 +814,7 @@ class MainWindow(QMainWindow):
         self.meme_group_combo.addItems([i for i in MEMORY_GROUP.keys()])
         format_combo(self.meme_group_combo)
         self.meme_group_combo.setCurrentIndex(0)
+        self.meme_group_combo.currentTextChanged.connect(self.set_mem_group)
 
         self.menu_table.setItem(36, 0, self.meme_group_menu_nb)
         self.menu_table.setItem(36, 1, self.meme_group_parm_name)
@@ -827,6 +831,7 @@ class MainWindow(QMainWindow):
         self.fm_setting_combo.addItems([i for i in FM_SETTING.keys()])
         format_combo(self.fm_setting_combo)
         self.fm_setting_combo.setCurrentIndex(0)
+        self.fm_setting_combo.currentTextChanged.connect(self.set_fm_setting)
 
         self.menu_table.setItem(37, 0, self.fm_setting_menu_nb)
         self.menu_table.setItem(37, 1, self.fm_setting_parm_name)
@@ -843,6 +848,7 @@ class MainWindow(QMainWindow):
         self.rec_setting_combo.addItems([i for i in REC_SETTING.keys()])
         format_combo(self.rec_setting_combo)
         self.rec_setting_combo.setCurrentIndex(0)
+        self.rec_setting_combo.currentTextChanged.connect(self.set_rec_setting)
 
         self.menu_table.setItem(38, 0, self.rec_setting_menu_nb)
         self.menu_table.setItem(38, 1, self.rec_setting_parm_name)
@@ -859,6 +865,7 @@ class MainWindow(QMainWindow):
         self.atas_setting_combo.addItems([i for i in ATAS_SETTING.keys()])
         format_combo(self.atas_setting_combo)
         self.atas_setting_combo.setCurrentIndex(0)
+        self.atas_setting_combo.currentTextChanged.connect(self.set_atas_setting)
 
         self.menu_table.setItem(39, 0, self.atas_setting_menu_nb)
         self.menu_table.setItem(39, 1, self.atas_setting_parm_name)
@@ -892,6 +899,7 @@ class MainWindow(QMainWindow):
         self.tx_tot_spin.setSingleStep(1)
         self.tx_tot_spin.setValue(10)
         self.tx_tot_spin.setSuffix(" min")
+        self.tx_tot_spin.valueChanged.connect(self.set_tx_tot)
 
         self.menu_table.setItem(41, 0, self.tx_tot_menu_nb)
         self.menu_table.setItem(41, 1, self.tx_tot_parm_name)
@@ -908,6 +916,7 @@ class MainWindow(QMainWindow):
         self.mic_scan_combo.addItems([i for i in MIC_SCAN.keys()])
         format_combo(self.mic_scan_combo)
         self.mic_scan_combo.setCurrentIndex(1)
+        self.mic_scan_combo.currentTextChanged.connect(self.set_mic_scan)
 
         self.menu_table.setItem(42, 0, self.mic_scan_menu_nb)
         self.menu_table.setItem(42, 1, self.mic_scan_parm_name)
@@ -924,6 +933,7 @@ class MainWindow(QMainWindow):
         self.mic_scan_resume_combo.addItems([i for i in MIC_SCAN_RESUME.keys()])
         format_combo(self.mic_scan_resume_combo)
         self.mic_scan_resume_combo.setCurrentIndex(1)
+        self.mic_scan_resume_combo.currentTextChanged.connect(self.set_mic_scan_resume)
 
         self.menu_table.setItem(43, 0, self.mic_scan_resume_menu_nb)
         self.menu_table.setItem(43, 1, self.mic_scan_resume_parm_name)
@@ -939,6 +949,7 @@ class MainWindow(QMainWindow):
         self.ref_freq_adj_spin.setMinimum(-25)
         self.ref_freq_adj_spin.setSingleStep(1)
         self.ref_freq_adj_spin.setValue(0)
+        self.ref_freq_adj_spin.valueChanged.connect(self.set_ref_freq_adj)
 
         self.menu_table.setItem(44, 0, self.ref_freq_adj_menu_nb)
         self.menu_table.setItem(44, 1, self.ref_freq_adj_parm_name)
@@ -955,6 +966,7 @@ class MainWindow(QMainWindow):
         self.clar_select_combo.addItems([i for i in CLAR_SELECT.keys()])
         format_combo(self.clar_select_combo)
         self.clar_select_combo.setCurrentIndex(0)
+        self.clar_select_combo.currentTextChangedconnect(self.set_clar_select)
 
         self.menu_table.setItem(45, 0, self.clar_select_menu_nb)
         self.menu_table.setItem(45, 1, self.clar_select_parm_name)
@@ -971,6 +983,7 @@ class MainWindow(QMainWindow):
         self.apo_combo.addItems([i for i in APO.keys()])
         format_combo(self.apo_combo)
         self.apo_combo.setCurrentIndex(0)
+        self.apo_combo.currentTextChanged.connect(self.set_apo)
 
         self.menu_table.setItem(46, 0, self.apo_menu_nb)
         self.menu_table.setItem(46, 1, self.apo_parm_name)
@@ -987,6 +1000,7 @@ class MainWindow(QMainWindow):
         self.fan_control_combo.addItems([i for i in FAN_CONTROL.keys()])
         format_combo(self.fan_control_combo)
         self.fan_control_combo.setCurrentIndex(0)
+        self.fan_control_combo.currentTextChanged.connect(self.set_fan_control)
 
         self.menu_table.setItem(47, 0, self.fan_control_menu_nb)
         self.menu_table.setItem(47, 1, self.fan_control_parm_name)
@@ -1008,6 +1022,7 @@ class MainWindow(QMainWindow):
         self.am_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.am_lcut_freq_combo)
         self.am_lcut_freq_combo.setCurrentIndex(0)
+        self.am_lcut_freq_combo.currentTextChanged.connect(self.set_am_lcut_freq)
 
         self.menu_table.setItem(49, 0, self.am_lcut_freq_menu_nb)
         self.menu_table.setItem(49, 1, self.am_lcut_freq_parm_name)
@@ -1024,6 +1039,7 @@ class MainWindow(QMainWindow):
         self.am_lcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.am_lcut_slope_combo)
         self.am_lcut_slope_combo.setCurrentIndex(0)
+        self.am_lcut_slope_combo.currentTextChanged.connect(self.set_am_lcut_slope)
 
         self.menu_table.setItem(50, 0, self.am_lcut_slope_menu_nb)
         self.menu_table.setItem(50, 1, self.am_lcut_slope_parm_name)
@@ -1040,6 +1056,7 @@ class MainWindow(QMainWindow):
         self.am_hcut_freq_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.am_hcut_freq_combo)
         self.am_hcut_freq_combo.setCurrentIndex(0)
+        self.am_hcut_freq_combo.currentTextChanged.connect(self.set_am_hcut_freq)
 
         self.menu_table.setItem(51, 0, self.am_hcut_freq_menu_nb)
         self.menu_table.setItem(51, 1, self.am_hcut_freq_parm_name)
@@ -1056,6 +1073,7 @@ class MainWindow(QMainWindow):
         self.am_hcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.am_hcut_slope_combo)
         self.am_hcut_slope_combo.setCurrentIndex(0)
+        self.am_hcut_slope_combo.currentTextChanged.connect(self.set_am_hcut_slope)
 
         self.menu_table.setItem(52, 0, self.am_hcut_slope_menu_nb)
         self.menu_table.setItem(52, 1, self.am_hcut_slope_parm_name)
@@ -1072,6 +1090,7 @@ class MainWindow(QMainWindow):
         self.am_mic_select_combo.addItems([i for i in AM_MIC_SELECT.keys()])
         format_combo(self.am_mic_select_combo)
         self.am_mic_select_combo.setCurrentIndex(0)
+        self.am_mic_select_combo.currentTextChanged.connect(self.set_am_mic_select)
 
         self.menu_table.setItem(53, 0, self.am_mic_select_menu_nb)
         self.menu_table.setItem(53, 1, self.am_mic_select_parm_name)
@@ -1087,6 +1106,7 @@ class MainWindow(QMainWindow):
         self.am_out_level_spin.setMinimum(0)
         self.am_out_level_spin.setSingleStep(1)
         self.am_out_level_spin.setValue(50)
+        self.am_out_level_spin.valueChanged.connect(self.set_am_out_level)
 
         self.menu_table.setItem(54, 0, self.am_out_level_menu_nb)
         self.menu_table.setItem(54, 1, self.am_out_level_parm_name)
@@ -1103,6 +1123,7 @@ class MainWindow(QMainWindow):
         self.am_ptt_select_combo.addItems([i for i in AM_PTT_SELECT.keys()])
         format_combo(self.am_ptt_select_combo)
         self.am_ptt_select_combo.setCurrentIndex(0)
+        self.am_ptt_select_combo.currentTextChanged.connect(self.set_am_ptt_select)
 
         self.menu_table.setItem(55, 0, self.am_ptt_select_menu_nb)
         self.menu_table.setItem(55, 1, self.am_ptt_select_parm_name)
@@ -1124,6 +1145,7 @@ class MainWindow(QMainWindow):
         self.cw_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.cw_lcut_freq_combo)
         self.cw_lcut_freq_combo.setCurrentIndex(1)
+        self.cw_lcut_freq_combo.currentTextChanged.connect(self.set_cw_lcut_freq)
 
         self.menu_table.setItem(57, 0, self.cw_lcut_freq_menu_nb)
         self.menu_table.setItem(57, 1, self.cw_lcut_freq_parm_name)
@@ -1140,6 +1162,7 @@ class MainWindow(QMainWindow):
         self.cw_lcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.cw_lcut_slope_combo)
         self.cw_lcut_slope_combo.setCurrentIndex(1)
+        self.cw_lcut_slope_combo.currentTextChanged.connect(self.set_cw_lcut_slope)
 
         self.menu_table.setItem(58, 0, self.cw_lcut_slope_menu_nb)
         self.menu_table.setItem(58, 1, self.cw_lcut_slope_parm_name)
@@ -1156,6 +1179,7 @@ class MainWindow(QMainWindow):
         self.cw_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.cw_hcut_freq_combo)
         self.cw_hcut_freq_combo.setCurrentIndex(1)
+        self.cw_hcut_freq_combo.currentTextChanged.connect(self.set_cw_hcut_freq)
 
         self.menu_table.setItem(59, 0, self.cw_hcut_freq_menu_nb)
         self.menu_table.setItem(59, 1, self.cw_hcut_freq_parm_name)
@@ -1172,6 +1196,7 @@ class MainWindow(QMainWindow):
         self.cw_hcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.cw_hcut_slope_combo)
         self.cw_hcut_slope_combo.setCurrentIndex(1)
+        self.cw_hcut_slope_combo.currentTextChanged.connect(self.set_cw_hcut_slope)
 
         self.menu_table.setItem(60, 0, self.cw_hcut_slope_menu_nb)
         self.menu_table.setItem(60, 1, self.cw_hcut_slope_parm_name)
@@ -1187,6 +1212,7 @@ class MainWindow(QMainWindow):
         self.cw_out_level_spin.setMinimum(0)
         self.cw_out_level_spin.setSingleStep(1)
         self.cw_out_level_spin.setValue(50)
+        self.cw_out_level_spin.valueChanged.connect(self.set_cw_out_level)
 
         self.menu_table.setItem(61, 0, self.cw_out_level_menu_nb)
         self.menu_table.setItem(61, 1, self.cw_out_level_parm_name)
@@ -1203,6 +1229,7 @@ class MainWindow(QMainWindow):
         self.cw_auto_mode_combo.addItems([i for i in CW_AUTO_MODE.keys()])
         format_combo(self.cw_auto_mode_combo)
         self.cw_auto_mode_combo.setCurrentIndex(0)
+        self.cw_auto_mode_combo.currentTextChanged.connect(self.set_cw_auto_mode)
 
         self.menu_table.setItem(62, 0, self.cw_auto_mode_menu_nb)
         self.menu_table.setItem(62, 1, self.cw_auto_mode_parm_name)
@@ -1219,6 +1246,7 @@ class MainWindow(QMainWindow):
         self.cw_bfo_combo.addItems([i for i in CW_BFO.keys()])
         format_combo(self.cw_bfo_combo)
         self.cw_bfo_combo.setCurrentIndex(0)
+        self.cw_bfo_combo.currentTextChanged.connect(self.set_cw_bfo)
 
         self.menu_table.setItem(63, 0, self.cw_bfo_menu_nb)
         self.menu_table.setItem(63, 1, self.cw_bfo_parm_name)
@@ -1235,6 +1263,7 @@ class MainWindow(QMainWindow):
         self.cw_bk_in_type_combo.addItems([i for i in CW_BK_IN_TYPE.keys()])
         format_combo(self.cw_bk_in_type_combo)
         self.cw_bk_in_type_combo.setCurrentIndex(0)
+        self.cw_bk_in_type_combo.currentTextChanged.connect(self.set_cw_bk_in_type)
 
         self.menu_table.setItem(64, 0, self.cw_bk_in_type_menu_nb)
         self.menu_table.setItem(64, 1, self.cw_bk_in_type_parm_name)
@@ -1251,6 +1280,7 @@ class MainWindow(QMainWindow):
         self.cw_bk_in_delay_spin.setSingleStep(1)
         self.cw_bk_in_delay_spin.setValue(200)
         self.cw_bk_in_delay_spin.setSuffix(" msec")
+        self.cw_bk_in_delay_spin.valueChanged.connect(self.set_cw_bk_in_delay)
 
         self.menu_table.setItem(65, 0, self.cw_bk_in_delay_menu_nb)
         self.menu_table.setItem(65, 1, self.cw_bk_in_delay_parm_name)
@@ -1267,6 +1297,7 @@ class MainWindow(QMainWindow):
         self.cw_wav_shape_combo.addItems([i for i in CW_WAVE_SHAPE.keys()])
         format_combo(self.cw_wav_shape_combo)
         self.cw_wav_shape_combo.setCurrentIndex(1)
+        self.cw_wav_shape_combo.currentTextChanged.connect(self.set_cw_wave_shape)
 
         self.menu_table.setItem(66, 0, self.cw_wav_shape_menu_nb)
         self.menu_table.setItem(66, 1, self.cw_wav_shape_parm_name)
@@ -1283,6 +1314,7 @@ class MainWindow(QMainWindow):
         self.cw_freq_display_combo.addItems([i for i in CW_FREQ_DISPLAY.keys()])
         format_combo(self.cw_freq_display_combo)
         self.cw_freq_display_combo.setCurrentIndex(1)
+        self.cw_freq_display_combo.currentTextChanged.connect(self.set_cw_freq_display)
 
         self.menu_table.setItem(67, 0, self.cw_freq_display_menu_nb)
         self.menu_table.setItem(67, 1, self.cw_freq_display_parm_name)
@@ -1299,6 +1331,7 @@ class MainWindow(QMainWindow):
         self.pc_keying_combo.addItems([i for i in PC_KEYING.keys()])
         format_combo(self.pc_keying_combo)
         self.pc_keying_combo.setCurrentIndex(0)
+        self.pc_keying_combo.currentTextChanged.connect(self.set_pc_keying)
 
         self.menu_table.setItem(68, 0, self.pc_keying_menu_nb)
         self.menu_table.setItem(68, 1, self.pc_keying_parm_name)
@@ -1315,6 +1348,7 @@ class MainWindow(QMainWindow):
         self.qsk_delay_time_combo.addItems([i for i in QSK_DELAY_TIME.keys()])
         format_combo(self.qsk_delay_time_combo)
         self.qsk_delay_time_combo.setCurrentIndex(0)
+        self.qsk_delay_time_combo.currentTextChanged.connect(self.set_qsk_delay_time)
 
         self.menu_table.setItem(69, 0, self.qsk_delay_time_menu_nb)
         self.menu_table.setItem(69, 1, self.qsk_delay_time_parm_name)
@@ -1336,6 +1370,7 @@ class MainWindow(QMainWindow):
         self.data_mode_combo.addItems([i for i in DATA_MODE.keys()])
         format_combo(self.data_mode_combo)
         self.data_mode_combo.setCurrentIndex(0)
+        self.data_mode_combo.currentTextChanged.connect(self.set_data_mode)
 
         self.menu_table.setItem(71, 0, self.data_mode_menu_nb)
         self.menu_table.setItem(71, 1, self.data_mode_parm_name)
@@ -1352,6 +1387,7 @@ class MainWindow(QMainWindow):
         self.psk_tone_combo.addItems([i for i in PSK_TONE.keys()])
         format_combo(self.psk_tone_combo)
         self.psk_tone_combo.setCurrentIndex(0)
+        self.psk_tone_combo.currentTextChanged.connect(self.set_psk_tone)
 
         self.menu_table.setItem(72, 0, self.psk_tone_menu_nb)
         self.menu_table.setItem(72, 1, self.psk_tone_parm_name)
@@ -1368,6 +1404,7 @@ class MainWindow(QMainWindow):
         self.other_disp_spin.setSingleStep(10)
         self.other_disp_spin.setValue(0)
         self.other_disp_spin.setSuffix(" Hz")
+        self.other_disp_spin.valueChanged.connect(self.set_other_disp)
 
         self.menu_table.setItem(73, 0, self.other_disp_menu_nb)
         self.menu_table.setItem(73, 1, self.other_disp_parm_name)
@@ -1384,6 +1421,7 @@ class MainWindow(QMainWindow):
         self.other_shift_spin.setSingleStep(10)
         self.other_shift_spin.setValue(0)
         self.other_shift_spin.setSuffix(" Hz")
+        self.other_shift_spin.valueChanged.connect(self.set_other_shift)
 
         self.menu_table.setItem(74, 0, self.other_shift_menu_nb)
         self.menu_table.setItem(74, 1, self.other_shift_parm_name)
@@ -1400,6 +1438,7 @@ class MainWindow(QMainWindow):
         self.data_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.data_lcut_freq_combo)
         self.data_lcut_freq_combo.setCurrentIndex(1)
+        self.data_lcut_freq_combo.currentTextChanged.connect(self.set_data_lcut_freq)
 
         self.menu_table.setItem(75, 0, self.data_lcut_freq_menu_nb)
         self.menu_table.setItem(75, 1, self.data_lcut_freq_parm_name)
@@ -1416,6 +1455,7 @@ class MainWindow(QMainWindow):
         self.data_lcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.data_lcut_slope_combo)
         self.data_lcut_slope_combo.setCurrentIndex(1)
+        self.data_lcut_slope_combo.currentTextChanged.connect(self.set_data_lcut_slope)
 
         self.menu_table.setItem(76, 0, self.data_lcut_slope_menu_nb)
         self.menu_table.setItem(76, 1, self.data_lcut_slope_parm_name)
@@ -1432,6 +1472,7 @@ class MainWindow(QMainWindow):
         self.data_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.data_hcut_freq_combo)
         self.data_hcut_freq_combo.setCurrentIndex(1)
+        self.data_hcut_freq_combo.currentTextChanged.connect(self.set_data_hcut_freq)
 
         self.menu_table.setItem(77, 0, self.data_hcut_freq_menu_nb)
         self.menu_table.setItem(77, 1, self.data_hcut_freq_parm_name)
@@ -1448,6 +1489,7 @@ class MainWindow(QMainWindow):
         self.data_hcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.data_hcut_slope_combo)
         self.data_hcut_slope_combo.setCurrentIndex(1)
+        self.data_hcut_slope_combo.currentTextChanged.connect(self.set_data_hcut_slope)
 
         self.menu_table.setItem(78, 0, self.data_hcut_slope_menu_nb)
         self.menu_table.setItem(78, 1, self.data_hcut_slope_parm_name)
@@ -1464,6 +1506,7 @@ class MainWindow(QMainWindow):
         self.data_in_select_combo.addItems([i for i in DATA_IN_SELECT.keys()])
         format_combo(self.data_in_select_combo)
         self.data_in_select_combo.setCurrentIndex(1)
+        self.data_in_select_combo.currentTextChanged.connect(self.set_data_in_select)
 
         self.menu_table.setItem(79, 0, self.data_in_select_menu_nb)
         self.menu_table.setItem(79, 1, self.data_in_select_parm_name)
@@ -1480,6 +1523,7 @@ class MainWindow(QMainWindow):
         self.data_ptt_select_combo.addItems([i for i in DATA_PTT_SELECT.keys()])
         format_combo(self.data_ptt_select_combo)
         self.data_ptt_select_combo.setCurrentIndex(0)
+        self.data_ptt_select_combo.currentTextChanged.connect(self.set_data_ptt_select)
 
         self.menu_table.setItem(80, 0, self.data_ptt_select_menu_nb)
         self.menu_table.setItem(80, 1, self.data_ptt_select_parm_name)
@@ -1495,6 +1539,7 @@ class MainWindow(QMainWindow):
         self.data_out_level_spin.setMinimum(0)
         self.data_out_level_spin.setSingleStep(1)
         self.data_out_level_spin.setValue(50)
+        self.data_out_level_spin.valueChanged.connect(self.set_data_out_level)
 
         self.menu_table.setItem(81, 0, self.data_out_level_menu_nb)
         self.menu_table.setItem(81, 1, self.data_out_level_parm_name)
@@ -1511,6 +1556,7 @@ class MainWindow(QMainWindow):
         self.data_bfo_combo.addItems([i for i in DATA_BFO.keys()])
         format_combo(self.data_bfo_combo)
         self.data_bfo_combo.setCurrentIndex(0)
+        self.data_bfo_combo.currentTextChanged.connect(self.set_data_bfo)
 
         self.menu_table.setItem(82, 0, self.data_bfo_menu_nb)
         self.menu_table.setItem(82, 1, self.data_bfo_parm_name)
@@ -1533,6 +1579,7 @@ class MainWindow(QMainWindow):
         self.fm_mic_select_combo.addItems([i for i in FM_MIC_SELECT.keys()])
         format_combo(self.fm_mic_select_combo)
         self.fm_mic_select_combo.setCurrentIndex(0)
+        self.fm_mic_select_combo.currentTextChanged.connect(self.set_fm_mic_select)
 
         self.menu_table.setItem(84, 0, self.fm_mic_select_menu_nb)
         self.menu_table.setItem(84, 1, self.fm_mic_select_parm_name)
@@ -1548,6 +1595,7 @@ class MainWindow(QMainWindow):
         self.fm_out_level_spin.setMinimum(0)
         self.fm_out_level_spin.setSingleStep(1)
         self.fm_out_level_spin.setValue(50)
+        self.fm_out_level_spin.valueChanged.connect(self.set_fm_out_level)
 
         self.menu_table.setItem(85, 0, self.fm_out_level_menu_nb)
         self.menu_table.setItem(85, 1, self.fm_out_level_parm_name)
@@ -1564,6 +1612,7 @@ class MainWindow(QMainWindow):
         self.pkt_ptt_select_combo.addItems([i for i in PKT_PTT_SELECT.keys()])
         format_combo(self.pkt_ptt_select_combo)
         self.pkt_ptt_select_combo.setCurrentIndex(0)
+        self.pkt_ptt_select_combo.currentTextChanged.connect(self.set_pkt_ptt_select)
 
         self.menu_table.setItem(86, 0, self.pkt_ptt_select_menu_nb)
         self.menu_table.setItem(86, 1, self.pkt_ptt_select_parm_name)
@@ -1580,6 +1629,7 @@ class MainWindow(QMainWindow):
         self.rpt_shift_28_spin.setSingleStep(10)
         self.rpt_shift_28_spin.setValue(100)
         self.rpt_shift_28_spin.setSuffix(" kHz")
+        self.rpt_shift_28_spin.valueChanged.connect(self.set_rpt_shift_28)
 
         self.menu_table.setItem(87, 0, self.rpt_shift_28_menu_nb)
         self.menu_table.setItem(87, 1, self.rpt_shift_28_parm_name)
@@ -1596,6 +1646,7 @@ class MainWindow(QMainWindow):
         self.rpt_shift_50_spin.setSingleStep(10)
         self.rpt_shift_50_spin.setValue(1000)
         self.rpt_shift_50_spin.setSuffix(" kHz")
+        self.rpt_shift_50_spin.valueChanged.connect(self.set_rpt_shift_50)
 
         self.menu_table.setItem(88, 0, self.rpt_shift_50_menu_nb)
         self.menu_table.setItem(88, 1, self.rpt_shift_50_parm_name)
@@ -1612,6 +1663,7 @@ class MainWindow(QMainWindow):
         self.dcs_polarity_combo.addItems([i for i in DCS_POLARITY.keys()])
         format_combo(self.dcs_polarity_combo)
         self.dcs_polarity_combo.setCurrentIndex(0)
+        self.dcs_polarity_combo.currentTextChanged.connect(self.set_dcs_polarity)
 
         self.menu_table.setItem(89, 0, self.dcs_polarity_menu_nb)
         self.menu_table.setItem(89, 1, self.dcs_polarity_parm_name)
@@ -1634,6 +1686,7 @@ class MainWindow(QMainWindow):
         self.rtty_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.rtty_lcut_freq_combo)
         self.rtty_lcut_freq_combo.setCurrentIndex(1)
+        self.rtty_lcut_freq_combo.currentTextChanged.connect(self.set_rtty_lcut_freq)
 
         self.menu_table.setItem(91, 0, self.rtty_lcut_freq_menu_nb)
         self.menu_table.setItem(91, 1, self.rtty_lcut_freq_parm_name)
@@ -1650,6 +1703,7 @@ class MainWindow(QMainWindow):
         self.rtty_lcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.rtty_lcut_slope_combo)
         self.rtty_lcut_slope_combo.setCurrentIndex(1)
+        self.rtty_lcut_slope_combo.currentTextChanged.connect(self.set_rtty_lcut_slope)
 
         self.menu_table.setItem(92, 0, self.rtty_lcut_slope_menu_nb)
         self.menu_table.setItem(92, 1, self.rtty_lcut_slope_parm_name)
@@ -1666,6 +1720,7 @@ class MainWindow(QMainWindow):
         self.rtty_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.rtty_hcut_freq_combo)
         self.rtty_hcut_freq_combo.setCurrentIndex(1)
+        self.rtty_hcut_freq_combo.currentTextChanged.connect(self.set_rtty_hcut_freq)
 
         self.menu_table.setItem(93, 0, self.rtty_hcut_freq_menu_nb)
         self.menu_table.setItem(93, 1, self.rtty_hcut_freq_parm_name)
@@ -1682,6 +1737,7 @@ class MainWindow(QMainWindow):
         self.rtty_hcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.rtty_hcut_slope_combo)
         self.rtty_hcut_slope_combo.setCurrentIndex(1)
+        self.rtty_hcut_slope_combo.currentTextChanged.connect(self.set_rtty_hcut_slope)
 
         self.menu_table.setItem(94, 0, self.rtty_hcut_slope_menu_nb)
         self.menu_table.setItem(94, 1, self.rtty_hcut_slope_parm_name)
@@ -1698,6 +1754,7 @@ class MainWindow(QMainWindow):
         self.rtty_shift_port_combo.addItems([i for i in RTTY_SHIT_PORT.keys()])
         format_combo(self.rtty_shift_port_combo)
         self.rtty_shift_port_combo.setCurrentIndex(0)
+        self.rtty_shift_port_combo.currentTextChanged.connect(self.set_rtty_shift_port)
 
         self.menu_table.setItem(95, 0, self.rtty_shift_port_menu_nb)
         self.menu_table.setItem(95, 1, self.rtty_shift_port_parm_name)
@@ -1714,6 +1771,7 @@ class MainWindow(QMainWindow):
         self.rtty_polarity_r_combo.addItems([i for i in RTTY_POLARITY.keys()])
         format_combo(self.rtty_polarity_r_combo)
         self.rtty_polarity_r_combo.setCurrentIndex(0)
+        self.rtty_polarity_r_combo.currentTextChanged.connect(self.set_rtty_polarity_r)
 
         self.menu_table.setItem(96, 0, self.rtty_polarity_r_menu_nb)
         self.menu_table.setItem(96, 1, self.rtty_polarity_r_parm_name)
@@ -1730,6 +1788,7 @@ class MainWindow(QMainWindow):
         self.rtty_polarity_t_combo.addItems([i for i in RTTY_POLARITY.keys()])
         format_combo(self.rtty_polarity_t_combo)
         self.rtty_polarity_t_combo.setCurrentIndex(0)
+        self.rtty_polarity_t_combo.currentTextChanged.connect(self.set_rtty_polarity_t)
 
         self.menu_table.setItem(97, 0, self.rtty_polarity_t_menu_nb)
         self.menu_table.setItem(97, 1, self.rtty_polarity_t_parm_name)
@@ -1745,6 +1804,7 @@ class MainWindow(QMainWindow):
         self.rtty_out_level_spin.setMinimum(0)
         self.rtty_out_level_spin.setSingleStep(1)
         self.rtty_out_level_spin.setValue(50)
+        self.rtty_out_level_spin.valueChanged.connect(self.set_rtty_out_level)
 
         self.menu_table.setItem(98, 0, self.rtty_out_level_menu_nb)
         self.menu_table.setItem(98, 1, self.rtty_out_level_parm_name)
@@ -1761,6 +1821,7 @@ class MainWindow(QMainWindow):
         self.rtty_shift_freq_combo.addItems([i for i in RTTY_SHIFT_FREQ.keys()])
         format_combo(self.rtty_shift_freq_combo)
         self.rtty_shift_freq_combo.setCurrentIndex(0)
+        self.rtty_shift_freq_combo.currentTextChanged.connect(self.set_rtty_shift_freq)
 
         self.menu_table.setItem(99, 0, self.rtty_shift_freq_menu_nb)
         self.menu_table.setItem(99, 1, self.rtty_shift_freq_parm_name)
@@ -1777,6 +1838,7 @@ class MainWindow(QMainWindow):
         self.rtty_mark_freq_combo.addItems([i for i in RTTY_MARK_FREQ.keys()])
         format_combo(self.rtty_mark_freq_combo)
         self.rtty_mark_freq_combo.setCurrentIndex(1)
+        self.rtty_mark_freq_combo.currentTextChanged.connect(self.set_rtty_mark_freq)
 
         self.menu_table.setItem(100, 0, self.rtty_mark_freq_menu_nb)
         self.menu_table.setItem(100, 1, self.rtty_mark_freq_parm_name)
@@ -1793,6 +1855,7 @@ class MainWindow(QMainWindow):
         self.rtty_bfo_combo.addItems([i for i in RTTY_BFO.keys()])
         format_combo(self.rtty_bfo_combo)
         self.rtty_bfo_combo.setCurrentIndex(1)
+        self.rtty_bfo_combo.currentTextChanged.connect(self.set_rtty_bfo)
 
         self.menu_table.setItem(101, 0, self.rtty_bfo_menu_nb)
         self.menu_table.setItem(101, 1, self.rtty_bfo_parm_name)
@@ -1815,6 +1878,7 @@ class MainWindow(QMainWindow):
         self.ssb_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.ssb_lcut_freq_combo)
         self.ssb_lcut_freq_combo.setCurrentIndex(0)
+        self.ssb_lcut_freq_combo.currentTextChanged.connect(self.set_ssb_lcut_freq)
 
         self.menu_table.setItem(103, 0, self.ssb_lcut_freq_menu_nb)
         self.menu_table.setItem(103, 1, self.ssb_lcut_freq_parm_name)
@@ -1831,6 +1895,7 @@ class MainWindow(QMainWindow):
         self.ssb_lcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.ssb_lcut_slope_combo)
         self.ssb_lcut_slope_combo.setCurrentIndex(0)
+        self.ssb_lcut_slope_combo.currentTextChanged.connect(self.set_ssb_lcut_slope)
 
         self.menu_table.setItem(104, 0, self.ssb_lcut_slope_menu_nb)
         self.menu_table.setItem(104, 1, self.ssb_lcut_slope_parm_name)
@@ -1847,6 +1912,7 @@ class MainWindow(QMainWindow):
         self.ssb_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.ssb_hcut_freq_combo)
         self.ssb_hcut_freq_combo.setCurrentIndex(0)
+        self.ssb_hcut_freq_combo.currentTextChanged.connect(self.set_ssb_hcut_freq)
 
         self.menu_table.setItem(105, 0, self.ssb_hcut_freq_menu_nb)
         self.menu_table.setItem(105, 1, self.ssb_hcut_freq_parm_name)
@@ -1863,6 +1929,7 @@ class MainWindow(QMainWindow):
         self.ssb_hcut_slope_combo.addItems([i for i in SLOPE.keys()])
         format_combo(self.ssb_hcut_slope_combo)
         self.ssb_hcut_slope_combo.setCurrentIndex(0)
+        self.ssb_hcut_slope_combo.currentTextChanged.connect(self.set_ssb_hcut_slope)
 
         self.menu_table.setItem(106, 0, self.ssb_hcut_slope_menu_nb)
         self.menu_table.setItem(106, 1, self.ssb_hcut_slope_parm_name)
@@ -1879,6 +1946,7 @@ class MainWindow(QMainWindow):
         self.ssb_mic_select_combo.addItems([i for i in SSB_MIC_SELECT.keys()])
         format_combo(self.ssb_mic_select_combo)
         self.ssb_mic_select_combo.setCurrentIndex(0)
+        self.ssb_mic_select_combo.currentTextChanged.connect(self.set_ssb_mic_select)
 
         self.menu_table.setItem(107, 0, self.ssb_mic_select_menu_nb)
         self.menu_table.setItem(107, 1, self.ssb_mic_select_parm_name)
@@ -1894,6 +1962,7 @@ class MainWindow(QMainWindow):
         self.ssb_out_level_spin.setMinimum(0)
         self.ssb_out_level_spin.setSingleStep(1)
         self.ssb_out_level_spin.setValue(50)
+        self.ssb_out_level_spin.valueChanged.connect(self.set_ssb_out_level)
 
         self.menu_table.setItem(108, 0, self.ssb_out_level_menu_nb)
         self.menu_table.setItem(108, 1, self.ssb_out_level_parm_name)
@@ -1910,6 +1979,7 @@ class MainWindow(QMainWindow):
         self.ssb_bfo_combo.addItems([i for i in SSB_BFO.keys()])
         format_combo(self.ssb_bfo_combo)
         self.ssb_bfo_combo.setCurrentIndex(2)
+        self.ssb_bfo_combo.currentTextChanged.connect(self.set_ssb_bfo)
 
         self.menu_table.setItem(109, 0, self.ssb_bfo_menu_nb)
         self.menu_table.setItem(109, 1, self.ssb_bfo_parm_name)
@@ -1926,6 +1996,7 @@ class MainWindow(QMainWindow):
         self.ssb_ptt_select_combo.addItems([i for i in SSB_PTT_SELECT.keys()])
         format_combo(self.ssb_ptt_select_combo)
         self.ssb_ptt_select_combo.setCurrentIndex(0)
+        self.ssb_ptt_select_combo.currentTextChanged.connect(self.set_ssb_ptt_select)
 
         self.menu_table.setItem(110, 0, self.ssb_ptt_select_menu_nb)
         self.menu_table.setItem(110, 1, self.ssb_ptt_select_parm_name)
@@ -1942,6 +2013,7 @@ class MainWindow(QMainWindow):
         self.ssb_tx_bpf_combo.addItems([i for i in SSB_TX_BPF.keys()])
         format_combo(self.ssb_tx_bpf_combo)
         self.ssb_tx_bpf_combo.setCurrentIndex(3)
+        self.ssb_tx_bpf_combo.currentTextChanged.connect(self.set_ssb_tx_bpf)
 
         self.menu_table.setItem(111, 0, self.ssb_tx_bpf_menu_nb)
         self.menu_table.setItem(111, 1, self.ssb_tx_bpf_parm_name)
@@ -1964,6 +2036,7 @@ class MainWindow(QMainWindow):
         self.apf_width_combo.addItems([i for i in APF_WIDTH.keys()])
         format_combo(self.apf_width_combo)
         self.apf_width_combo.setCurrentIndex(1)
+        self.apf_width_combo.currentTextChanged.connect(self.set_apf_width)
 
         self.menu_table.setItem(113, 0, self.apf_width_menu_nb)
         self.menu_table.setItem(113, 1, self.apf_width_parm_name)
@@ -1979,6 +2052,7 @@ class MainWindow(QMainWindow):
         self.contour_level_spin.setMinimum(-40)
         self.contour_level_spin.setSingleStep(1)
         self.contour_level_spin.setValue(-15)
+        self.contour_level_spin.valueChanged.connect(self.set_contour_level)
 
         self.menu_table.setItem(114, 0, self.contour_level_menu_nb)
         self.menu_table.setItem(114, 1, self.contour_level_parm_name)
@@ -1994,6 +2068,7 @@ class MainWindow(QMainWindow):
         self.contour_width_spin.setMinimum(1)
         self.contour_width_spin.setSingleStep(1)
         self.contour_width_spin.setValue(10)
+        self.contour_width_spin.valueChanged.connect(self.set_contour_width)
 
         self.menu_table.setItem(115, 0, self.contour_width_menu_nb)
         self.menu_table.setItem(115, 1, self.contour_width_parm_name)
@@ -2010,6 +2085,7 @@ class MainWindow(QMainWindow):
         self.if_notch_width_combo.addItems([i for i in IF_NOTCH_WIDTH.keys()])
         format_combo(self.if_notch_width_combo)
         self.if_notch_width_combo.setCurrentIndex(1)
+        self.if_notch_width_combo.currentTextChanged.connect(self.set_if_notch_width)
 
         self.menu_table.setItem(116, 0, self.if_notch_width_menu_nb)
         self.menu_table.setItem(116, 1, self.if_notch_width_parm_name)
@@ -2032,6 +2108,7 @@ class MainWindow(QMainWindow):
         self.scp_start_cycle_combo.addItems([i for i in SCP_START_CYCLE.keys()])
         format_combo(self.scp_start_cycle_combo)
         self.scp_start_cycle_combo.setCurrentIndex(0)
+        self.scp_start_cycle_combo.currentTextChanged.connect(self.set_scp_start_cycle)
 
         self.menu_table.setItem(118, 0, self.scp_start_cycle_menu_nb)
         self.menu_table.setItem(118, 1, self.scp_start_cycle_parm_name)
@@ -2048,6 +2125,7 @@ class MainWindow(QMainWindow):
         self.scp_span_freq_combo.addItems([i for i in SCP_SPAN_FREQ.keys()])
         format_combo(self.scp_span_freq_combo)
         self.scp_span_freq_combo.setCurrentIndex(4)
+        self.scp_span_freq_combo.currentTextChanged.connect(self.set_scp_span_freq)
 
         self.menu_table.setItem(119, 0, self.scp_span_freq_menu_nb)
         self.menu_table.setItem(119, 1, self.scp_span_freq_parm_name)
@@ -2070,6 +2148,7 @@ class MainWindow(QMainWindow):
         self.quick_dial_combo.addItems([i for i in QUICK_DIAL.keys()])
         format_combo(self.quick_dial_combo)
         self.quick_dial_combo.setCurrentIndex(2)
+        self.quick_dial_combo.currentTextChanged.connect(self.set_quick_dial)
 
         self.menu_table.setItem(121, 0, self.quick_dial_menu_nb)
         self.menu_table.setItem(121, 1, self.quick_dial_parm_name)
@@ -2086,6 +2165,7 @@ class MainWindow(QMainWindow):
         self.ssb_dial_step_combo.addItems([i for i in SSB_DIAL_STEP.keys()])
         format_combo(self.ssb_dial_step_combo)
         self.ssb_dial_step_combo.setCurrentIndex(2)
+        self.ssb_dial_step_combo.currentTextChanged.connect(self.set_ssb_dial_step)
 
         self.menu_table.setItem(122, 0, self.ssb_dial_step_menu_nb)
         self.menu_table.setItem(122, 1, self.ssb_dial_step_parm_name)
@@ -2102,6 +2182,7 @@ class MainWindow(QMainWindow):
         self.am_dial_step_combo.addItems([i for i in AM_DIAL_STEP.keys()])
         format_combo(self.am_dial_step_combo)
         self.am_dial_step_combo.setCurrentIndex(0)
+        self.am_dial_step_combo.currentTextChanged.connect(self.set_am_dial_step)
 
         self.menu_table.setItem(123, 0, self.am_dial_step_menu_nb)
         self.menu_table.setItem(123, 1, self.am_dial_step_parm_name)
@@ -2118,6 +2199,7 @@ class MainWindow(QMainWindow):
         self.fm_dial_step_combo.addItems([i for i in FM_DIAL_STEP.keys()])
         format_combo(self.fm_dial_step_combo)
         self.fm_dial_step_combo.setCurrentIndex(0)
+        self.fm_dial_step_combo.currentTextChanged.connect(self.set_fm_dial_step)
 
         self.menu_table.setItem(124, 0, self.fm_dial_step_menu_nb)
         self.menu_table.setItem(124, 1, self.fm_dial_step_parm_name)
@@ -2134,6 +2216,7 @@ class MainWindow(QMainWindow):
         self.dial_step_combo.addItems([i for i in DIAL_STEP.keys()])
         format_combo(self.dial_step_combo)
         self.dial_step_combo.setCurrentIndex(1)
+        self.dial_step_combo.currentTextChanged.connect(self.set_dial_step)
 
         self.menu_table.setItem(125, 0, self.dial_step_menu_nb)
         self.menu_table.setItem(125, 1, self.dial_step_parm_name)
@@ -2150,6 +2233,7 @@ class MainWindow(QMainWindow):
         self.am_ch_step_combo.addItems([i for i in AM_CH_STEP.keys()])
         format_combo(self.am_ch_step_combo)
         self.am_ch_step_combo.setCurrentIndex(1)
+        self.am_ch_step_combo.currentTextChanged.connect(self.set_am_ch_step)
 
         self.menu_table.setItem(126, 0, self.am_ch_step_menu_nb)
         self.menu_table.setItem(126, 1, self.am_ch_step_parm_name)
@@ -2166,6 +2250,7 @@ class MainWindow(QMainWindow):
         self.fm_ch_step_combo.addItems([i for i in FM_CH_STEP.keys()])
         format_combo(self.fm_ch_step_combo)
         self.fm_ch_step_combo.setCurrentIndex(0)
+        self.fm_ch_step_combo.currentTextChanged.connect(self.set_fm_ch_step)
 
         self.menu_table.setItem(127, 0, self.fm_ch_step_menu_nb)
         self.menu_table.setItem(127, 1, self.fm_ch_step_parm_name)
@@ -2188,6 +2273,7 @@ class MainWindow(QMainWindow):
         self.eq_1_freq_combo.addItems([i for i in EQ_1_FREQ.keys()])
         format_combo(self.eq_1_freq_combo)
         self.eq_1_freq_combo.setCurrentIndex(0)
+        self.eq_1_freq_combo.currentTextChanged.connect(self.set_eq_1_freq)
 
         self.menu_table.setItem(129, 0, self.eq_1_freq_menu_nb)
         self.menu_table.setItem(129, 1, self.eq_1_freq_parm_name)
@@ -2203,6 +2289,7 @@ class MainWindow(QMainWindow):
         self.eq_1_level_spin.setMinimum(-20)
         self.eq_1_level_spin.setSingleStep(1)
         self.eq_1_level_spin.setValue(5)
+        self.eq_1_level_spin.valueChanged.connect(self.set_eq_1_level)
 
         self.menu_table.setItem(130, 0, self.eq_1_level_menu_nb)
         self.menu_table.setItem(130, 1, self.eq_1_level_parm_name)
@@ -2218,6 +2305,7 @@ class MainWindow(QMainWindow):
         self.eq_1_bwth_spin.setMinimum(1)
         self.eq_1_bwth_spin.setSingleStep(1)
         self.eq_1_bwth_spin.setValue(10)
+        self.eq_1_bwth_spin.valueChanged.connect(self.set_eq_1_bwth)
 
         self.menu_table.setItem(131, 0, self.eq_1_bwth_menu_nb)
         self.menu_table.setItem(131, 1, self.eq_1_bwth_parm_name)
@@ -2234,6 +2322,7 @@ class MainWindow(QMainWindow):
         self.eq_2_freq_combo.addItems([i for i in EQ_2_FREQ.keys()])
         format_combo(self.eq_2_freq_combo)
         self.eq_2_freq_combo.setCurrentIndex(0)
+        self.eq_2_freq_combo.currentTextChanged.connect(self.set_eq_2_freq)
 
         self.menu_table.setItem(132, 0, self.eq_2_freq_menu_nb)
         self.menu_table.setItem(132, 1, self.eq_2_freq_parm_name)
@@ -2249,6 +2338,7 @@ class MainWindow(QMainWindow):
         self.eq_2_level_spin.setMinimum(-20)
         self.eq_2_level_spin.setSingleStep(1)
         self.eq_2_level_spin.setValue(5)
+        self.eq_2_level_spin.valueChanged.connect(self.set_eq_2_level)
 
         self.menu_table.setItem(133, 0, self.eq_2_level_menu_nb)
         self.menu_table.setItem(133, 1, self.eq_2_level_parm_name)
@@ -2264,6 +2354,7 @@ class MainWindow(QMainWindow):
         self.eq_2_bwth_spin.setMinimum(1)
         self.eq_2_bwth_spin.setSingleStep(1)
         self.eq_2_bwth_spin.setValue(10)
+        self.eq_2_bwth_spin.valueChanged.connect(self.set_eq_2_bwth)
 
         self.menu_table.setItem(134, 0, self.eq_2_bwth_menu_nb)
         self.menu_table.setItem(134, 1, self.eq_2_bwth_parm_name)
@@ -2280,6 +2371,7 @@ class MainWindow(QMainWindow):
         self.eq_3_freq_combo.addItems([i for i in EQ_3_FREQ.keys()])
         format_combo(self.eq_3_freq_combo)
         self.eq_3_freq_combo.setCurrentIndex(0)
+        self.eq_3_freq_combo.currentTextChanged.connect(self.set_eq_3_freq)
 
         self.menu_table.setItem(135, 0, self.eq_3_freq_menu_nb)
         self.menu_table.setItem(135, 1, self.eq_3_freq_parm_name)
@@ -2295,6 +2387,7 @@ class MainWindow(QMainWindow):
         self.eq_3_level_spin.setMinimum(-20)
         self.eq_3_level_spin.setSingleStep(1)
         self.eq_3_level_spin.setValue(5)
+        self.eq_3_level_spin.valueChanged.connect(self.set_eq_3_level)
 
         self.menu_table.setItem(136, 0, self.eq_3_level_menu_nb)
         self.menu_table.setItem(136, 1, self.eq_3_level_parm_name)
@@ -2310,6 +2403,7 @@ class MainWindow(QMainWindow):
         self.eq_3_bwth_spin.setMinimum(1)
         self.eq_3_bwth_spin.setSingleStep(1)
         self.eq_3_bwth_spin.setValue(10)
+        self.eq_3_bwth_spin.valueChanged.connect(self.set_eq_3_bwth)
 
         self.menu_table.setItem(137, 0, self.eq_3_bwth_menu_nb)
         self.menu_table.setItem(137, 1, self.eq_3_bwth_parm_name)
@@ -2326,6 +2420,7 @@ class MainWindow(QMainWindow):
         self.p_eq_1_freq_combo.addItems([i for i in EQ_1_FREQ.keys()])
         format_combo(self.p_eq_1_freq_combo)
         self.p_eq_1_freq_combo.setCurrentIndex(2)
+        self.p_eq_1_freq_combo.currentTextChanged.connect(self.set_p_eq_1_freq)
 
         self.menu_table.setItem(138, 0, self.p_eq_1_freq_menu_nb)
         self.menu_table.setItem(138, 1, self.p_eq_1_freq_parm_name)
@@ -2341,6 +2436,7 @@ class MainWindow(QMainWindow):
         self.p_eq_1_level_spin.setMinimum(-20)
         self.p_eq_1_level_spin.setSingleStep(1)
         self.p_eq_1_level_spin.setValue(0)
+        self.p_eq_1_level_spin.valueChanged.connect(self.set_p_eq_1_level)
 
         self.menu_table.setItem(139, 0, self.p_eq_1_level_menu_nb)
         self.menu_table.setItem(139, 1, self.p_eq_1_level_parm_name)
@@ -2356,6 +2452,7 @@ class MainWindow(QMainWindow):
         self.p_eq_1_bwth_spin.setMinimum(1)
         self.p_eq_1_bwth_spin.setSingleStep(1)
         self.p_eq_1_bwth_spin.setValue(2)
+        self.p_eq_1_bwth_spin.valueChanged.connect(self.set_p_eq_1_bwth)
 
         self.menu_table.setItem(140, 0, self.p_eq_1_bwth_menu_nb)
         self.menu_table.setItem(140, 1, self.p_eq_1_bwth_parm_name)
@@ -2372,6 +2469,7 @@ class MainWindow(QMainWindow):
         self.p_eq_2_freq_combo.addItems([i for i in EQ_2_FREQ.keys()])
         format_combo(self.p_eq_2_freq_combo)
         self.p_eq_2_freq_combo.setCurrentIndex(2)
+        self.p_eq_2_freq_combo.currentTextChanged.connect(self.set_p_eq_2_freq)
 
         self.menu_table.setItem(141, 0, self.p_eq_2_freq_menu_nb)
         self.menu_table.setItem(141, 1, self.p_eq_2_freq_parm_name)
@@ -2387,6 +2485,7 @@ class MainWindow(QMainWindow):
         self.p_eq_2_level_spin.setMinimum(-20)
         self.p_eq_2_level_spin.setSingleStep(1)
         self.p_eq_2_level_spin.setValue(0)
+        self.p_eq_2_level_spin.valueChanged.connect(self.set_p_eq_2_level)
 
         self.menu_table.setItem(142, 0, self.p_eq_2_level_menu_nb)
         self.menu_table.setItem(142, 1, self.p_eq_2_level_parm_name)
@@ -2402,6 +2501,7 @@ class MainWindow(QMainWindow):
         self.p_eq_2_bwth_spin.setMinimum(1)
         self.p_eq_2_bwth_spin.setSingleStep(1)
         self.p_eq_2_bwth_spin.setValue(1)
+        self.p_eq_2_bwth_spin.valueChanged.connect(self.set_p_eq_2_bwth)
 
         self.menu_table.setItem(143, 0, self.p_eq_2_bwth_menu_nb)
         self.menu_table.setItem(143, 1, self.p_eq_2_bwth_parm_name)
@@ -2418,6 +2518,7 @@ class MainWindow(QMainWindow):
         self.p_eq_3_freq_combo.addItems([i for i in EQ_3_FREQ.keys()])
         format_combo(self.p_eq_3_freq_combo)
         self.p_eq_3_freq_combo.setCurrentIndex(7)
+        self.p_eq_3_freq_combo.currentTextChanged.connect(self.set_p_eq_3_freq)
 
         self.menu_table.setItem(144, 0, self.p_eq_3_freq_menu_nb)
         self.menu_table.setItem(144, 1, self.p_eq_3_freq_parm_name)
@@ -2433,6 +2534,7 @@ class MainWindow(QMainWindow):
         self.p_eq_3_level_spin.setMinimum(-20)
         self.p_eq_3_level_spin.setSingleStep(1)
         self.p_eq_3_level_spin.setValue(0)
+        self.p_eq_3_level_spin.valueChanged.connect(self.set_p_eq_3_level)
 
         self.menu_table.setItem(145, 0, self.p_eq_3_level_menu_nb)
         self.menu_table.setItem(145, 1, self.p_eq_3_level_parm_name)
@@ -2448,6 +2550,7 @@ class MainWindow(QMainWindow):
         self.p_eq_3_bwth_spin.setMinimum(1)
         self.p_eq_3_bwth_spin.setSingleStep(1)
         self.p_eq_3_bwth_spin.setValue(1)
+        self.p_eq_3_bwth_spin.valueChanged.connect(self.set_p_eq_3_bwth)
 
         self.menu_table.setItem(146, 0, self.p_eq_3_bwth_menu_nb)
         self.menu_table.setItem(146, 1, self.p_eq_3_bwth_parm_name)
@@ -2469,6 +2572,7 @@ class MainWindow(QMainWindow):
         self.hf_ssb_pwr_spin.setMinimum(5)
         self.hf_ssb_pwr_spin.setSingleStep(1)
         self.hf_ssb_pwr_spin.setValue(100)
+        self.hf_ssb_pwr_spin.valueChanged.connect(self.set_hf_ssb_pwr)
 
         self.menu_table.setItem(148, 0, self.hf_ssb_pwr_menu_nb)
         self.menu_table.setItem(148, 1, self.hf_ssb_pwr_parm_name)
@@ -2484,6 +2588,8 @@ class MainWindow(QMainWindow):
         self.hf_am_pwr_spin.setMinimum(5)
         self.hf_am_pwr_spin.setSingleStep(1)
         self.hf_am_pwr_spin.setValue(25)
+        self.hf_am_pwr_spin.setValue(25)
+        self.hf_am_pwr_spin.valueChanged.connect(self.set_hf_am_pwr)
 
         self.menu_table.setItem(149, 0, self.hf_am_pwr_menu_nb)
         self.menu_table.setItem(149, 1, self.hf_am_pwr_parm_name)
@@ -2499,6 +2605,7 @@ class MainWindow(QMainWindow):
         self.hf_pwr_spin.setMinimum(5)
         self.hf_pwr_spin.setSingleStep(1)
         self.hf_pwr_spin.setValue(100)
+        self.hf_pwr_spin.valueChanged.connect(self.set_hf_pwr)
 
         self.menu_table.setItem(150, 0, self.hf_pwr_menu_nb)
         self.menu_table.setItem(150, 1, self.hf_pwr_parm_name)
@@ -2514,6 +2621,7 @@ class MainWindow(QMainWindow):
         self.ssb_50m_pwr_spin.setMinimum(5)
         self.ssb_50m_pwr_spin.setSingleStep(1)
         self.ssb_50m_pwr_spin.setValue(100)
+        self.ssb_50m_pwr_spin.valueChanged.connect(self.set_50m_pwr)
 
         self.menu_table.setItem(151, 0, self.ssb_50m_pwr_menu_nb)
         self.menu_table.setItem(151, 1, self.ssb_50m_pwr_parm_name)
@@ -2529,6 +2637,7 @@ class MainWindow(QMainWindow):
         self.am_50m_pwr_spin.setMinimum(5)
         self.am_50m_pwr_spin.setSingleStep(1)
         self.am_50m_pwr_spin.setValue(25)
+        self.am_50m_pwr_spin.valueChanged.connect(self.set_50m_am_pwr)
 
         self.menu_table.setItem(152, 0, self.am_50m_pwr_menu_nb)
         self.menu_table.setItem(152, 1, self.am_50m_pwr_parm_name)
@@ -2544,6 +2653,7 @@ class MainWindow(QMainWindow):
         self.pwr_50m_spin.setMinimum(5)
         self.pwr_50m_spin.setSingleStep(1)
         self.pwr_50m_spin.setValue(50)
+        self.pwr_50m_spin.valueChanged.connect(self.set_50m_pwr)
 
         self.menu_table.setItem(153, 0, self.pwr_50m_menu_nb)
         self.menu_table.setItem(153, 1, self.pwr_50m_parm_name)
@@ -2559,6 +2669,7 @@ class MainWindow(QMainWindow):
         self.ssb_mic_gain_spin.setMinimum(0)
         self.ssb_mic_gain_spin.setSingleStep(1)
         self.ssb_mic_gain_spin.setValue(50)
+        self.ssb_mic_gain_spin.valueChanged.connect(self.set_ssb_mic_gain)
 
         self.menu_table.setItem(154, 0, self.ssb_mic_gain_menu_nb)
         self.menu_table.setItem(154, 1, self.ssb_mic_gain_parm_name)
@@ -2574,6 +2685,7 @@ class MainWindow(QMainWindow):
         self.am_mic_gain_spin.setMinimum(0)
         self.am_mic_gain_spin.setSingleStep(1)
         self.am_mic_gain_spin.setValue(50)
+        self.am_mic_gain_spin.valueChanged.connect(self.set_am_mic_gain)
 
         self.menu_table.setItem(155, 0, self.am_mic_gain_menu_nb)
         self.menu_table.setItem(155, 1, self.am_mic_gain_parm_name)
@@ -2589,6 +2701,7 @@ class MainWindow(QMainWindow):
         self.fm_mic_gain_spin.setMinimum(0)
         self.fm_mic_gain_spin.setSingleStep(1)
         self.fm_mic_gain_spin.setValue(50)
+        self.fm_mic_gain_spin.valueChanged.connect(self.set_fm_mic_gain)
 
         self.menu_table.setItem(156, 0, self.fm_mic_gain_menu_nb)
         self.menu_table.setItem(156, 1, self.fm_mic_gain_parm_name)
@@ -2604,6 +2717,7 @@ class MainWindow(QMainWindow):
         self.data_mic_gain_spin.setMinimum(0)
         self.data_mic_gain_spin.setSingleStep(1)
         self.data_mic_gain_spin.setValue(50)
+        self.data_mic_gain_spin.valueChanged.connect(self.set_data_mic_gain)
 
         self.menu_table.setItem(157, 0, self.data_mic_gain_menu_nb)
         self.menu_table.setItem(157, 1, self.data_mic_gain_parm_name)
@@ -2619,6 +2733,7 @@ class MainWindow(QMainWindow):
         self.ssb_data_gain_spin.setMinimum(0)
         self.ssb_data_gain_spin.setSingleStep(1)
         self.ssb_data_gain_spin.setValue(50)
+        self.ssb_data_gain_spin.valueChanged.connect(self.set_ssb_data_gain)
 
         self.menu_table.setItem(158, 0, self.ssb_data_gain_menu_nb)
         self.menu_table.setItem(158, 1, self.ssb_data_gain_parm_name)
@@ -2634,6 +2749,7 @@ class MainWindow(QMainWindow):
         self.am_data_gain_spin.setMinimum(0)
         self.am_data_gain_spin.setSingleStep(1)
         self.am_data_gain_spin.setValue(50)
+        self.am_data_gain_spin.valueChanged.connect(self.set_am_data_gain)
 
         self.menu_table.setItem(159, 0, self.am_data_gain_menu_nb)
         self.menu_table.setItem(159, 1, self.am_data_gain_parm_name)
@@ -2649,6 +2765,7 @@ class MainWindow(QMainWindow):
         self.fm_data_gain_spin.setMinimum(0)
         self.fm_data_gain_spin.setSingleStep(1)
         self.fm_data_gain_spin.setValue(50)
+        self.fm_data_gain_spin.valueChanged.connect(self.set_fm_data_gain)
 
         self.menu_table.setItem(160, 0, self.fm_data_gain_menu_nb)
         self.menu_table.setItem(160, 1, self.fm_data_gain_parm_name)
@@ -2664,6 +2781,7 @@ class MainWindow(QMainWindow):
         self.data_data_gain_spin.setMinimum(0)
         self.data_data_gain_spin.setSingleStep(1)
         self.data_data_gain_spin.setValue(50)
+        self.data_data_gain_spin.valueChanged.connect(self.set_data_data_gain)
 
         self.menu_table.setItem(161, 0, self.data_data_gain_menu_nb)
         self.menu_table.setItem(161, 1, self.data_data_gain_parm_name)
@@ -2680,6 +2798,7 @@ class MainWindow(QMainWindow):
         self.tuner_select_combo.addItems([i for i in TUNER_SELECT.keys()])
         format_combo(self.tuner_select_combo)
         self.tuner_select_combo.setCurrentIndex(0)
+        self.tuner_select_combo.currentTextChanged.connect(self.set_tuner_select)
 
         self.menu_table.setItem(162, 0, self.tuner_select_menu_nb)
         self.menu_table.setItem(162, 1, self.tuner_select_parm_name)
@@ -2696,6 +2815,7 @@ class MainWindow(QMainWindow):
         self.vox_select_combo.addItems([i for i in VOX_SELECT.keys()])
         format_combo(self.vox_select_combo)
         self.vox_select_combo.setCurrentIndex(0)
+        self.vox_select_combo.currentTextChanged.connect(self.set_vox_select)
 
         self.menu_table.setItem(163, 0, self.vox_select_menu_nb)
         self.menu_table.setItem(163, 1, self.vox_select_parm_name)
@@ -2711,6 +2831,7 @@ class MainWindow(QMainWindow):
         self.vox_gain_spin.setMinimum(0)
         self.vox_gain_spin.setSingleStep(1)
         self.vox_gain_spin.setValue(50)
+        self.vox_gain_spin.valueChanged.connect(self.set_vox_gain)
 
         self.menu_table.setItem(164, 0, self.vox_gain_menu_nb)
         self.menu_table.setItem(164, 1, self.vox_gain_parm_name)
@@ -2727,6 +2848,7 @@ class MainWindow(QMainWindow):
         self.vox_delay_spin.setSingleStep(10)
         self.vox_delay_spin.setValue(500)
         self.vox_delay_spin.setSuffix(" msec")
+        self.vox_delay_spin.valueChanged.connect(self.set_vox_delay)
 
         self.menu_table.setItem(165, 0, self.vox_delay_menu_nb)
         self.menu_table.setItem(165, 1, self.vox_delay_parm_name)
@@ -2742,6 +2864,7 @@ class MainWindow(QMainWindow):
         self.anti_vox_gain_spin.setMinimum(0)
         self.anti_vox_gain_spin.setSingleStep(1)
         self.anti_vox_gain_spin.setValue(50)
+        self.anti_vox_gain_spin.valueChanged.connect(self.set_anti_vox_gain)
 
         self.menu_table.setItem(166, 0, self.anti_vox_gain_menu_nb)
         self.menu_table.setItem(166, 1, self.anti_vox_gain_parm_name)
@@ -2757,6 +2880,7 @@ class MainWindow(QMainWindow):
         self.data_vox_gain_spin.setMinimum(0)
         self.data_vox_gain_spin.setSingleStep(1)
         self.data_vox_gain_spin.setValue(50)
+        self.data_vox_gain_spin.valueChanged.connect(self.set_data_vox_gain)
 
         self.menu_table.setItem(167, 0, self.data_vox_gain_menu_nb)
         self.menu_table.setItem(167, 1, self.data_vox_gain_parm_name)
@@ -2773,6 +2897,7 @@ class MainWindow(QMainWindow):
         self.data_vox_delay_spin.setSingleStep(10)
         self.data_vox_delay_spin.setValue(100)
         self.data_vox_delay_spin.setSuffix(" msec")
+        self.data_vox_delay_spin.valueChanged.connect(self.set_data_vox_delay)
 
         self.menu_table.setItem(168, 0, self.data_vox_delay_menu_nb)
         self.menu_table.setItem(168, 1, self.data_vox_delay_parm_name)
@@ -2788,6 +2913,7 @@ class MainWindow(QMainWindow):
         self.anti_dvox_gain_spin.setMinimum(0)
         self.anti_dvox_gain_spin.setSingleStep(1)
         self.anti_dvox_gain_spin.setValue(0)
+        self.anti_dvox_gain_spin.valueChanged.connect(self.set_anti_dvox_gain)
 
         self.menu_table.setItem(169, 0, self.anti_dvox_gain_menu_nb)
         self.menu_table.setItem(169, 1, self.anti_dvox_gain_parm_name)
@@ -2804,6 +2930,7 @@ class MainWindow(QMainWindow):
         self.emergency_freq_combo.addItems([i for i in EMERGENCY_FREQ.keys()])
         format_combo(self.emergency_freq_combo)
         self.emergency_freq_combo.setCurrentIndex(0)
+        self.emergency_freq_combo.currentTextChanged.connect(self.set_emergency_freq)
 
         self.menu_table.setItem(170, 0, self.emergency_freq_menu_nb)
         self.menu_table.setItem(170, 1, self.emergency_freq_parm_name)
