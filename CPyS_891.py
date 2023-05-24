@@ -129,9 +129,9 @@ APF_WIDTH = {"NARROW": b"0", "MEDIUM": b"1", "WIDE": b"2"}
 IF_NOTCH_WIDTH = {"NARROW": b"0", "WIDE": b"1"}
 SCP_START_CYCLE = {"OFF": b"0", "3 sec": b"1",
                    "2.5 sec": b"2", "10 sec": b"3"}
-SCP_SPAN_FREQ = {"37.5 kHz": b"0", "75 kHz": b"1",
-                 "150 kHz": b"2", "375 kHz": b"3",
-                 "750 kHz": b"4"}
+SCP_SPAN_FREQ = {"37.5 kHz": b"00", "75 kHz": b"01",
+                 "150 kHz": b"02", "375 kHz": b"03",
+                 "750 kHz": b"04"}
 QUICK_DIAL = {"50 kHz": b"0", "100 kHz": b"1", "500 kHz": b"2"}
 SSB_DIAL_STEP = {"2 Hz": b"0", "5 Hz": b"1", "10 Hz": b"2"}
 AM_DIAL_STEP = {"10 Hz": b"0", "100 Hz": b"1"}
@@ -244,7 +244,7 @@ class MainWindow(QMainWindow):
         self.central_Widget.setLayout(self.main_layout)
 
         # ###### Rig
-        self.rig = Serial(baudrate=38400, write_timeout=1)
+        self.rig = Serial(baudrate=4800, write_timeout=1)
         self.rig.setPort("/dev/ttyUSB0")
         # self.rig.open()
 
@@ -308,6 +308,7 @@ class MainWindow(QMainWindow):
         self.acg_mid_spin.setMaximum(4000)
         self.acg_mid_spin.setMinimum(20)
         self.acg_mid_spin.setValue(700)
+        self.acg_mid_spin.setSingleStep(20)
         self.acg_mid_spin.setSuffix(" msec")
         self.acg_mid_spin.valueChanged.connect(self.set_acg_mid_delay)
 
@@ -324,6 +325,7 @@ class MainWindow(QMainWindow):
         self.acg_slow_spin.setMaximum(4000)
         self.acg_slow_spin.setMinimum(20)
         self.acg_slow_spin.setValue(3000)
+        self.acg_slow_spin.setSingleStep(20)
         self.acg_slow_spin.setSuffix(" msec")
         self.acg_slow_spin.valueChanged.connect(self.set_acg_slow_delay)
 
@@ -476,6 +478,7 @@ class MainWindow(QMainWindow):
         self.dvs_tx_out_lvl_spin.setMaximum(100)
         self.dvs_tx_out_lvl_spin.setMinimum(0)
         self.dvs_tx_out_lvl_spin.setValue(50)
+        self.dvs_tx_out_lvl_spin.valueChanged.connect(self.set_dvs_tx_out_lvl)
 
         self.menu_table.setItem(14, 0, self.dvs_tx_out_lvl_menu_nb)
         self.menu_table.setItem(14, 1, self.dvs_tx_out_lvl_parm_name)
@@ -907,6 +910,7 @@ class MainWindow(QMainWindow):
         self.tx_tot_spin.setSingleStep(1)
         self.tx_tot_spin.setValue(10)
         self.tx_tot_spin.setSuffix(" min")
+        self.tx_tot_spin.setSpecialValueText("OFF")
         self.tx_tot_spin.valueChanged.connect(self.set_tx_tot)
 
         self.menu_table.setItem(41, 0, self.tx_tot_menu_nb)
@@ -1285,7 +1289,7 @@ class MainWindow(QMainWindow):
         self.cw_bk_in_delay_spin.setAlignment(Qt.AlignCenter)
         self.cw_bk_in_delay_spin.setMaximum(3000)
         self.cw_bk_in_delay_spin.setMinimum(30)
-        self.cw_bk_in_delay_spin.setSingleStep(1)
+        self.cw_bk_in_delay_spin.setSingleStep(10)
         self.cw_bk_in_delay_spin.setValue(200)
         self.cw_bk_in_delay_spin.setSuffix(" msec")
         self.cw_bk_in_delay_spin.valueChanged.connect(self.set_cw_bk_in_delay)
@@ -2629,7 +2633,7 @@ class MainWindow(QMainWindow):
         self.ssb_50m_pwr_spin.setMinimum(5)
         self.ssb_50m_pwr_spin.setSingleStep(1)
         self.ssb_50m_pwr_spin.setValue(100)
-        self.ssb_50m_pwr_spin.valueChanged.connect(self.set_50m_pwr)
+        self.ssb_50m_pwr_spin.valueChanged.connect(self.set_50m_ssb_pwr)
 
         self.menu_table.setItem(151, 0, self.ssb_50m_pwr_menu_nb)
         self.menu_table.setItem(151, 1, self.ssb_50m_pwr_parm_name)
@@ -2976,6 +2980,7 @@ class MainWindow(QMainWindow):
         self.set_lcd_contrast()
         self.set_dimmer_backlit()
         self.set_dimmer_lcd()
+        self.set_dimmer_tx_busy()
 
         self.set_beacon_interval()
 
@@ -3036,7 +3041,7 @@ class MainWindow(QMainWindow):
         """Set LCD CONTRAST"""
         if self.rig.isOpen():
             if self.trasnfert:
-                value = str(self.dimmer_lcd_spin.value())
+                value = str(self.lcd_contrast_spin.value())
                 while len(value) < 2:
                     value = "0" + value
                 value = bytes(value, ENCODER)
@@ -3137,8 +3142,8 @@ class MainWindow(QMainWindow):
     def set_cw_weight(self):
         if self.rig.isOpen():
             if self.trasnfert:
-                value = str(self.cw_weight_spin.value())
-                value = value.replace(",", "")
+                value = str(round(self.cw_weight_spin.value(), 1))
+                value = value.replace(".", "")
                 value = bytes(value, ENCODER)
                 cmd = b"EX0403" + value + b";"
                 self.rig.write(cmd)
@@ -3157,9 +3162,41 @@ class MainWindow(QMainWindow):
         if self.rig.isOpen():
             if self.trasnfert:
                 value = str(self.beacon_interval_spin.value())
+
+                if value == "270":
+                    value = "241"
+                elif value == "300":
+                    value = "242"
+                elif value == "330":
+                    value = "243"
+                elif value == "360":
+                    value = "244"
+                elif value == "390":
+                    value = "245"
+                elif value == "420":
+                    value = "246"
+                elif value == "450":
+                    value = "247"
+                elif value == "480":
+                    value = "248"
+                elif value == "510":
+                    value = "249"
+                elif value == "540":
+                    value = "250"
+                elif value == "570":
+                    value = "251"
+                elif value == "600":
+                    value = "252"
+                elif value == "630":
+                    value = "253"
+                elif value == "660":
+                    value = "254"
+                elif value == "690":
+                    value = "255"
+
                 while len(value) < 3:
                     value = "0" + value
-                cmd = b"EX0404" + bytes(value) + b";"
+                cmd = b"EX0404" + bytes(value, ENCODER) + b";"
                 self.rig.write(cmd)
 
     def set_number_style(self):
