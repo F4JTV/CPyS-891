@@ -246,7 +246,7 @@ class MainWindow(QMainWindow):
         # ###### Rig
         self.rig = Serial(baudrate=4800, write_timeout=1)
         self.rig.setPort("/dev/ttyUSB0")
-        self.rig.open()
+        # self.rig.open()
 
         # ###### Tab
         self.tab = QTabWidget()
