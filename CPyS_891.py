@@ -231,6 +231,7 @@ class MainWindow(QMainWindow):
 
         self.get_from_radio_action = QAction("Get config from FT-891")
         self.edit_menu.addAction(self.get_from_radio_action)
+        self.get_from_radio_action.triggered.connect(self.get_config_from_radio)
         # self.get_from_radio_action.setDisabled(True)
 
         # ###### Status Bar
@@ -3150,33 +3151,103 @@ class MainWindow(QMainWindow):
     def get_config_from_radio(self):
         self.transfert = True
 
+        self.progressbar = QProgressBar()
+        self.status_bar.addWidget(self.progressbar, 1)
+        self.progressbar.setMaximum(155)
+        self.progressbar.setValue(0)
+
         self.get_acg_fast_delay()
+        self.progressbar.setValue(1)
         self.get_acg_mid_delay()
+        self.progressbar.setValue(2)
         self.get_acg_slow_delay()
+        self.progressbar.setValue(3)
 
         self.get_lcd_contrast()
+        self.progressbar.setValue(4)
         self.get_dimmer_backlit()
+        self.progressbar.setValue(5)
         self.get_dimmer_lcd()
+        self.progressbar.setValue(6)
         self.get_dimmer_tx_busy()
+        self.progressbar.setValue(7)
         self.get_peak_hold()
+        self.progressbar.setValue(8)
         self.get_zin_led()
+        self.progressbar.setValue(9)
         self.get_pop_up_menu()
+        self.progressbar.setValue(10)
 
         self.get_dvs_rx_out_lvl()
+        self.progressbar.setValue(11)
         self.get_dvs_tx_out_lvl()
+        self.progressbar.setValue(12)
 
         self.get_keyer_type()
+        self.progressbar.setValue(13)
         self.get_keyer_dot_dash()
+        self.progressbar.setValue(14)
         self.get_cw_weight()
+        self.progressbar.setValue(15)
         self.get_beacon_interval()
+        self.progressbar.setValue(16)
         self.get_number_style()
+        self.progressbar.setValue(17)
         self.get_contest_number()
+        self.progressbar.setValue(18)
         self.get_cw_memory_1()
+        self.progressbar.setValue(19)
         self.get_cw_memory_2()
+        self.progressbar.setValue(20)
         self.get_cw_memory_3()
+        self.progressbar.setValue(21)
         self.get_cw_memory_4()
+        self.progressbar.setValue(22)
         self.get_cw_memory_5()
+        self.progressbar.setValue(23)
 
+        self.get_nb_width()
+        self.progressbar.setValue(24)
+        self.get_nb_rejection()
+        self.progressbar.setValue(25)
+        self.get_nb_level()
+        self.progressbar.setValue(26)
+        self.get_beep_level()
+        self.progressbar.setValue(27)
+        self.get_rf_sql_vr()
+        self.progressbar.setValue(28)
+        self.get_cat_rate()
+        self.progressbar.setValue(29)
+        self.get_cat_tot()
+        self.progressbar.setValue(30)
+        self.get_cat_rts()
+        self.progressbar.setValue(31)
+        self.get_mem_group()
+        self.progressbar.setValue(32)
+        self.get_fm_setting()
+        self.progressbar.setValue(33)
+        self.get_rec_setting()
+        self.progressbar.setValue(34)
+        self.get_atas_setting()
+        self.progressbar.setValue(35)
+        self.get_quick_spl_freq()
+        self.progressbar.setValue(36)
+        self.get_tx_tot()
+        self.progressbar.setValue(37)
+        self.get_mic_scan()
+        self.progressbar.setValue(38)
+        self.get_mic_scan_resume()
+        self.progressbar.setValue(39)
+        self.get_ref_freq_adj()
+        self.progressbar.setValue(40)
+        self.get_clar_select()
+        self.progressbar.setValue(41)
+        self.get_apo()
+        self.progressbar.setValue(42)
+        self.get_fan_control()
+        self.progressbar.setValue(43)
+
+        self.status_bar.removeWidget(self.progressbar)
         self.transfert = False
 
     def toggle_live_mode(self):
@@ -3697,12 +3768,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0501" + value + b";"
                 self.rig.write(cmd)
 
+    def get_nb_width(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0501;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_nb_width = {value: key for key, value in NB_WIDHT.items()}
+                self.nb_width_combo.setCurrentText(rev_nb_width[resp[6:]])
+
     def set_nb_rejection(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = NB_REJECTION[self.nb_rejection_combo.currentText()]
                 cmd = b"EX0502" + value + b";"
                 self.rig.write(cmd)
+
+    def get_nb_rejection(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0502;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_nb_rejection = {value: key for key, value in NB_REJECTION.items()}
+                self.nb_rejection_combo.setCurrentText(rev_nb_rejection[resp[6:]])
 
     def set_nb_level(self):
         if self.rig.isOpen():
@@ -3714,6 +3803,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0503" + value + b";"
                 self.rig.write(cmd)
 
+    def get_nb_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0503;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.nb_level_spin.setValue(int(resp[6:]))
+
     def set_beep_level(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -3724,12 +3822,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0504" + value + b";"
                 self.rig.write(cmd)
 
+    def get_beep_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0504;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.beep_level_spin.setValue(int(resp[6:]))
+
     def set_rf_sql_vr(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = RF_SQL_VR[self.rf_sql_vr_combo.currentText()]
                 cmd = b"EX0505" + value + b";"
                 self.rig.write(cmd)
+
+    def get_rf_sql_vr(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0505;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rf_sql_vr = {value: key for key, value in RF_SQL_VR.items()}
+                self.rf_sql_vr_combo.setCurrentText(rev_rf_sql_vr[resp[6:]])
 
     def set_cat_rate(self):
         if self.rig.isOpen():
@@ -3738,12 +3854,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0506" + value + b";"
                 self.rig.write(cmd)
 
+    def get_cat_rate(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0506;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cat_rate = {value: key for key, value in CAT_RATE.items()}
+                self.cat_rate_combo.setCurrentText(rev_cat_rate[resp[6:]])
+
     def set_cat_tot(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = CAT_TOT[self.cat_tot_combo.currentText()]
                 cmd = b"EX0507" + value + b";"
                 self.rig.write(cmd)
+
+    def get_cat_tot(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0507;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cat_tot = {value: key for key, value in CAT_TOT.items()}
+                self.cat_tot_combo.setCurrentText(rev_cat_tot[resp[6:]])
 
     def set_cat_rts(self):
         if self.rig.isOpen():
@@ -3752,12 +3886,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0508" + value + b";"
                 self.rig.write(cmd)
 
+    def get_cat_rts(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0508;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cat_rts = {value: key for key, value in CAT_RTS.items()}
+                self.cat_rts_combo.setCurrentText(rev_cat_rts[resp[6:]])
+
     def set_mem_group(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = MEMORY_GROUP[self.meme_group_combo.currentText()]
                 cmd = b"EX0509" + value + b";"
                 self.rig.write(cmd)
+
+    def get_mem_group(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0509;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_mem_group = {value: key for key, value in MEMORY_GROUP.items()}
+                self.meme_group_combo.setCurrentText(rev_mem_group[resp[6:]])
 
     def set_fm_setting(self):
         if self.rig.isOpen():
@@ -3766,6 +3918,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0510" + value + b";"
                 self.rig.write(cmd)
 
+    def get_fm_setting(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0510;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_fm_setting = {value: key for key, value in FM_SETTING.items()}
+                self.fm_setting_combo.setCurrentText(rev_fm_setting[resp[6:]])
+
     def set_rec_setting(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -3773,12 +3934,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0511" + value + b";"
                 self.rig.write(cmd)
 
+    def get_rec_setting(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0511;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rec_setting = {value: key for key, value in REC_SETTING.items()}
+                self.rec_setting_combo.setCurrentText(rev_rec_setting[resp[6:]])
+
     def set_atas_setting(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = ATAS_SETTING[self.atas_setting_combo.currentText()]
                 cmd = b"EX0512" + value + b";"
                 self.rig.write(cmd)
+
+    def get_atas_setting(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0512;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_atas_setting = {value: key for key, value in ATAS_SETTING.items()}
+                self.atas_setting_combo.setCurrentText(rev_atas_setting[resp[6:]])
 
     def set_quick_spl_freq(self):
         if self.rig.isOpen():
@@ -3796,6 +3975,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0513" + value + b";"
                 self.rig.write(cmd)
 
+    def get_quick_spl_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0513;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.quick_spl_freq_spin.setValue(int(resp[6:]))
+
     def set_tx_tot(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -3806,6 +3994,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0514" + value + b";"
                 self.rig.write(cmd)
 
+    def get_tx_tot(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0514;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.tx_tot_spin.setValue(int(resp[6:]))
+
     def set_mic_scan(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -3813,12 +4010,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0515" + value + b";"
                 self.rig.write(cmd)
 
+    def get_mic_scan(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0515;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_mic_scan = {value: key for key, value in MIC_SCAN.items()}
+                self.mic_scan_combo.setCurrentText(rev_mic_scan[resp[6:]])
+
     def set_mic_scan_resume(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = MIC_SCAN_RESUME[self.mic_scan_resume_combo.currentText()]
                 cmd = b"EX0516" + value + b";"
                 self.rig.write(cmd)
+
+    def get_mic_scan_resume(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0516;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_mic_scan_resume = {value: key for key, value in MIC_SCAN_RESUME.items()}
+                self.mic_scan_resume_combo.setCurrentText(rev_mic_scan_resume[resp[6:]])
 
     def set_ref_freq_adj(self):
         if self.rig.isOpen():
@@ -3836,12 +4051,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0517" + value + b";"
                 self.rig.write(cmd)
 
+    def get_ref_freq_adj(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0517;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.ref_freq_adj_spin.setValue(int(resp[6:]))
+
     def set_clar_select(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = CLAR_SELECT[self.clar_select_combo.currentText()]
                 cmd = b"EX0518" + value + b";"
                 self.rig.write(cmd)
+
+    def get_clar_select(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0518;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_clar_select = {value: key for key, value in CLAR_SELECT.items()}
+                self.clar_select_combo.setCurrentText(rev_clar_select[resp[6:]])
 
     def set_apo(self):
         if self.rig.isOpen():
@@ -3850,12 +4083,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0519" + value + b";"
                 self.rig.write(cmd)
 
+    def get_apo(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0519;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_apo = {value: key for key, value in APO.items()}
+                self.apo_combo.setCurrentText(rev_apo[resp[6:]])
+
     def set_fan_control(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = FAN_CONTROL[self.fan_control_combo.currentText()]
                 cmd = b"EX0520" + value + b";"
                 self.rig.write(cmd)
+
+    def get_fan_control(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0520;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_fan_control = {value: key for key, value in FAN_CONTROL.items()}
+                self.fan_control_combo.setCurrentText(rev_fan_control[resp[6:]])
 
     def set_am_lcut_freq(self):
         if self.rig.isOpen():
