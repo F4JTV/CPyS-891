@@ -31,7 +31,7 @@ ICON = "./images/icon.png"
 FONT = "./fonts/Quicksand-Regular.ttf"
 FONT_FAMILY = "Quicksand"
 FONT_SIZE = 11
-ENCODER = "utf-8"
+ENCODER = "ascii"
 PEAK_HOLD = {"OFF": b"0", "0.5 sec": b"1",
              "1.0 sec": b"2", "2.0 sec": b"3"}
 ZIN_LED = {"DISABLE": b"0", "ENABLE": b"1"}
@@ -247,7 +247,7 @@ class MainWindow(QMainWindow):
         # ###### Rig
         self.rig = Serial(baudrate=4800, write_timeout=1)
         self.rig.setPort("/dev/ttyUSB0")
-        # self.rig.open()
+        self.rig.open()
 
         # ###### Tab
         self.tab = QTabWidget()
@@ -3551,7 +3551,7 @@ class MainWindow(QMainWindow):
                 resp = resp.decode(ENCODER)
                 resp = resp[6:]
                 resp = resp[0] + "." + resp[1]
-                self.cw_weight_spin.setValue(int(resp))
+                self.cw_weight_spin.setValue(float(resp))
 
     def set_beacon_interval(self):
         """Set BEACON INTERVAL"""
