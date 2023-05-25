@@ -2975,177 +2975,339 @@ class MainWindow(QMainWindow):
         """Send the config to the Radio"""
         self.transfert = True
 
+        self.progressbar = QProgressBar()
+        self.status_bar.addWidget(self.progressbar, 1)
+        self.progressbar.setMaximum(155)
+        self.progressbar.setValue(0)
+
         self.set_acg_fast_delay()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_acg_mid_delay()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_acg_slow_delay()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_lcd_contrast()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_dimmer_backlit()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_dimmer_lcd()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_dimmer_tx_busy()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_peak_hold()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_zin_led()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_pop_up_menu()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_dvs_rx_out_lvl()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_dvs_tx_out_lvl()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_keyer_type()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_keyer_dot_dash()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_weight()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_beacon_interval()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_number_style()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_contest_number()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_memory_1()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_memory_2()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_memory_3()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_memory_4()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_memory_5()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_nb_width()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_nb_rejection()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_nb_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_beep_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rf_sql_vr()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cat_rate()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cat_tot()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cat_rts()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_mem_group()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_fm_setting()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rec_setting()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_atas_setting()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_quick_spl_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_tx_tot()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_mic_scan()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_mic_scan_resume()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ref_freq_adj()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_clar_select()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_apo()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_fan_control()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_am_lcut_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_am_lcut_slope()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_am_hcut_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_am_hcut_slope()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_am_mic_select()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_am_out_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_am_ptt_select()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_cw_lcut_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_lcut_slope()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_hcut_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_hcut_slope()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_out_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_auto_mode()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_bfo()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_bk_in_type()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_bk_in_delay()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_wave_shape()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_cw_freq_display()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_pc_keying()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_qsk_delay_time()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_data_mode()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_psk_tone()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_other_disp()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_other_shift()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_lcut_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_lcut_slope()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_hcut_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_hcut_slope()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_in_select()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_ptt_select()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_out_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_bfo()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_fm_mic_select()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_fm_out_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_pkt_ptt_select()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rpt_shift_28()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rpt_shift_50()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_dcs_polarity()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_rtty_lcut_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rtty_lcut_slope()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rtty_hcut_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rtty_hcut_slope()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rtty_shift_port()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rtty_polarity_r()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rtty_polarity_t()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rtty_out_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rtty_shift_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rtty_mark_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_rtty_bfo()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_ssb_lcut_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ssb_lcut_slope()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ssb_hcut_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ssb_hcut_slope()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ssb_mic_select()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ssb_out_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ssb_bfo()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ssb_ptt_select()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ssb_tx_bpf()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_apf_width()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_contour_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_contour_width()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_if_notch_width()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_scp_start_cycle()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_scp_span_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_quick_dial()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ssb_dial_step()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_am_dial_step()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_fm_dial_step()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_dial_step()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_am_ch_step()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_fm_ch_step()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_eq_1_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_eq_1_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_eq_1_bwth()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_eq_2_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_eq_2_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_eq_2_bwth()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_eq_3_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_eq_3_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_eq_3_bwth()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_p_eq_1_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_p_eq_1_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_p_eq_1_bwth()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_p_eq_2_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_p_eq_2_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_p_eq_2_bwth()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_p_eq_3_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_p_eq_3_level()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_p_eq_3_bwth()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
         self.set_hf_ssb_pwr()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_hf_am_pwr()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_hf_pwr()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_50m_ssb_pwr()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_50m_am_pwr()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_50m_pwr()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ssb_mic_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_am_mic_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_fm_mic_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_mic_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_ssb_data_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_am_data_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_fm_data_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_data_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_tuner_select()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_vox_select()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_vox_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_vox_delay()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_anti_vox_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_vox_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_data_vox_delay()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_anti_dvox_gain()
+        self.progressbar.setValue(self.progressbar.value() + 1)
         self.set_emergency_freq()
+        self.progressbar.setValue(self.progressbar.value() + 1)
 
+        self.status_bar.removeWidget(self.progressbar)
+        self.status_bar.showMessage("Done")
         self.transfert = False
         
     def get_config_from_radio(self):
@@ -3247,8 +3409,52 @@ class MainWindow(QMainWindow):
         self.get_fan_control()
         self.progressbar.setValue(43)
 
+        self.get_am_lcut_freq()
+        self.progressbar.setValue(44)
+        self.get_am_lcut_slope()
+        self.progressbar.setValue(45)
+        self.get_am_hcut_freq()
+        self.progressbar.setValue(46)
+        self.get_am_hcut_slope()
+        self.progressbar.setValue(47)
+        self.get_am_mic_select()
+        self.progressbar.setValue(48)
+        self.get_am_out_level()
+        self.progressbar.setValue(49)
+        self.get_am_ptt_select()
+        self.progressbar.setValue(50)
+
+        self.get_cw_lcut_freq()
+        self.progressbar.setValue(51)
+        self.get_cw_lcut_slope()
+        self.progressbar.setValue(52)
+        self.get_cw_hcut_freq()
+        self.progressbar.setValue(53)
+        self.get_cw_hcut_slope()
+        self.progressbar.setValue(54)
+        self.get_cw_out_level()
+        self.progressbar.setValue(55)
+        self.get_cw_auto_mode()
+        self.progressbar.setValue(56)
+        self.get_cw_bfo()
+        self.progressbar.setValue(57)
+        self.get_cw_bk_in_type()
+        self.progressbar.setValue(58)
+        self.get_cw_bk_in_delay()
+        self.progressbar.setValue(59)
+        self.get_cw_wave_shape()
+        self.progressbar.setValue(60)
+        self.get_cw_freq_display()
+        self.progressbar.setValue(61)
+        self.get_pc_keying()
+        self.progressbar.setValue(62)
+        self.get_qsk_delay_time()
+        self.progressbar.setValue(63)
+
         self.status_bar.removeWidget(self.progressbar)
-        self.transfert = False
+        self.status_bar.showMessage("Done")
+        if not self.live_mode_action.isChecked():
+            self.transfert = False
 
     def toggle_live_mode(self):
         """Toggle Live Mode"""
@@ -3850,9 +4056,10 @@ class MainWindow(QMainWindow):
     def set_cat_rate(self):
         if self.rig.isOpen():
             if self.transfert:
-                value = CAT_RATE[self.cat_rate_combo.currentText()]
+                """value = CAT_RATE[self.cat_rate_combo.currentText()]
                 cmd = b"EX0506" + value + b";"
-                self.rig.write(cmd)
+                self.rig.write(cmd)"""
+                pass
 
     def get_cat_rate(self):
         if self.rig.isOpen():
@@ -4115,12 +4322,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0601" + value + b";"
                 self.rig.write(cmd)
 
+    def get_am_lcut_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0601;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_am_lcut_freq = {value: key for key, value in LCUT_FREQ.items()}
+                self.am_lcut_freq_combo.setCurrentText(rev_am_lcut_freq[resp[6:]])
+
     def set_am_lcut_slope(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = SLOPE[self.am_lcut_slope_combo.currentText()]
                 cmd = b"EX0602" + value + b";"
                 self.rig.write(cmd)
+
+    def get_am_lcut_slope(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0602;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_am_lcut_slope = {value: key for key, value in SLOPE.items()}
+                self.am_lcut_slope_combo.setCurrentText(rev_am_lcut_slope[resp[6:]])
 
     def set_am_hcut_freq(self):
         if self.rig.isOpen():
@@ -4129,6 +4354,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0603" + value + b";"
                 self.rig.write(cmd)
 
+    def get_am_hcut_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0603;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_am_hcut_freq = {value: key for key, value in HCUT_FREQ.items()}
+                self.am_hcut_freq_combo.setCurrentText(rev_am_hcut_freq[resp[6:]])
+
     def set_am_hcut_slope(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -4136,12 +4370,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0604" + value + b";"
                 self.rig.write(cmd)
 
+    def get_am_hcut_slope(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0604;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_am_hcut_slope = {value: key for key, value in SLOPE.items()}
+                self.am_hcut_slope_combo.setCurrentText(rev_am_hcut_slope[resp[6:]])
+
     def set_am_mic_select(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = AM_MIC_SELECT[self.am_mic_select_combo.currentText()]
                 cmd = b"EX0605" + value + b";"
                 self.rig.write(cmd)
+
+    def get_am_mic_select(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0605;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_am_mic_select = {value: key for key, value in AM_MIC_SELECT.items()}
+                self.am_mic_select_combo.setCurrentText(rev_am_mic_select[resp[6:]])
 
     def set_am_out_level(self):
         if self.rig.isOpen():
@@ -4153,12 +4405,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0606" + value + b";"
                 self.rig.write(cmd)
 
+    def get_am_out_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0606;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.am_out_level_spin.setValue(int(resp[6:]))
+
     def set_am_ptt_select(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = AM_PTT_SELECT[self.am_ptt_select_combo.currentText()]
                 cmd = b"EX0607" + value + b";"
                 self.rig.write(cmd)
+
+    def get_am_ptt_select(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0607;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_am_ptt_select = {value: key for key, value in AM_PTT_SELECT.items()}
+                self.am_ptt_select_combo.setCurrentText(rev_am_ptt_select[resp[6:]])
 
     def set_cw_lcut_freq(self):
         if self.rig.isOpen():
@@ -4167,12 +4437,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0701" + value + b";"
                 self.rig.write(cmd)
 
+    def get_cw_lcut_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0701;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cw_lcut_freq = {value: key for key, value in LCUT_FREQ.items()}
+                self.cw_lcut_freq_combo.setCurrentText(rev_cw_lcut_freq[resp[6:]])
+
     def set_cw_lcut_slope(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = SLOPE[self.cw_lcut_slope_combo.currentText()]
                 cmd = b"EX0702" + value + b";"
                 self.rig.write(cmd)
+
+    def get_cw_lcut_slope(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0702;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cw_lcut_slope = {value: key for key, value in SLOPE.items()}
+                self.cw_lcut_slope_combo.setCurrentText(rev_cw_lcut_slope[resp[6:]])
 
     def set_cw_hcut_freq(self):
         if self.rig.isOpen():
@@ -4181,12 +4469,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0703" + value + b";"
                 self.rig.write(cmd)
 
+    def get_cw_hcut_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0703;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cw_hcut_freq = {value: key for key, value in HCUT_FREQ.items()}
+                self.cw_hcut_freq_combo.setCurrentText(rev_cw_hcut_freq[resp[6:]])
+
     def set_cw_hcut_slope(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = SLOPE[self.cw_hcut_slope_combo.currentText()]
                 cmd = b"EX0704" + value + b";"
                 self.rig.write(cmd)
+
+    def get_cw_hcut_slope(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0704;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cw_hcut_slope = {value: key for key, value in SLOPE.items()}
+                self.cw_hcut_slope_combo.setCurrentText(rev_cw_hcut_slope[resp[6:]])
 
     def set_cw_out_level(self):
         if self.rig.isOpen():
@@ -4198,12 +4504,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0705" + value + b";"
                 self.rig.write(cmd)
 
+    def get_cw_out_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0705;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.cw_out_level_spin.setValue(int(resp[6:]))
+
     def set_cw_auto_mode(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = CW_AUTO_MODE[self.cw_auto_mode_combo.currentText()]
                 cmd = b"EX0706" + value + b";"
                 self.rig.write(cmd)
+
+    def get_cw_auto_mode(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0706;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cw_auto_mode = {value: key for key, value in CW_AUTO_MODE.items()}
+                self.cw_auto_mode_combo.setCurrentText(rev_cw_auto_mode[resp[6:]])
 
     def set_cw_bfo(self):
         if self.rig.isOpen():
@@ -4212,12 +4536,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0707" + value + b";"
                 self.rig.write(cmd)
 
+    def get_cw_bfo(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0707;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cw_bfo = {value: key for key, value in CW_BFO.items()}
+                self.cw_bfo_combo.setCurrentText(rev_cw_bfo[resp[6:]])
+
     def set_cw_bk_in_type(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = CW_BK_IN_TYPE[self.cw_bk_in_type_combo.currentText()]
                 cmd = b"EX0708" + value + b";"
                 self.rig.write(cmd)
+
+    def get_cw_bk_in_type(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0708;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cw_bk_in_type = {value: key for key, value in CW_BK_IN_TYPE.items()}
+                self.cw_bk_in_type_combo.setCurrentText(rev_cw_bk_in_type[resp[6:]])
 
     def set_cw_bk_in_delay(self):
         if self.rig.isOpen():
@@ -4229,12 +4571,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0709" + value + b";"
                 self.rig.write(cmd)
 
+    def get_cw_bk_in_delay(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0709;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.cw_bk_in_delay_spin.setValue(int(resp[6:]))
+
     def set_cw_wave_shape(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = CW_WAVE_SHAPE[self.cw_wav_shape_combo.currentText()]
                 cmd = b"EX0710" + value + b";"
                 self.rig.write(cmd)
+
+    def get_cw_wave_shape(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0710;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cw_wave_shape = {value: key for key, value in CW_WAVE_SHAPE.items()}
+                self.cw_wav_shape_combo.setCurrentText(rev_cw_wave_shape[resp[6:]])
 
     def set_cw_freq_display(self):
         if self.rig.isOpen():
@@ -4243,6 +4603,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0711" + value + b";"
                 self.rig.write(cmd)
 
+    def get_cw_freq_display(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0711;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_cw_freq_display = {value: key for key, value in CW_FREQ_DISPLAY.items()}
+                self.cw_freq_display_combo.setCurrentText(rev_cw_freq_display[resp[6:]])
+
     def set_pc_keying(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -4250,12 +4619,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0712" + value + b";"
                 self.rig.write(cmd)
 
+    def get_pc_keying(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0712;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_pc_keying = {value: key for key, value in PC_KEYING.items()}
+                self.pc_keying_combo.setCurrentText(rev_pc_keying[resp[6:]])
+
     def set_qsk_delay_time(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = QSK_DELAY_TIME[self.qsk_delay_time_combo.currentText()]
                 cmd = b"EX0713" + value + b";"
                 self.rig.write(cmd)
+
+    def get_qsk_delay_time(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0713;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_qsk_delay_time = {value: key for key, value in QSK_DELAY_TIME.items()}
+                self.qsk_delay_time_combo.setCurrentText(rev_qsk_delay_time[resp[6:]])
 
     def set_data_mode(self):
         if self.rig.isOpen():
