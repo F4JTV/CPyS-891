@@ -11,6 +11,7 @@
 ##########################################################################
 
 import sys
+import threading
 from datetime import datetime
 
 from serial import Serial
@@ -170,6 +171,15 @@ def format_combo(combobox):
         combobox.setItemData(i, Qt.AlignCenter, Qt.TextAlignmentRole)
 
 
+class GetFromRadioThread(QThread):
+    def __init__(self, master):
+        super().__init__()
+        self.master = master
+
+    def run(self):
+        self.master.get_config_from_radio()
+
+
 class MainWindow(QMainWindow):
     """ Main Window """
 
@@ -247,7 +257,7 @@ class MainWindow(QMainWindow):
         # ###### Rig
         self.rig = Serial(baudrate=4800, write_timeout=1)
         self.rig.setPort("/dev/ttyUSB0")
-        # self.rig.open()
+        self.rig.open()
 
         # ###### Tab
         self.tab = QTabWidget()
@@ -3464,17 +3474,53 @@ class MainWindow(QMainWindow):
         self.get_data_lcut_slope()
         self.progressbar.setValue(69)
         self.get_data_hcut_freq()
-        self.progressbar.setValue(68)
-        self.get_data_hcut_slope()
-        self.progressbar.setValue(69)
-        self.get_data_in_select()
         self.progressbar.setValue(70)
-        self.get_data_ptt_select()
+        self.get_data_hcut_slope()
         self.progressbar.setValue(71)
-        self.get_data_out_level()
+        self.get_data_in_select()
         self.progressbar.setValue(72)
-        self.get_data_bfo()
+        self.get_data_ptt_select()
         self.progressbar.setValue(73)
+        self.get_data_out_level()
+        self.progressbar.setValue(74)
+        self.get_data_bfo()
+        self.progressbar.setValue(75)
+
+        self.get_fm_mic_select()
+        self.progressbar.setValue(76)
+        self.get_fm_out_level()
+        self.progressbar.setValue(77)
+        self.get_pkt_ptt_select()
+        self.progressbar.setValue(78)
+        self.get_rpt_shift_28()
+        self.progressbar.setValue(79)
+        self.get_rpt_shift_50()
+        self.progressbar.setValue(80)
+        self.get_dcs_polarity()
+        self.progressbar.setValue(81)
+
+        self.get_rtty_lcut_freq()
+        self.progressbar.setValue(82)
+        self.get_rtty_lcut_slope()
+        self.progressbar.setValue(83)
+        self.get_rtty_hcut_freq()
+        self.progressbar.setValue(84)
+        self.get_rtty_hcut_slope()
+        self.progressbar.setValue(85)
+        self.get_rtty_shift_port()
+        self.progressbar.setValue(86)
+        self.get_rtty_polarity_r()
+        self.progressbar.setValue(87)
+        self.get_rtty_polarity_t()
+        self.progressbar.setValue(88)
+        self.get_rtty_out_level()
+        self.progressbar.setValue(89)
+        self.get_rtty_shift_freq()
+        self.progressbar.setValue(90)
+        self.get_rtty_mark_freq()
+        self.progressbar.setValue(91)
+        self.get_rtty_bfo()
+        self.progressbar.setValue(92)
 
         self.status_bar.removeWidget(self.progressbar)
         self.status_bar.showMessage("Done")
@@ -4907,6 +4953,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0901" + value + b";"
                 self.rig.write(cmd)
 
+    def get_fm_mic_select(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0901;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_fm_mic_select = {value: key for key, value in FM_MIC_SELECT.items()}
+                self.fm_mic_select_combo.setCurrentText(rev_fm_mic_select[resp[6:]])
+
     def set_fm_out_level(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -4917,12 +4972,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0902" + value + b";"
                 self.rig.write(cmd)
 
+    def get_fm_out_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0902;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.fm_out_level_spin.setValue(int(resp[6:]))
+
     def set_pkt_ptt_select(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = PKT_PTT_SELECT[self.pkt_ptt_select_combo.currentText()]
                 cmd = b"EX0903" + value + b";"
                 self.rig.write(cmd)
+
+    def get_pkt_ptt_select(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0903;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_pkt_ptt_select = {value: key for key, value in PKT_PTT_SELECT.items()}
+                self.pkt_ptt_select_combo.setCurrentText(rev_pkt_ptt_select[resp[6:]])
 
     def set_rpt_shift_28(self):
         if self.rig.isOpen():
@@ -4934,6 +5007,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0904" + value + b";"
                 self.rig.write(cmd)
 
+    def get_rpt_shift_28(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0904;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.rpt_shift_28_spin.setValue(int(resp[6:]))
+
     def set_rpt_shift_50(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -4944,12 +5026,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0905" + value + b";"
                 self.rig.write(cmd)
 
+    def get_rpt_shift_50(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0905;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.rpt_shift_50_spin.setValue(int(resp[6:]))
+
     def set_dcs_polarity(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = DCS_POLARITY[self.dcs_polarity_combo.currentText()]
                 cmd = b"EX0906" + value + b";"
                 self.rig.write(cmd)
+
+    def get_dcs_polarity(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0906;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_dcs_polarity = {value: key for key, value in DCS_POLARITY.items()}
+                self.dcs_polarity_combo.setCurrentText(rev_dcs_polarity[resp[6:]])
 
     def set_rtty_lcut_freq(self):
         if self.rig.isOpen():
@@ -4958,12 +5058,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1001" + value + b";"
                 self.rig.write(cmd)
 
+    def get_rtty_lcut_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1001;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rtty_lcut_freq = {value: key for key, value in LCUT_FREQ.items()}
+                self.rtty_lcut_freq_combo.setCurrentText(rev_rtty_lcut_freq[resp[6:]])
+
     def set_rtty_lcut_slope(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = SLOPE[self.rtty_lcut_slope_combo.currentText()]
                 cmd = b"EX1002" + value + b";"
                 self.rig.write(cmd)
+
+    def get_rtty_lcut_slope(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1002;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rtty_lcut_slope = {value: key for key, value in SLOPE.items()}
+                self.rtty_lcut_slope_combo.setCurrentText(rev_rtty_lcut_slope[resp[6:]])
 
     def set_rtty_hcut_freq(self):
         if self.rig.isOpen():
@@ -4972,12 +5090,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1003" + value + b";"
                 self.rig.write(cmd)
 
+    def get_rtty_hcut_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1003;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rtty_hcut_freq = {value: key for key, value in HCUT_FREQ.items()}
+                self.rtty_hcut_freq_combo.setCurrentText(rev_rtty_hcut_freq[resp[6:]])
+
     def set_rtty_hcut_slope(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = SLOPE[self.rtty_hcut_slope_combo.currentText()]
                 cmd = b"EX1004" + value + b";"
                 self.rig.write(cmd)
+
+    def get_rtty_hcut_slope(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1004;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rtty_hcut_slope = {value: key for key, value in SLOPE.items()}
+                self.rtty_hcut_slope_combo.setCurrentText(rev_rtty_hcut_slope[resp[6:]])
 
     def set_rtty_shift_port(self):
         if self.rig.isOpen():
@@ -4986,6 +5122,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1005" + value + b";"
                 self.rig.write(cmd)
 
+    def get_rtty_shift_port(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1005;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rtty_shift_port = {value: key for key, value in RTTY_SHIT_PORT.items()}
+                self.rtty_shift_port_combo.setCurrentText(rev_rtty_shift_port[resp[6:]])
+
     def set_rtty_polarity_r(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -4993,12 +5138,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1006" + value + b";"
                 self.rig.write(cmd)
 
+    def get_rtty_polarity_r(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1006;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rtty_polarity_r = {value: key for key, value in RTTY_POLARITY.items()}
+                self.rtty_polarity_r_combo.setCurrentText(rev_rtty_polarity_r[resp[6:]])
+
     def set_rtty_polarity_t(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = RTTY_POLARITY[self.rtty_polarity_t_combo.currentText()]
                 cmd = b"EX1007" + value + b";"
                 self.rig.write(cmd)
+
+    def get_rtty_polarity_t(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1007;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rtty_polarity_t = {value: key for key, value in RTTY_POLARITY.items()}
+                self.rtty_polarity_t_combo.setCurrentText(rev_rtty_polarity_t[resp[6:]])
 
     def set_rtty_out_level(self):
         if self.rig.isOpen():
@@ -5010,12 +5173,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1008" + value + b";"
                 self.rig.write(cmd)
 
+    def get_rtty_out_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1008;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.rtty_out_level_spin.setValue(int(resp[6:]))
+
     def set_rtty_shift_freq(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = RTTY_SHIFT_FREQ[self.rtty_shift_freq_combo.currentText()]
                 cmd = b"EX1009" + value + b";"
                 self.rig.write(cmd)
+
+    def get_rtty_shift_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1009;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rtty_shift_freq = {value: key for key, value in RTTY_SHIFT_FREQ.items()}
+                self.rtty_shift_freq_combo.setCurrentText(rev_rtty_shift_freq[resp[6:]])
 
     def set_rtty_mark_freq(self):
         if self.rig.isOpen():
@@ -5024,12 +5205,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1010" + value + b";"
                 self.rig.write(cmd)
 
+    def get_rtty_mark_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1010;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rtty_mark_freq = {value: key for key, value in RTTY_MARK_FREQ.items()}
+                self.rtty_mark_freq_combo.setCurrentText(rev_rtty_mark_freq[resp[6:]])
+
     def set_rtty_bfo(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = RTTY_BFO[self.rtty_bfo_combo.currentText()]
                 cmd = b"EX1011" + value + b";"
                 self.rig.write(cmd)
+
+    def get_rtty_bfo(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1011;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_rtty_bfo = {value: key for key, value in RTTY_BFO.items()}
+                self.rtty_bfo_combo.setCurrentText(rev_rtty_bfo[resp[6:]])
 
     def set_ssb_lcut_freq(self):
         if self.rig.isOpen():
