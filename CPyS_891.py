@@ -247,7 +247,7 @@ class MainWindow(QMainWindow):
         # ###### Rig
         self.rig = Serial(baudrate=4800, write_timeout=1)
         self.rig.setPort("/dev/ttyUSB0")
-        self.rig.open()
+        # self.rig.open()
 
         # ###### Tab
         self.tab = QTabWidget()
@@ -3451,6 +3451,31 @@ class MainWindow(QMainWindow):
         self.get_qsk_delay_time()
         self.progressbar.setValue(63)
 
+        self.get_data_mode()
+        self.progressbar.setValue(64)
+        self.get_psk_tone()
+        self.progressbar.setValue(65)
+        self.get_other_disp()
+        self.progressbar.setValue(66)
+        self.get_other_shift()
+        self.progressbar.setValue(67)
+        self.get_data_lcut_freq()
+        self.progressbar.setValue(68)
+        self.get_data_lcut_slope()
+        self.progressbar.setValue(69)
+        self.get_data_hcut_freq()
+        self.progressbar.setValue(68)
+        self.get_data_hcut_slope()
+        self.progressbar.setValue(69)
+        self.get_data_in_select()
+        self.progressbar.setValue(70)
+        self.get_data_ptt_select()
+        self.progressbar.setValue(71)
+        self.get_data_out_level()
+        self.progressbar.setValue(72)
+        self.get_data_bfo()
+        self.progressbar.setValue(73)
+
         self.status_bar.removeWidget(self.progressbar)
         self.status_bar.showMessage("Done")
         if not self.live_mode_action.isChecked():
@@ -4651,12 +4676,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0801" + value + b";"
                 self.rig.write(cmd)
 
+    def get_data_mode(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0801;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_data_mode = {value: key for key, value in DATA_MODE.items()}
+                self.data_mode_combo.setCurrentText(rev_data_mode[resp[6:]])
+
     def set_psk_tone(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = PSK_TONE[self.psk_tone_combo.currentText()]
                 cmd = b"EX0802" + value + b";"
                 self.rig.write(cmd)
+
+    def get_psk_tone(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0802;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_psk_tone = {value: key for key, value in PSK_TONE.items()}
+                self.psk_tone_combo.setCurrentText(rev_psk_tone[resp[6:]])
 
     def set_other_disp(self):
         if self.rig.isOpen():
@@ -4683,6 +4726,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0803" + value + b";"
                 self.rig.write(cmd)
 
+    def get_other_disp(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0803;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.other_disp_spin.setValue(int(resp[6:]))
+
     def set_other_shift(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -4708,12 +4760,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0804" + value + b";"
                 self.rig.write(cmd)
 
+    def get_other_shift(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0804;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.other_shift_spin.setValue(int(resp[6:]))
+
     def set_data_lcut_freq(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = LCUT_FREQ[self.data_lcut_freq_combo.currentText()]
                 cmd = b"EX0805" + value + b";"
                 self.rig.write(cmd)
+
+    def get_data_lcut_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0805;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_data_lcut_freq = {value: key for key, value in LCUT_FREQ.items()}
+                self.data_lcut_freq_combo.setCurrentText(rev_data_lcut_freq[resp[6:]])
 
     def set_data_lcut_slope(self):
         if self.rig.isOpen():
@@ -4722,12 +4792,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0806" + value + b";"
                 self.rig.write(cmd)
 
+    def get_data_lcut_slope(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0806;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_data_lcut_slope = {value: key for key, value in SLOPE.items()}
+                self.data_lcut_slope_combo.setCurrentText(rev_data_lcut_slope[resp[6:]])
+
     def set_data_hcut_freq(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = HCUT_FREQ[self.data_hcut_freq_combo.currentText()]
                 cmd = b"EX0807" + value + b";"
                 self.rig.write(cmd)
+
+    def get_data_hcut_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0807;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_data_hcut_freq = {value: key for key, value in HCUT_FREQ.items()}
+                self.data_hcut_freq_combo.setCurrentText(rev_data_hcut_freq[resp[6:]])
 
     def set_data_hcut_slope(self):
         if self.rig.isOpen():
@@ -4736,6 +4824,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0808" + value + b";"
                 self.rig.write(cmd)
 
+    def get_data_hcut_slope(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0808;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_data_hcut_slope = {value: key for key, value in SLOPE.items()}
+                self.data_hcut_slope_combo.setCurrentText(rev_data_hcut_slope[resp[6:]])
+
     def set_data_in_select(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -4743,12 +4840,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0809" + value + b";"
                 self.rig.write(cmd)
 
+    def get_data_in_select(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0809;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_data_in_select = {value: key for key, value in DATA_IN_SELECT.items()}
+                self.data_in_select_combo.setCurrentText(rev_data_in_select[resp[6:]])
+
     def set_data_ptt_select(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = DATA_PTT_SELECT[self.data_ptt_select_combo.currentText()]
                 cmd = b"EX0810" + value + b";"
                 self.rig.write(cmd)
+
+    def get_data_ptt_select(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0810;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_data_ptt_select = {value: key for key, value in DATA_PTT_SELECT.items()}
+                self.data_ptt_select_combo.setCurrentText(rev_data_ptt_select[resp[6:]])
 
     def set_data_out_level(self):
         if self.rig.isOpen():
@@ -4760,12 +4875,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX0811" + value + b";"
                 self.rig.write(cmd)
 
+    def get_data_out_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0811;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.cw_out_level_spin.setValue(int(resp[6:]))
+
     def set_data_bfo(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = DATA_BFO[self.data_bfo_combo.currentText()]
                 cmd = b"EX0812" + value + b";"
                 self.rig.write(cmd)
+
+    def get_data_bfo(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX0812;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_data_bfo = {value: key for key, value in DATA_BFO.items()}
+                self.data_bfo_combo.setCurrentText(rev_data_bfo[resp[6:]])
 
     def set_fm_mic_select(self):
         if self.rig.isOpen():
