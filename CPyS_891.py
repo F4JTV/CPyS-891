@@ -13,6 +13,7 @@
 import sys
 from datetime import datetime
 
+import serial.tools.list_ports
 from serial import Serial
 from PyQt5.Qt import *
 
@@ -25,7 +26,7 @@ from PyQt5.Qt import *
 # TODO: About window
 
 APP_NAME = "CPyS-891"
-APP_VERSION = datetime.strftime(datetime.now(), "%y%m%d")
+APP_VERSION = datetime.strftime(datetime.now(), "0.%m%d")
 APP_TITLE = f"{APP_NAME} - v{APP_VERSION}"
 ICON = "./images/icon.png"
 FONT = "./fonts/Quicksand-Regular.ttf"
@@ -163,6 +164,7 @@ TUNER_SELECT = {"OFF": b"0", "EXTERNAL": b"1",
 VOX_SELECT = {"MIC": b"0", "DATA": b"1"}
 EMERGENCY_FREQ = {"DISABLE": b"0", "ENABLE": b"1"}
 RESET = {"ALL": b"0", "DATA": b"1", "FUNC": b"2"}
+BAUDRATE = ["4800", "9600", "19200", "38400"]
 
 
 def format_combo(combobox):
@@ -246,9 +248,7 @@ class MainWindow(QMainWindow):
         self.central_Widget.setLayout(self.main_layout)
 
         # ###### Rig
-        self.rig = Serial(baudrate=4800, write_timeout=1)
-        self.rig.setPort("/dev/ttyUSB0")
-        # self.rig.open()
+        self.rig = serial.Serial(baudrate=4800, write_timeout=1)
 
         # ###### Tab
         self.tab = QTabWidget()
@@ -5517,6 +5517,8 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1401" + value + b";"
                 self.rig.write(cmd)
 
+
+
     def set_ssb_dial_step(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -6055,7 +6057,57 @@ class SettingsWindow(QDialog):
 
         self.master = master
 
+        self.setWindowTitle("Settings")
         self.setModal(True)
+
+        self.main_layout = QHBoxLayout()
+        self.setLayout(self.main_layout)
+
+        self.com_port_group = QGroupBox("USB COM port")
+        self.main_layout.addWidget(self.com_port_group, Qt.AlignCenter)
+        self.com_port_layout = QHBoxLayout()
+        self.com_port_combo = QComboBox()
+        self.com_port_combo.setMinimumWidth(200)
+        self.com_port_group.setLayout(self.com_port_layout)
+        self.com_port_layout.addWidget(self.com_port_combo, Qt.AlignCenter)
+
+        ports = serial.tools.list_ports.comports()
+        if len(ports) == 0:
+            self.com_port_combo.addItem("No COM port connected")
+        else:
+            for port in ports:
+                self.com_port_combo.addItem(port[0])
+        self.com_port_combo.setEditable(True)
+        self.com_port_combo.lineEdit().setReadOnly(True)
+        self.com_port_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        format_combo(self.com_port_combo)
+        self.com_port_combo.setCurrentIndex(0)
+        self.com_port_combo.currentTextChanged.connect(self.connect_to_rig)
+
+        self.baudrate_group = QGroupBox("Baudrate")
+        self.main_layout.addWidget(self.baudrate_group, Qt.AlignCenter)
+        self.baudrate_layout = QHBoxLayout()
+        self.baudrate_combo = QComboBox()
+        self.baudrate_combo.setMinimumWidth(200)
+        self.baudrate_group.setLayout(self.baudrate_layout)
+        self.baudrate_layout.addWidget(self.baudrate_combo, Qt.AlignCenter)
+
+        self.baudrate_combo.addItems(BAUDRATE)
+        self.baudrate_combo.setEditable(True)
+        self.baudrate_combo.lineEdit().setReadOnly(True)
+        self.baudrate_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        format_combo(self.baudrate_combo)
+        self.baudrate_combo.setCurrentIndex(0)
+        self.baudrate_combo.currentTextChanged.connect(self.connect_to_rig)
+
+    def connect_to_rig(self):
+        try:
+            self.master.rig.baudrate = int(self.baudrate_combo.currentText())
+            self.master.rig.setPort(self.com_port_combo.currentText())
+            self.master.rig.open()
+            self.master.status_bar.showMessage("Connected to the rig")
+        except serial.SerialException:
+            self.master.status_bar.showMessage("Not connected")
 
     def closeEvent(self, event):
         self.master.settings = None
@@ -6072,7 +6124,7 @@ if __name__ == "__main__":
     splash = QSplashScreen(QPixmap(ICON))
     splash.show()
     splash.showMessage(APP_NAME, Qt.AlignmentFlag.AlignHCenter |
-                       Qt.AlignmentFlag.AlignBottom, Qt.GlobalColor.black)
+                       Qt.AlignmentFlag.AlignBottom, Qt.GlobalColor.white)
 
     app.processEvents()
     window = MainWindow(app)
