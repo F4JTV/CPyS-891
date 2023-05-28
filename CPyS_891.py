@@ -19,10 +19,10 @@ from PyQt5.Qt import *
 
 # TODO: Functions
 # TODO: Memory
-# TODO: default data on open
-# TODO: save config to file
-# TODO: open config
-# TODO: Settings window
+# TODO: check if default data on open
+# TODO: save config to file (json)
+# TODO: open config from file (json)
+# TODO: Presets (json)
 # TODO: About window
 
 APP_NAME = "CPyS-891"
@@ -183,8 +183,13 @@ class MainWindow(QMainWindow):
             self.config = configparser.ConfigParser()
             self.config.read("./CPyS.cfg")
         except FileNotFoundError:
-            print('"CPyS.cfg" file not found')
-            sys.exit(-1)
+            error_box = QMessageBox(QMessageBox.Critical,
+                                    "Config error",
+                                    '"CPyS.cfg" file not found',
+                                    QMessageBox.Ok)
+            error_box.setModal(True)
+            error_box.exec_()
+            sys.exit()
 
         self.app = appli
         self.transfert = True
@@ -198,14 +203,22 @@ class MainWindow(QMainWindow):
         self.baudrate = self.config["DEFAULT"]["baudrate"]
 
         # ###### Rig
+        self.rig = serial.Serial(baudrate=self.baudrate,
+                                 bytesize=8,
+                                 timeout=0.1,
+                                 stopbits=serial.STOPBITS_ONE)
         try:
-            self.rig = serial.Serial(port=self.com_port, baudrate=self.baudrate,
-                                     bytesize=8, timeout=0.1, stopbits=serial.STOPBITS_ONE)
+            self.rig.setPort(self.com_port)
+            self.rig.open()
             print(self.com_port + ' Connected.')
-        except serial.SerialException:
-            print('Comport error. No connetion for ' + self.com_port)
-            print('Check "CPyS.cfg" file and check if the FT-891 is plugged')
-            sys.exit(-2)
+        except:
+            error_box = QMessageBox(QMessageBox.Critical,
+                                    "Connection error",
+                                    'Check "CPyS.cfg" file and check if the FT-891 is plugged',
+                                    QMessageBox.Ok)
+            error_box.setModal(True)
+            error_box.exec_()
+            sys.exit()
 
         # ###### Main Window config
         self.setWindowTitle(APP_TITLE)
