@@ -11,7 +11,6 @@
 ##########################################################################
 
 import sys
-import threading
 from datetime import datetime
 
 from serial import Serial
@@ -171,15 +170,6 @@ def format_combo(combobox):
         combobox.setItemData(i, Qt.AlignCenter, Qt.TextAlignmentRole)
 
 
-class GetFromRadioThread(QThread):
-    def __init__(self, master):
-        super().__init__()
-        self.master = master
-
-    def run(self):
-        self.master.get_config_from_radio()
-
-
 class MainWindow(QMainWindow):
     """ Main Window """
 
@@ -191,6 +181,7 @@ class MainWindow(QMainWindow):
         self.transfert = True
         self.old_beacon_interval = int()
         self.settings = None
+        self.progressbar = QProgressBar()
 
         # ###### Main Window config
         self.setWindowTitle(APP_TITLE)
@@ -257,7 +248,7 @@ class MainWindow(QMainWindow):
         # ###### Rig
         self.rig = Serial(baudrate=4800, write_timeout=1)
         self.rig.setPort("/dev/ttyUSB0")
-        self.rig.open()
+        # self.rig.open()
 
         # ###### Tab
         self.tab = QTabWidget()
@@ -2985,7 +2976,6 @@ class MainWindow(QMainWindow):
         """Send the config to the Radio"""
         self.transfert = True
 
-        self.progressbar = QProgressBar()
         self.status_bar.addWidget(self.progressbar, 1)
         self.progressbar.setMaximum(155)
         self.progressbar.setValue(0)
@@ -3323,7 +3313,6 @@ class MainWindow(QMainWindow):
     def get_config_from_radio(self):
         self.transfert = True
 
-        self.progressbar = QProgressBar()
         self.status_bar.addWidget(self.progressbar, 1)
         self.progressbar.setMaximum(155)
         self.progressbar.setValue(0)
@@ -3521,6 +3510,39 @@ class MainWindow(QMainWindow):
         self.progressbar.setValue(91)
         self.get_rtty_bfo()
         self.progressbar.setValue(92)
+
+        self.get_ssb_lcut_freq()
+        self.progressbar.setValue(93)
+        self.get_ssb_lcut_slope()
+        self.progressbar.setValue(94)
+        self.get_ssb_hcut_freq()
+        self.progressbar.setValue(95)
+        self.get_ssb_hcut_slope()
+        self.progressbar.setValue(96)
+        self.get_ssb_mic_select()
+        self.progressbar.setValue(97)
+        self.get_ssb_out_level()
+        self.progressbar.setValue(98)
+        self.get_ssb_bfo()
+        self.progressbar.setValue(99)
+        self.get_ssb_ptt_select()
+        self.progressbar.setValue(100)
+        self.get_ssb_tx_bpf()
+        self.progressbar.setValue(101)
+
+        self.get_apf_width()
+        self.progressbar.setValue(102)
+        self.get_contour_level()
+        self.progressbar.setValue(103)
+        self.get_contour_width()
+        self.progressbar.setValue(104)
+        self.get_if_notch_width()
+        self.progressbar.setValue(105)
+
+        self.get_scp_start_cycle()
+        self.progressbar.setValue(106)
+        self.get_scp_span_freq()
+        self.progressbar.setValue(107)
 
         self.status_bar.removeWidget(self.progressbar)
         self.status_bar.showMessage("Done")
@@ -5237,12 +5259,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1101" + value + b";"
                 self.rig.write(cmd)
 
+    def get_ssb_lcut_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1101;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_ssb_lcut_freq = {value: key for key, value in LCUT_FREQ.items()}
+                self.ssb_lcut_freq_combo.setCurrentText(rev_ssb_lcut_freq[resp[6:]])
+
     def set_ssb_lcut_slope(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = SLOPE[self.ssb_lcut_slope_combo.currentText()]
                 cmd = b"EX1102" + value + b";"
                 self.rig.write(cmd)
+
+    def get_ssb_lcut_slope(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1102;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_ssb_lcut_slope = {value: key for key, value in SLOPE.items()}
+                self.ssb_lcut_slope_combo.setCurrentText(rev_ssb_lcut_slope[resp[6:]])
 
     def set_ssb_hcut_freq(self):
         if self.rig.isOpen():
@@ -5251,6 +5291,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1103" + value + b";"
                 self.rig.write(cmd)
 
+    def get_ssb_hcut_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1103;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_ssb_hcut_freq = {value: key for key, value in HCUT_FREQ.items()}
+                self.ssb_hcut_freq_combo.setCurrentText(rev_ssb_hcut_freq[resp[6:]])
+
     def set_ssb_hcut_slope(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5258,12 +5307,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1104" + value + b";"
                 self.rig.write(cmd)
 
+    def get_ssb_hcut_slope(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1104;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_ssb_hcut_slope = {value: key for key, value in SLOPE.items()}
+                self.ssb_hcut_slope_combo.setCurrentText(rev_ssb_hcut_slope[resp[6:]])
+
     def set_ssb_mic_select(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = SSB_MIC_SELECT[self.ssb_mic_select_combo.currentText()]
                 cmd = b"EX1105" + value + b";"
                 self.rig.write(cmd)
+
+    def get_ssb_mic_select(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1105;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_ssb_mic_select = {value: key for key, value in SSB_MIC_SELECT.items()}
+                self.ssb_mic_select_combo.setCurrentText(rev_ssb_mic_select[resp[6:]])
 
     def set_ssb_out_level(self):
         if self.rig.isOpen():
@@ -5275,12 +5342,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1106" + value + b";"
                 self.rig.write(cmd)
 
+    def get_ssb_out_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1106;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.ssb_out_level_spin.setValue(int(resp[6:]))
+
     def set_ssb_bfo(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = SSB_BFO[self.ssb_bfo_combo.currentText()]
                 cmd = b"EX1107" + value + b";"
                 self.rig.write(cmd)
+
+    def get_ssb_bfo(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1107;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_ssb_bfo = {value: key for key, value in SSB_BFO.items()}
+                self.ssb_bfo_combo.setCurrentText(rev_ssb_bfo[resp[6:]])
 
     def set_ssb_ptt_select(self):
         if self.rig.isOpen():
@@ -5289,6 +5374,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1108" + value + b";"
                 self.rig.write(cmd)
 
+    def get_ssb_ptt_select(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1108;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_ssb_ptt_select = {value: key for key, value in SSB_PTT_SELECT.items()}
+                self.ssb_ptt_select_combo.setCurrentText(rev_ssb_ptt_select[resp[6:]])
+
     def set_ssb_tx_bpf(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5296,12 +5390,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1109" + value + b";"
                 self.rig.write(cmd)
 
+    def get_ssb_tx_bpf(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1109;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_ssb_tx_bpf = {value: key for key, value in SSB_TX_BPF.items()}
+                self.ssb_tx_bpf_combo.setCurrentText(rev_ssb_tx_bpf[resp[6:]])
+
     def set_apf_width(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = APF_WIDTH[self.apf_width_combo.currentText()]
                 cmd = b"EX1201" + value + b";"
                 self.rig.write(cmd)
+
+    def get_apf_width(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1201;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_apf_width = {value: key for key, value in APF_WIDTH.items()}
+                self.apf_width_combo.setCurrentText(rev_apf_width[resp[6:]])
 
     def set_contour_level(self):
         if self.rig.isOpen():
@@ -5320,6 +5432,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1202" + value + b";"
                 self.rig.write(cmd)
 
+    def get_contour_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1202;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.contour_level_spin.setValue(int(resp[6:]))
+
     def set_contour_width(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5332,12 +5453,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1203" + value + b";"
                 self.rig.write(cmd)
 
+    def get_contour_width(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1203;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.contour_width_spin.setValue(int(resp[6:]))
+
     def set_if_notch_width(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = IF_NOTCH_WIDTH[self.if_notch_width_combo.currentText()]
                 cmd = b"EX1204" + value + b";"
                 self.rig.write(cmd)
+
+    def get_if_notch_width(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1204;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_if_notch_width = {value: key for key, value in IF_NOTCH_WIDTH.items()}
+                self.if_notch_width_combo.setCurrentText(rev_if_notch_width[resp[6:]])
 
     def set_scp_start_cycle(self):
         if self.rig.isOpen():
@@ -5346,12 +5485,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1301" + value + b";"
                 self.rig.write(cmd)
 
+    def get_scp_start_cycle(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1301;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_scp_start_cycle = {value: key for key, value in SCP_START_CYCLE.items()}
+                self.scp_start_cycle_combo.setCurrentText(rev_scp_start_cycle[resp[6:]])
+
     def set_scp_span_freq(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = SCP_SPAN_FREQ[self.scp_span_freq_combo.currentText()]
                 cmd = b"EX1302" + value + b";"
                 self.rig.write(cmd)
+
+    def get_scp_span_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1302;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_scp_span_freq = {value: key for key, value in SCP_SPAN_FREQ.items()}
+                self.scp_span_freq_combo.setCurrentText(rev_scp_span_freq[resp[6:]])
 
     def set_quick_dial(self):
         if self.rig.isOpen():
