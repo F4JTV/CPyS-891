@@ -9,12 +9,10 @@
 #                 \___|_|  \_, |___/   \___//_/|_|                       #
 #                          |__/                                          #
 ##########################################################################
-
 import sys
 from datetime import datetime
 
 import serial.tools.list_ports
-from serial import Serial
 from PyQt5.Qt import *
 
 # TODO: Functions
@@ -248,7 +246,7 @@ class MainWindow(QMainWindow):
         self.central_Widget.setLayout(self.main_layout)
 
         # ###### Rig
-        self.rig = serial.Serial(baudrate=4800, write_timeout=1)
+        self.rig = serial.Serial()
 
         # ###### Tab
         self.tab = QTabWidget()
@@ -6101,13 +6099,13 @@ class SettingsWindow(QDialog):
         self.baudrate_combo.currentTextChanged.connect(self.connect_to_rig)
 
     def connect_to_rig(self):
+        self.master.rig.close()
         try:
             self.master.rig.baudrate = int(self.baudrate_combo.currentText())
             self.master.rig.setPort(self.com_port_combo.currentText())
             self.master.rig.open()
-            self.master.status_bar.showMessage("Connected to the rig")
         except serial.SerialException:
-            self.master.status_bar.showMessage("Not connected")
+            pass
 
     def closeEvent(self, event):
         self.master.settings = None
