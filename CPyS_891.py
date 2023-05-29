@@ -9,20 +9,19 @@
 #                 \___|_|  \_, |___/   \___//_/|_|                       #
 #                          |__/                                          #
 ##########################################################################
-
+import platform
 import sys
 from datetime import datetime
+import configparser
 
 import serial.tools.list_ports
-from serial import Serial
 from PyQt5.Qt import *
 
 # TODO: Functions
 # TODO: Memory
-# TODO: default data on open
-# TODO: save config to file
-# TODO: open config
-# TODO: Settings window
+# TODO: save config to file (json)
+# TODO: open config from file (json)
+# TODO: Presets (json)
 # TODO: About window
 
 APP_NAME = "CPyS-891"
@@ -178,12 +177,48 @@ class MainWindow(QMainWindow):
     def __init__(self, appli, **kwargs):
         super().__init__(**kwargs)
 
-        # ######
+        # ####### Config
+        try:
+            self.config = configparser.ConfigParser()
+            self.config.read("./CPyS.cfg")
+        except FileNotFoundError:
+            error_box = QMessageBox(QMessageBox.Critical,
+                                    "Config error",
+                                    '"CPyS.cfg" file not found',
+                                    QMessageBox.Ok)
+            error_box.setModal(True)
+            error_box.exec_()
+            sys.exit()
+
         self.app = appli
         self.transfert = True
         self.old_beacon_interval = int()
-        self.settings = None
         self.progressbar = QProgressBar()
+
+        if platform.system() == "Windows":
+            self.com_port = self.config["DEFAULT"]["windows_port"]
+        elif platform.system() == "Linux":
+            self.com_port = self.config["DEFAULT"]["linux_port"]
+        self.baudrate = self.config["DEFAULT"]["baudrate"]
+
+        # ###### Rig
+        self.rig = serial.Serial(baudrate=self.baudrate,
+                                 bytesize=8,
+                                 timeout=0.1,
+                                 stopbits=serial.STOPBITS_ONE)
+        try:
+            self.rig.setPort(self.com_port)
+            # self.rig.open()
+            print(self.com_port + ' Connected.')
+
+        except serial.SerialException:
+            error_box = QMessageBox(QMessageBox.Critical,
+                                    "Connection error",
+                                    'Check "CPyS.cfg" file and check if the FT-891 is plugged',
+                                    QMessageBox.Ok)
+            error_box.setModal(True)
+            error_box.exec_()
+            sys.exit()
 
         # ###### Main Window config
         self.setWindowTitle(APP_TITLE)
@@ -207,11 +242,6 @@ class MainWindow(QMainWindow):
 
         self.open_config_action = QAction("&Open config file")
         self.file_menu.addAction(self.open_config_action)
-        self.file_menu.addSeparator()
-
-        self.settings_action = QAction("Se&tting")
-        self.settings_action.triggered.connect(self.display_settings_win)
-        self.file_menu.addAction(self.settings_action)
         self.file_menu.addSeparator()
 
         self.exit_action = QAction("Exit")
@@ -246,9 +276,6 @@ class MainWindow(QMainWindow):
 
         self.main_layout = QVBoxLayout()
         self.central_Widget.setLayout(self.main_layout)
-
-        # ###### Rig
-        self.rig = serial.Serial(baudrate=4800, write_timeout=1)
 
         # ###### Tab
         self.tab = QTabWidget()
@@ -602,7 +629,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_1_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_memory_1_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_1_combo)
-        self.cw_memory_1_combo.setCurrentIndex(1)
+        self.cw_memory_1_combo.setCurrentIndex(0)
         self.cw_memory_1_combo.currentTextChanged.connect(self.set_cw_memory_1)
 
         self.menu_table.setItem(22, 0, self.cw_memory_1_menu_nb)
@@ -619,7 +646,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_2_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_memory_2_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_2_combo)
-        self.cw_memory_2_combo.setCurrentIndex(1)
+        self.cw_memory_2_combo.setCurrentIndex(0)
         self.cw_memory_2_combo.currentTextChanged.connect(self.set_cw_memory_2)
 
         self.menu_table.setItem(23, 0, self.cw_memory_2_menu_nb)
@@ -636,7 +663,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_3_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_memory_3_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_3_combo)
-        self.cw_memory_3_combo.setCurrentIndex(1)
+        self.cw_memory_3_combo.setCurrentIndex(0)
         self.cw_memory_3_combo.currentTextChanged.connect(self.set_cw_memory_3)
 
         self.menu_table.setItem(24, 0, self.cw_memory_3_menu_nb)
@@ -653,7 +680,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_4_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_memory_4_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_4_combo)
-        self.cw_memory_4_combo.setCurrentIndex(1)
+        self.cw_memory_4_combo.setCurrentIndex(0)
         self.cw_memory_4_combo.currentTextChanged.connect(self.set_cw_memory_4)
 
         self.menu_table.setItem(25, 0, self.cw_memory_4_menu_nb)
@@ -670,7 +697,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_5_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_memory_5_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_5_combo)
-        self.cw_memory_5_combo.setCurrentIndex(1)
+        self.cw_memory_5_combo.setCurrentIndex(0)
         self.cw_memory_5_combo.currentTextChanged.connect(self.set_cw_memory_5)
 
         self.menu_table.setItem(26, 0, self.cw_memory_5_menu_nb)
@@ -1158,7 +1185,7 @@ class MainWindow(QMainWindow):
         self.cw_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.cw_lcut_freq_combo)
-        self.cw_lcut_freq_combo.setCurrentIndex(1)
+        self.cw_lcut_freq_combo.setCurrentIndex(4)
         self.cw_lcut_freq_combo.currentTextChanged.connect(self.set_cw_lcut_freq)
 
         self.menu_table.setItem(57, 0, self.cw_lcut_freq_menu_nb)
@@ -1192,7 +1219,7 @@ class MainWindow(QMainWindow):
         self.cw_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.cw_hcut_freq_combo)
-        self.cw_hcut_freq_combo.setCurrentIndex(1)
+        self.cw_hcut_freq_combo.setCurrentIndex(11)
         self.cw_hcut_freq_combo.currentTextChanged.connect(self.set_cw_hcut_freq)
 
         self.menu_table.setItem(59, 0, self.cw_hcut_freq_menu_nb)
@@ -1451,7 +1478,7 @@ class MainWindow(QMainWindow):
         self.data_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.data_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.data_lcut_freq_combo)
-        self.data_lcut_freq_combo.setCurrentIndex(1)
+        self.data_lcut_freq_combo.setCurrentIndex(5)
         self.data_lcut_freq_combo.currentTextChanged.connect(self.set_data_lcut_freq)
 
         self.menu_table.setItem(75, 0, self.data_lcut_freq_menu_nb)
@@ -1485,7 +1512,7 @@ class MainWindow(QMainWindow):
         self.data_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.data_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.data_hcut_freq_combo)
-        self.data_hcut_freq_combo.setCurrentIndex(1)
+        self.data_hcut_freq_combo.setCurrentIndex(47)
         self.data_hcut_freq_combo.currentTextChanged.connect(self.set_data_hcut_freq)
 
         self.menu_table.setItem(77, 0, self.data_hcut_freq_menu_nb)
@@ -1569,7 +1596,7 @@ class MainWindow(QMainWindow):
         self.data_bfo_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.data_bfo_combo.addItems([i for i in DATA_BFO.keys()])
         format_combo(self.data_bfo_combo)
-        self.data_bfo_combo.setCurrentIndex(0)
+        self.data_bfo_combo.setCurrentIndex(1)
         self.data_bfo_combo.currentTextChanged.connect(self.set_data_bfo)
 
         self.menu_table.setItem(82, 0, self.data_bfo_menu_nb)
@@ -1699,7 +1726,7 @@ class MainWindow(QMainWindow):
         self.rtty_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.rtty_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.rtty_lcut_freq_combo)
-        self.rtty_lcut_freq_combo.setCurrentIndex(1)
+        self.rtty_lcut_freq_combo.setCurrentIndex(5)
         self.rtty_lcut_freq_combo.currentTextChanged.connect(self.set_rtty_lcut_freq)
 
         self.menu_table.setItem(91, 0, self.rtty_lcut_freq_menu_nb)
@@ -1733,7 +1760,7 @@ class MainWindow(QMainWindow):
         self.rtty_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.rtty_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.rtty_hcut_freq_combo)
-        self.rtty_hcut_freq_combo.setCurrentIndex(1)
+        self.rtty_hcut_freq_combo.setCurrentIndex(47)
         self.rtty_hcut_freq_combo.currentTextChanged.connect(self.set_rtty_hcut_freq)
 
         self.menu_table.setItem(93, 0, self.rtty_hcut_freq_menu_nb)
@@ -1891,7 +1918,7 @@ class MainWindow(QMainWindow):
         self.ssb_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.ssb_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.ssb_lcut_freq_combo)
-        self.ssb_lcut_freq_combo.setCurrentIndex(0)
+        self.ssb_lcut_freq_combo.setCurrentIndex(1)
         self.ssb_lcut_freq_combo.currentTextChanged.connect(self.set_ssb_lcut_freq)
 
         self.menu_table.setItem(103, 0, self.ssb_lcut_freq_menu_nb)
@@ -1925,7 +1952,7 @@ class MainWindow(QMainWindow):
         self.ssb_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.ssb_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.ssb_hcut_freq_combo)
-        self.ssb_hcut_freq_combo.setCurrentIndex(0)
+        self.ssb_hcut_freq_combo.setCurrentIndex(47)
         self.ssb_hcut_freq_combo.currentTextChanged.connect(self.set_ssb_hcut_freq)
 
         self.menu_table.setItem(105, 0, self.ssb_hcut_freq_menu_nb)
@@ -2212,7 +2239,7 @@ class MainWindow(QMainWindow):
         self.fm_dial_step_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.fm_dial_step_combo.addItems([i for i in FM_DIAL_STEP.keys()])
         format_combo(self.fm_dial_step_combo)
-        self.fm_dial_step_combo.setCurrentIndex(0)
+        self.fm_dial_step_combo.setCurrentIndex(1)
         self.fm_dial_step_combo.currentTextChanged.connect(self.set_fm_dial_step)
 
         self.menu_table.setItem(124, 0, self.fm_dial_step_menu_nb)
@@ -2666,7 +2693,7 @@ class MainWindow(QMainWindow):
         self.pwr_50m_spin.setMaximum(100)
         self.pwr_50m_spin.setMinimum(5)
         self.pwr_50m_spin.setSingleStep(1)
-        self.pwr_50m_spin.setValue(50)
+        self.pwr_50m_spin.setValue(100)
         self.pwr_50m_spin.valueChanged.connect(self.set_50m_pwr)
 
         self.menu_table.setItem(153, 0, self.pwr_50m_menu_nb)
@@ -2976,6 +3003,7 @@ class MainWindow(QMainWindow):
         """Send the config to the Radio"""
         self.transfert = True
 
+        self.progressbar = QProgressBar(self)
         self.status_bar.addWidget(self.progressbar, 1)
         self.progressbar.setMaximum(155)
         self.progressbar.setValue(0)
@@ -3313,6 +3341,7 @@ class MainWindow(QMainWindow):
     def get_config_from_radio(self):
         self.transfert = True
 
+        self.progressbar = QProgressBar(self)
         self.status_bar.addWidget(self.progressbar, 1)
         self.progressbar.setMaximum(155)
         self.progressbar.setValue(0)
@@ -3544,6 +3573,105 @@ class MainWindow(QMainWindow):
         self.get_scp_span_freq()
         self.progressbar.setValue(107)
 
+        self.get_quick_dial()
+        self.progressbar.setValue(108)
+        self.get_ssb_dial_step()
+        self.progressbar.setValue(109)
+        self.get_am_dial_step()
+        self.progressbar.setValue(110)
+        self.get_fm_dial_step()
+        self.progressbar.setValue(111)
+        self.get_dial_step()
+        self.progressbar.setValue(112)
+        self.get_am_ch_step()
+        self.progressbar.setValue(113)
+        self.get_fm_ch_step()
+        self.progressbar.setValue(114)
+
+        self.get_eq_1_freq()
+        self.progressbar.setValue(115)
+        self.get_eq_1_level()
+        self.progressbar.setValue(116)
+        self.get_eq_1_bwth()
+        self.progressbar.setValue(117)
+        self.get_eq_2_freq()
+        self.progressbar.setValue(118)
+        self.get_eq_2_level()
+        self.progressbar.setValue(119)
+        self.get_eq_2_bwth()
+        self.progressbar.setValue(120)
+        self.get_eq_3_freq()
+        self.progressbar.setValue(121)
+        self.get_eq_3_level()
+        self.progressbar.setValue(122)
+        self.get_eq_3_bwth()
+        self.progressbar.setValue(123)
+        self.get_p_eq_1_freq()
+        self.progressbar.setValue(124)
+        self.get_p_eq_1_level()
+        self.progressbar.setValue(125)
+        self.get_p_eq_1_bwth()
+        self.progressbar.setValue(126)
+        self.get_p_eq_2_freq()
+        self.progressbar.setValue(127)
+        self.get_p_eq_2_level()
+        self.progressbar.setValue(128)
+        self.get_p_eq_2_bwth()
+        self.progressbar.setValue(129)
+        self.get_p_eq_3_freq()
+        self.progressbar.setValue(130)
+        self.get_p_eq_3_level()
+        self.progressbar.setValue(131)
+        self.get_p_eq_3_bwth()
+        self.progressbar.setValue(132)
+
+        self.get_hf_ssb_pwr()
+        self.progressbar.setValue(133)
+        self.get_hf_am_pwr()
+        self.progressbar.setValue(134)
+        self.get_hf_pwr()
+        self.progressbar.setValue(135)
+        self.get_50m_ssb_pwr()
+        self.progressbar.setValue(136)
+        self.get_50m_am_pwr()
+        self.progressbar.setValue(137)
+        self.get_50m_pwr()
+        self.progressbar.setValue(138)
+        self.get_ssb_mic_gain()
+        self.progressbar.setValue(139)
+        self.get_am_mic_gain()
+        self.progressbar.setValue(140)
+        self.get_fm_mic_gain()
+        self.progressbar.setValue(141)
+        self.get_data_mic_gain()
+        self.progressbar.setValue(142)
+        self.get_ssb_data_gain()
+        self.progressbar.setValue(143)
+        self.get_am_data_gain()
+        self.progressbar.setValue(144)
+        self.get_fm_data_gain()
+        self.progressbar.setValue(145)
+        self.get_data_data_gain()
+        self.progressbar.setValue(146)
+        self.get_tuner_select()
+        self.progressbar.setValue(147)
+        self.get_vox_select()
+        self.progressbar.setValue(148)
+        self.get_vox_gain()
+        self.progressbar.setValue(149)
+        self.get_vox_delay()
+        self.progressbar.setValue(150)
+        self.get_anti_vox_gain()
+        self.progressbar.setValue(151)
+        self.get_data_vox_gain()
+        self.progressbar.setValue(152)
+        self.get_data_vox_delay()
+        self.progressbar.setValue(153)
+        self.get_anti_dvox_gain()
+        self.progressbar.setValue(154)
+        self.get_emergency_freq()
+        self.progressbar.setValue(155)
+
         self.status_bar.removeWidget(self.progressbar)
         self.status_bar.showMessage("Done")
         if not self.live_mode_action.isChecked():
@@ -3559,13 +3687,6 @@ class MainWindow(QMainWindow):
             self.live_mode_action.setChecked(True)
             self.transfert = True
             self.send_to_radio_action.setDisabled(True)
-
-    def display_settings_win(self):
-        if self.settings is not None:
-            pass
-        else:
-            self.settings = SettingsWindow(self)
-            self.settings.show()
 
     def set_acg_fast_delay(self):
         """Set ACG FAST DELAY"""
@@ -5517,7 +5638,14 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1401" + value + b";"
                 self.rig.write(cmd)
 
-
+    def get_quick_dial(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1401;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_quick_dial = {value: key for key, value in QUICK_DIAL.items()}
+                self.quick_dial_combo.setCurrentText(rev_quick_dial[resp[6:]])
 
     def set_ssb_dial_step(self):
         if self.rig.isOpen():
@@ -5526,12 +5654,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1402" + value + b";"
                 self.rig.write(cmd)
 
+    def get_ssb_dial_step(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1402;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_ssb_dial_step = {value: key for key, value in SSB_DIAL_STEP.items()}
+                self.ssb_dial_step_combo.setCurrentText(rev_ssb_dial_step[resp[6:]])
+
     def set_am_dial_step(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = AM_DIAL_STEP[self.am_dial_step_combo.currentText()]
                 cmd = b"EX1403" + value + b";"
                 self.rig.write(cmd)
+
+    def get_am_dial_step(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1403;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_am_dial_step = {value: key for key, value in AM_DIAL_STEP.items()}
+                self.am_dial_step_combo.setCurrentText(rev_am_dial_step[resp[6:]])
 
     def set_fm_dial_step(self):
         if self.rig.isOpen():
@@ -5540,12 +5686,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1404" + value + b";"
                 self.rig.write(cmd)
 
+    def get_fm_dial_step(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1404;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_fm_dial_step = {value: key for key, value in FM_DIAL_STEP.items()}
+                self.fm_dial_step_combo.setCurrentText(rev_fm_dial_step[resp[6:]])
+
     def set_dial_step(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = DIAL_STEP[self.dial_step_combo.currentText()]
                 cmd = b"EX1405" + value + b";"
                 self.rig.write(cmd)
+
+    def get_dial_step(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1405;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_dial_step = {value: key for key, value in DIAL_STEP.items()}
+                self.dial_step_combo.setCurrentText(rev_dial_step[resp[6:]])
 
     def set_am_ch_step(self):
         if self.rig.isOpen():
@@ -5554,6 +5718,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1406" + value + b";"
                 self.rig.write(cmd)
 
+    def get_am_ch_step(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1406;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_am_ch_step = {value: key for key, value in AM_CH_STEP.items()}
+                self.am_ch_step_combo.setCurrentText(rev_am_ch_step[resp[6:]])
+
     def set_fm_ch_step(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5561,12 +5734,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1407" + value + b";"
                 self.rig.write(cmd)
 
+    def get_fm_ch_step(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1407;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_fm_ch_step = {value: key for key, value in FM_CH_STEP.items()}
+                self.fm_ch_step_combo.setCurrentText(rev_fm_ch_step[resp[6:]])
+
     def set_eq_1_freq(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = EQ_1_FREQ[self.eq_1_freq_combo.currentText()]
                 cmd = b"EX1501" + value + b";"
                 self.rig.write(cmd)
+
+    def get_eq_1_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1501;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_eq_1_freq = {value: key for key, value in EQ_1_FREQ.items()}
+                self.eq_1_freq_combo.setCurrentText(rev_eq_1_freq[resp[6:]])
 
     def set_eq_1_level(self):
         if self.rig.isOpen():
@@ -5584,6 +5775,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1502" + value + b";"
                 self.rig.write(cmd)
 
+    def get_eq_1_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1502;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.eq_1_level_spin.setValue(int(resp[6:]))
+
     def set_eq_1_bwth(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5596,12 +5796,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1503" + value + b";"
                 self.rig.write(cmd)
 
+    def get_eq_1_bwth(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1503;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.eq_1_bwth_spin.setValue(int(resp[6:]))
+
     def set_eq_2_freq(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = EQ_2_FREQ[self.eq_2_freq_combo.currentText()]
                 cmd = b"EX1504" + value + b";"
                 self.rig.write(cmd)
+
+    def get_eq_2_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1504;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_eq_2_freq = {value: key for key, value in EQ_2_FREQ.items()}
+                self.eq_2_freq_combo.setCurrentText(rev_eq_2_freq[resp[6:]])
 
     def set_eq_2_level(self):
         if self.rig.isOpen():
@@ -5619,6 +5837,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1505" + value + b";"
                 self.rig.write(cmd)
 
+    def get_eq_2_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1505;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.eq_2_level_spin.setValue(int(resp[6:]))
+
     def set_eq_2_bwth(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5631,12 +5858,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1506" + value + b";"
                 self.rig.write(cmd)
 
+    def get_eq_2_bwth(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1506;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.eq_2_bwth_spin.setValue(int(resp[6:]))
+
     def set_eq_3_freq(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = EQ_3_FREQ[self.eq_3_freq_combo.currentText()]
                 cmd = b"EX1507" + value + b";"
                 self.rig.write(cmd)
+
+    def get_eq_3_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1507;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_eq_3_freq = {value: key for key, value in EQ_3_FREQ.items()}
+                self.eq_3_freq_combo.setCurrentText(rev_eq_3_freq[resp[6:]])
 
     def set_eq_3_level(self):
         if self.rig.isOpen():
@@ -5654,6 +5899,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1508" + value + b";"
                 self.rig.write(cmd)
 
+    def get_eq_3_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1508;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.eq_3_level_spin.setValue(int(resp[6:]))
+
     def set_eq_3_bwth(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5666,12 +5920,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1509" + value + b";"
                 self.rig.write(cmd)
 
+    def get_eq_3_bwth(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1509;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.eq_3_bwth_spin.setValue(int(resp[6:]))
+
     def set_p_eq_1_freq(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = EQ_1_FREQ[self.p_eq_1_freq_combo.currentText()]
                 cmd = b"EX1510" + value + b";"
                 self.rig.write(cmd)
+
+    def get_p_eq_1_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1510;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_p_eq_1_freq = {value: key for key, value in EQ_1_FREQ.items()}
+                self.p_eq_1_freq_combo.setCurrentText(rev_p_eq_1_freq[resp[6:]])
 
     def set_p_eq_1_level(self):
         if self.rig.isOpen():
@@ -5689,6 +5961,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1511" + value + b";"
                 self.rig.write(cmd)
 
+    def get_p_eq_1_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1511;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.p_eq_1_level_spin.setValue(int(resp[6:]))
+
     def set_p_eq_1_bwth(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5701,12 +5982,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1512" + value + b";"
                 self.rig.write(cmd)
 
+    def get_p_eq_1_bwth(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1512;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.p_eq_1_bwth_spin.setValue(int(resp[6:]))
+
     def set_p_eq_2_freq(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = EQ_2_FREQ[self.p_eq_2_freq_combo.currentText()]
                 cmd = b"EX1513" + value + b";"
                 self.rig.write(cmd)
+
+    def get_p_eq_2_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1513;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_p_eq_2_freq = {value: key for key, value in EQ_2_FREQ.items()}
+                self.p_eq_2_freq_combo.setCurrentText(rev_p_eq_2_freq[resp[6:]])
 
     def set_p_eq_2_level(self):
         if self.rig.isOpen():
@@ -5724,6 +6023,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1514" + value + b";"
                 self.rig.write(cmd)
 
+    def get_p_eq_2_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1514;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.p_eq_2_level_spin.setValue(int(resp[6:]))
+
     def set_p_eq_2_bwth(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5736,12 +6044,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1515" + value + b";"
                 self.rig.write(cmd)
 
+    def get_p_eq_2_bwth(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1515;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.p_eq_2_bwth_spin.setValue(int(resp[6:]))
+
     def set_p_eq_3_freq(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = EQ_3_FREQ[self.p_eq_3_freq_combo.currentText()]
                 cmd = b"EX1516" + value + b";"
                 self.rig.write(cmd)
+
+    def get_p_eq_3_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1516;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_p_eq_3_freq = {value: key for key, value in EQ_3_FREQ.items()}
+                self.p_eq_3_freq_combo.setCurrentText(rev_p_eq_3_freq[resp[6:]])
 
     def set_p_eq_3_level(self):
         if self.rig.isOpen():
@@ -5759,6 +6085,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1517" + value + b";"
                 self.rig.write(cmd)
 
+    def get_p_eq_3_level(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1517;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.p_eq_3_level_spin.setValue(int(resp[6:]))
+
     def set_p_eq_3_bwth(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5770,6 +6105,15 @@ class MainWindow(QMainWindow):
                 value = bytes(value, ENCODER)
                 cmd = b"EX1518" + value + b";"
                 self.rig.write(cmd)
+
+    def get_p_eq_3_bwth(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1518;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.p_eq_3_bwth_spin.setValue(int(resp[6:]))
 
     def set_hf_ssb_pwr(self):
         if self.rig.isOpen():
@@ -5783,6 +6127,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1601" + value + b";"
                 self.rig.write(cmd)
 
+    def get_hf_ssb_pwr(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1601;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.hf_ssb_pwr_spin.setValue(int(resp[6:]))
+
     def set_hf_am_pwr(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5794,6 +6147,15 @@ class MainWindow(QMainWindow):
                 value = bytes(value, ENCODER)
                 cmd = b"EX1602" + value + b";"
                 self.rig.write(cmd)
+
+    def get_hf_am_pwr(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1602;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.hf_am_pwr_spin.setValue(int(resp[6:]))
 
     def set_hf_pwr(self):
         if self.rig.isOpen():
@@ -5807,6 +6169,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1603" + value + b";"
                 self.rig.write(cmd)
 
+    def get_hf_pwr(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1603;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.hf_pwr_spin.setValue(int(resp[6:]))
+
     def set_50m_ssb_pwr(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5818,6 +6189,15 @@ class MainWindow(QMainWindow):
                 value = bytes(value, ENCODER)
                 cmd = b"EX1604" + value + b";"
                 self.rig.write(cmd)
+
+    def get_50m_ssb_pwr(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1604;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.ssb_50m_pwr_spin.setValue(int(resp[6:]))
 
     def set_50m_am_pwr(self):
         if self.rig.isOpen():
@@ -5831,6 +6211,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1605" + value + b";"
                 self.rig.write(cmd)
 
+    def get_50m_am_pwr(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1605;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.am_50m_pwr_spin.setValue(int(resp[6:]))
+
     def set_50m_pwr(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5842,6 +6231,15 @@ class MainWindow(QMainWindow):
                 value = bytes(value, ENCODER)
                 cmd = b"EX1606" + value + b";"
                 self.rig.write(cmd)
+
+    def get_50m_pwr(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1606;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.pwr_50m_spin.setValue(int(resp[6:]))
 
     def set_ssb_mic_gain(self):
         if self.rig.isOpen():
@@ -5855,6 +6253,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1607" + value + b";"
                 self.rig.write(cmd)
 
+    def get_ssb_mic_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1607;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.ssb_mic_gain_spin.setValue(int(resp[6:]))
+
     def set_am_mic_gain(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5866,6 +6273,15 @@ class MainWindow(QMainWindow):
                 value = bytes(value, ENCODER)
                 cmd = b"EX1608" + value + b";"
                 self.rig.write(cmd)
+
+    def get_am_mic_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1608;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.am_mic_gain_spin.setValue(int(resp[6:]))
 
     def set_fm_mic_gain(self):
         if self.rig.isOpen():
@@ -5879,6 +6295,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1609" + value + b";"
                 self.rig.write(cmd)
 
+    def get_fm_mic_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1609;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.fm_mic_gain_spin.setValue(int(resp[6:]))
+
     def set_data_mic_gain(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5890,6 +6315,15 @@ class MainWindow(QMainWindow):
                 value = bytes(value, ENCODER)
                 cmd = b"EX1610" + value + b";"
                 self.rig.write(cmd)
+
+    def get_data_mic_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1610;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.data_mic_gain_spin.setValue(int(resp[6:]))
 
     def set_ssb_data_gain(self):
         if self.rig.isOpen():
@@ -5903,6 +6337,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1611" + value + b";"
                 self.rig.write(cmd)
 
+    def get_ssb_data_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1611;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.ssb_data_gain_spin.setValue(int(resp[6:]))
+
     def set_am_data_gain(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5914,6 +6357,15 @@ class MainWindow(QMainWindow):
                 value = bytes(value, ENCODER)
                 cmd = b"EX1612" + value + b";"
                 self.rig.write(cmd)
+
+    def get_am_data_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1612;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.am_data_gain_spin.setValue(int(resp[6:]))
 
     def set_fm_data_gain(self):
         if self.rig.isOpen():
@@ -5927,6 +6379,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1613" + value + b";"
                 self.rig.write(cmd)
 
+    def get_fm_data_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1613;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.fm_data_gain_spin.setValue(int(resp[6:]))
+
     def set_data_data_gain(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5939,6 +6400,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1614" + value + b";"
                 self.rig.write(cmd)
 
+    def get_data_data_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1614;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.data_data_gain_spin.setValue(int(resp[6:]))
+
     def set_tuner_select(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5946,12 +6416,30 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1615" + value + b";"
                 self.rig.write(cmd)
 
+    def get_tuner_select(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1615;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_tuner_select = {value: key for key, value in TUNER_SELECT.items()}
+                self.tuner_select_combo.setCurrentText(rev_tuner_select[resp[6:]])
+
     def set_vox_select(self):
         if self.rig.isOpen():
             if self.transfert:
                 value = VOX_SELECT[self.vox_select_combo.currentText()]
                 cmd = b"EX1616" + value + b";"
                 self.rig.write(cmd)
+
+    def get_vox_select(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1616;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_vox_select = {value: key for key, value in VOX_SELECT.items()}
+                self.vox_select_combo.setCurrentText(rev_vox_select[resp[6:]])
 
     def set_vox_gain(self):
         if self.rig.isOpen():
@@ -5965,6 +6453,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1617" + value + b";"
                 self.rig.write(cmd)
 
+    def get_vox_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1617;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.vox_gain_spin.setValue(int(resp[6:]))
+
     def set_vox_delay(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -5976,6 +6473,15 @@ class MainWindow(QMainWindow):
                 value = bytes(value, ENCODER)
                 cmd = b"EX1618" + value + b";"
                 self.rig.write(cmd)
+
+    def get_vox_delay(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1618;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.vox_delay_spin.setValue(int(resp[6:]))
 
     def set_anti_vox_gain(self):
         if self.rig.isOpen():
@@ -5989,6 +6495,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1619" + value + b";"
                 self.rig.write(cmd)
 
+    def get_anti_vox_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1619;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.anti_vox_gain_spin.setValue(int(resp[6:]))
+
     def set_data_vox_gain(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -6000,6 +6515,15 @@ class MainWindow(QMainWindow):
                 value = bytes(value, ENCODER)
                 cmd = b"EX1620" + value + b";"
                 self.rig.write(cmd)
+
+    def get_data_vox_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1620;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.data_vox_gain_spin.setValue(int(resp[6:]))
 
     def set_data_vox_delay(self):
         if self.rig.isOpen():
@@ -6013,6 +6537,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1621" + value + b";"
                 self.rig.write(cmd)
 
+    def get_data_vox_delay(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1621;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.data_vox_delay_spin.setValue(int(resp[6:]))
+
     def set_anti_dvox_gain(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -6025,6 +6558,15 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1622" + value + b";"
                 self.rig.write(cmd)
 
+    def get_anti_dvox_gain(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1622;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                resp = resp.decode(ENCODER)
+                self.anti_dvox_gain_spin.setValue(int(resp[6:]))
+
     def set_emergency_freq(self):
         if self.rig.isOpen():
             if self.transfert:
@@ -6032,9 +6574,18 @@ class MainWindow(QMainWindow):
                 cmd = b"EX1623" + value + b";"
                 self.rig.write(cmd)
 
+    def get_emergency_freq(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                self.rig.write(b"EX1623;")
+                resp = self.rig.read_until(b";")
+                resp = resp.replace(b";", b"")
+                rev_emergency_freq = {value: key for key, value in EMERGENCY_FREQ.items()}
+                self.emergency_freq_combo.setCurrentText(rev_emergency_freq[resp[6:]])
+
     def closeEvent(self, event):
         """Close event"""
-        """dialog = QMessageBox()
+        dialog = QMessageBox()
         rep = dialog.question(self,
                               "Exit",
                               "Close CPyS-891 ?",
@@ -6044,73 +6595,10 @@ class MainWindow(QMainWindow):
 
         elif rep == dialog.No:
             QCloseEvent.ignore(event)
-            return"""
+            return
 
         if self.rig.isOpen():
             self.rig.close()
-
-
-class SettingsWindow(QDialog):
-    """ Settings Windows """
-    def __init__(self, master, **kwargs):
-        super().__init__(**kwargs)
-
-        self.master = master
-
-        self.setWindowTitle("Settings")
-        self.setModal(True)
-
-        self.main_layout = QHBoxLayout()
-        self.setLayout(self.main_layout)
-
-        self.com_port_group = QGroupBox("USB COM port")
-        self.main_layout.addWidget(self.com_port_group, Qt.AlignCenter)
-        self.com_port_layout = QHBoxLayout()
-        self.com_port_combo = QComboBox()
-        self.com_port_combo.setMinimumWidth(200)
-        self.com_port_group.setLayout(self.com_port_layout)
-        self.com_port_layout.addWidget(self.com_port_combo, Qt.AlignCenter)
-
-        ports = serial.tools.list_ports.comports()
-        if len(ports) == 0:
-            self.com_port_combo.addItem("No COM port connected")
-        else:
-            for port in ports:
-                self.com_port_combo.addItem(port[0])
-        self.com_port_combo.setEditable(True)
-        self.com_port_combo.lineEdit().setReadOnly(True)
-        self.com_port_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        format_combo(self.com_port_combo)
-        self.com_port_combo.setCurrentIndex(0)
-        self.com_port_combo.currentTextChanged.connect(self.connect_to_rig)
-
-        self.baudrate_group = QGroupBox("Baudrate")
-        self.main_layout.addWidget(self.baudrate_group, Qt.AlignCenter)
-        self.baudrate_layout = QHBoxLayout()
-        self.baudrate_combo = QComboBox()
-        self.baudrate_combo.setMinimumWidth(200)
-        self.baudrate_group.setLayout(self.baudrate_layout)
-        self.baudrate_layout.addWidget(self.baudrate_combo, Qt.AlignCenter)
-
-        self.baudrate_combo.addItems(BAUDRATE)
-        self.baudrate_combo.setEditable(True)
-        self.baudrate_combo.lineEdit().setReadOnly(True)
-        self.baudrate_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        format_combo(self.baudrate_combo)
-        self.baudrate_combo.setCurrentIndex(0)
-        self.baudrate_combo.currentTextChanged.connect(self.connect_to_rig)
-
-    def connect_to_rig(self):
-        try:
-            self.master.rig.baudrate = int(self.baudrate_combo.currentText())
-            self.master.rig.setPort(self.com_port_combo.currentText())
-            self.master.rig.open()
-            self.master.status_bar.showMessage("Connected to the rig")
-        except serial.SerialException:
-            self.master.status_bar.showMessage("Not connected")
-
-    def closeEvent(self, event):
-        self.master.settings = None
 
 
 if __name__ == "__main__":
@@ -6123,7 +6611,7 @@ if __name__ == "__main__":
     # ###### Splash Screen
     splash = QSplashScreen(QPixmap(ICON))
     splash.show()
-    splash.showMessage(APP_NAME, Qt.AlignmentFlag.AlignHCenter |
+    splash.showMessage(APP_TITLE, Qt.AlignmentFlag.AlignHCenter |
                        Qt.AlignmentFlag.AlignBottom, Qt.GlobalColor.white)
 
     app.processEvents()
