@@ -235,8 +235,10 @@ class MainWindow(QMainWindow):
 
         self.file_menu = QMenu("&Files")
         self.edit_menu = QMenu("&Edit")
+        self.help_menu = QMenu("&Help")
         self.menu_bar.addMenu(self.file_menu)
         self.menu_bar.addMenu(self.edit_menu)
+        self.menu_bar.addMenu(self.help_menu)
 
         # Files Actions
         self.save_config_action = QAction("&Save config")
@@ -268,6 +270,13 @@ class MainWindow(QMainWindow):
         self.edit_menu.addAction(self.get_from_radio_action)
         self.get_from_radio_action.triggered.connect(self.get_config_from_radio)
         # self.get_from_radio_action.setDisabled(True)
+
+        # Help Actions
+        self.about_action = QAction("&About CPyS")
+        self.help_menu.addAction(self.about_action)
+        self.doc_action = QAction("Online &Doc")
+        self.help_menu.addAction(self.doc_action)
+
 
         # ###### Status Bar
         self.status_bar = QStatusBar()
