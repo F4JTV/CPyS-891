@@ -19,7 +19,6 @@ from PyQt5.Qt import *
 
 # TODO: Functions
 # TODO: Memory
-# TODO: check if default data on open
 # TODO: save config to file (json)
 # TODO: open config from file (json)
 # TODO: Presets (json)
@@ -209,9 +208,10 @@ class MainWindow(QMainWindow):
                                  stopbits=serial.STOPBITS_ONE)
         try:
             self.rig.setPort(self.com_port)
-            self.rig.open()
+            # self.rig.open()
             print(self.com_port + ' Connected.')
-        except:
+
+        except serial.SerialException:
             error_box = QMessageBox(QMessageBox.Critical,
                                     "Connection error",
                                     'Check "CPyS.cfg" file and check if the FT-891 is plugged',
@@ -629,7 +629,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_1_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_memory_1_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_1_combo)
-        self.cw_memory_1_combo.setCurrentIndex(1)
+        self.cw_memory_1_combo.setCurrentIndex(0)
         self.cw_memory_1_combo.currentTextChanged.connect(self.set_cw_memory_1)
 
         self.menu_table.setItem(22, 0, self.cw_memory_1_menu_nb)
@@ -646,7 +646,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_2_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_memory_2_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_2_combo)
-        self.cw_memory_2_combo.setCurrentIndex(1)
+        self.cw_memory_2_combo.setCurrentIndex(0)
         self.cw_memory_2_combo.currentTextChanged.connect(self.set_cw_memory_2)
 
         self.menu_table.setItem(23, 0, self.cw_memory_2_menu_nb)
@@ -663,7 +663,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_3_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_memory_3_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_3_combo)
-        self.cw_memory_3_combo.setCurrentIndex(1)
+        self.cw_memory_3_combo.setCurrentIndex(0)
         self.cw_memory_3_combo.currentTextChanged.connect(self.set_cw_memory_3)
 
         self.menu_table.setItem(24, 0, self.cw_memory_3_menu_nb)
@@ -680,7 +680,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_4_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_memory_4_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_4_combo)
-        self.cw_memory_4_combo.setCurrentIndex(1)
+        self.cw_memory_4_combo.setCurrentIndex(0)
         self.cw_memory_4_combo.currentTextChanged.connect(self.set_cw_memory_4)
 
         self.menu_table.setItem(25, 0, self.cw_memory_4_menu_nb)
@@ -697,7 +697,7 @@ class MainWindow(QMainWindow):
         self.cw_memory_5_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_memory_5_combo.addItems([i for i in CW_MEMORY.keys()])
         format_combo(self.cw_memory_5_combo)
-        self.cw_memory_5_combo.setCurrentIndex(1)
+        self.cw_memory_5_combo.setCurrentIndex(0)
         self.cw_memory_5_combo.currentTextChanged.connect(self.set_cw_memory_5)
 
         self.menu_table.setItem(26, 0, self.cw_memory_5_menu_nb)
@@ -1185,7 +1185,7 @@ class MainWindow(QMainWindow):
         self.cw_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.cw_lcut_freq_combo)
-        self.cw_lcut_freq_combo.setCurrentIndex(1)
+        self.cw_lcut_freq_combo.setCurrentIndex(4)
         self.cw_lcut_freq_combo.currentTextChanged.connect(self.set_cw_lcut_freq)
 
         self.menu_table.setItem(57, 0, self.cw_lcut_freq_menu_nb)
@@ -1219,7 +1219,7 @@ class MainWindow(QMainWindow):
         self.cw_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.cw_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.cw_hcut_freq_combo)
-        self.cw_hcut_freq_combo.setCurrentIndex(1)
+        self.cw_hcut_freq_combo.setCurrentIndex(11)
         self.cw_hcut_freq_combo.currentTextChanged.connect(self.set_cw_hcut_freq)
 
         self.menu_table.setItem(59, 0, self.cw_hcut_freq_menu_nb)
@@ -1478,7 +1478,7 @@ class MainWindow(QMainWindow):
         self.data_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.data_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.data_lcut_freq_combo)
-        self.data_lcut_freq_combo.setCurrentIndex(1)
+        self.data_lcut_freq_combo.setCurrentIndex(5)
         self.data_lcut_freq_combo.currentTextChanged.connect(self.set_data_lcut_freq)
 
         self.menu_table.setItem(75, 0, self.data_lcut_freq_menu_nb)
@@ -1512,7 +1512,7 @@ class MainWindow(QMainWindow):
         self.data_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.data_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.data_hcut_freq_combo)
-        self.data_hcut_freq_combo.setCurrentIndex(1)
+        self.data_hcut_freq_combo.setCurrentIndex(47)
         self.data_hcut_freq_combo.currentTextChanged.connect(self.set_data_hcut_freq)
 
         self.menu_table.setItem(77, 0, self.data_hcut_freq_menu_nb)
@@ -1596,7 +1596,7 @@ class MainWindow(QMainWindow):
         self.data_bfo_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.data_bfo_combo.addItems([i for i in DATA_BFO.keys()])
         format_combo(self.data_bfo_combo)
-        self.data_bfo_combo.setCurrentIndex(0)
+        self.data_bfo_combo.setCurrentIndex(1)
         self.data_bfo_combo.currentTextChanged.connect(self.set_data_bfo)
 
         self.menu_table.setItem(82, 0, self.data_bfo_menu_nb)
@@ -1726,7 +1726,7 @@ class MainWindow(QMainWindow):
         self.rtty_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.rtty_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.rtty_lcut_freq_combo)
-        self.rtty_lcut_freq_combo.setCurrentIndex(1)
+        self.rtty_lcut_freq_combo.setCurrentIndex(5)
         self.rtty_lcut_freq_combo.currentTextChanged.connect(self.set_rtty_lcut_freq)
 
         self.menu_table.setItem(91, 0, self.rtty_lcut_freq_menu_nb)
@@ -1760,7 +1760,7 @@ class MainWindow(QMainWindow):
         self.rtty_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.rtty_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.rtty_hcut_freq_combo)
-        self.rtty_hcut_freq_combo.setCurrentIndex(1)
+        self.rtty_hcut_freq_combo.setCurrentIndex(47)
         self.rtty_hcut_freq_combo.currentTextChanged.connect(self.set_rtty_hcut_freq)
 
         self.menu_table.setItem(93, 0, self.rtty_hcut_freq_menu_nb)
@@ -1918,7 +1918,7 @@ class MainWindow(QMainWindow):
         self.ssb_lcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.ssb_lcut_freq_combo.addItems([i for i in LCUT_FREQ.keys()])
         format_combo(self.ssb_lcut_freq_combo)
-        self.ssb_lcut_freq_combo.setCurrentIndex(0)
+        self.ssb_lcut_freq_combo.setCurrentIndex(1)
         self.ssb_lcut_freq_combo.currentTextChanged.connect(self.set_ssb_lcut_freq)
 
         self.menu_table.setItem(103, 0, self.ssb_lcut_freq_menu_nb)
@@ -1952,7 +1952,7 @@ class MainWindow(QMainWindow):
         self.ssb_hcut_freq_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.ssb_hcut_freq_combo.addItems([i for i in HCUT_FREQ.keys()])
         format_combo(self.ssb_hcut_freq_combo)
-        self.ssb_hcut_freq_combo.setCurrentIndex(0)
+        self.ssb_hcut_freq_combo.setCurrentIndex(47)
         self.ssb_hcut_freq_combo.currentTextChanged.connect(self.set_ssb_hcut_freq)
 
         self.menu_table.setItem(105, 0, self.ssb_hcut_freq_menu_nb)
@@ -2239,7 +2239,7 @@ class MainWindow(QMainWindow):
         self.fm_dial_step_combo.lineEdit().setAlignment(Qt.AlignCenter)
         self.fm_dial_step_combo.addItems([i for i in FM_DIAL_STEP.keys()])
         format_combo(self.fm_dial_step_combo)
-        self.fm_dial_step_combo.setCurrentIndex(0)
+        self.fm_dial_step_combo.setCurrentIndex(1)
         self.fm_dial_step_combo.currentTextChanged.connect(self.set_fm_dial_step)
 
         self.menu_table.setItem(124, 0, self.fm_dial_step_menu_nb)
@@ -2693,7 +2693,7 @@ class MainWindow(QMainWindow):
         self.pwr_50m_spin.setMaximum(100)
         self.pwr_50m_spin.setMinimum(5)
         self.pwr_50m_spin.setSingleStep(1)
-        self.pwr_50m_spin.setValue(50)
+        self.pwr_50m_spin.setValue(100)
         self.pwr_50m_spin.valueChanged.connect(self.set_50m_pwr)
 
         self.menu_table.setItem(153, 0, self.pwr_50m_menu_nb)
@@ -6585,7 +6585,7 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         """Close event"""
-        """dialog = QMessageBox()
+        dialog = QMessageBox()
         rep = dialog.question(self,
                               "Exit",
                               "Close CPyS-891 ?",
@@ -6595,7 +6595,7 @@ class MainWindow(QMainWindow):
 
         elif rep == dialog.No:
             QCloseEvent.ignore(event)
-            return"""
+            return
 
         if self.rig.isOpen():
             self.rig.close()
@@ -6611,7 +6611,7 @@ if __name__ == "__main__":
     # ###### Splash Screen
     splash = QSplashScreen(QPixmap(ICON))
     splash.show()
-    splash.showMessage(APP_NAME, Qt.AlignmentFlag.AlignHCenter |
+    splash.showMessage(APP_TITLE, Qt.AlignmentFlag.AlignHCenter |
                        Qt.AlignmentFlag.AlignBottom, Qt.GlobalColor.white)
 
     app.processEvents()
