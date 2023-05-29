@@ -207,10 +207,10 @@ class MainWindow(QMainWindow):
                                  bytesize=8,
                                  timeout=0.1,
                                  stopbits=serial.STOPBITS_ONE,
-								 rtscts=True)			# Need the rts / cts active to comm to FT-891
+                                 rtscts=True)           # Need the rts / cts active to comm to FT-891
         try:
             self.rig.setPort(self.com_port)
-            self.rig.open()								# In code change remove the '#' in front 
+            self.rig.open()                             # In code change remove the '#' in front 
             print(self.com_port + ' Connected.')
 
         except serial.SerialException:
