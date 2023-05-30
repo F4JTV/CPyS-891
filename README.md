@@ -17,7 +17,7 @@ ___
 
 ## 2) Usage :
 
-- Edit the CPyS.cfg and change the COM port (Windows) or the /dev/ttyUSB (Linux) folowing your rig.
+- Edit the CPyS.cfg and change the COM port (Windows) or the /dev/ttyUSB (Linux) and the baudrate folowing your rig.
 - The Live Mode will change immediatly the value parameters. If it is disabled, changes on the FT-891 will be applied when you trigger the "Send config to FT-891"
 - For now, you can get all the parameters of the menu with "Get config from FT-891" on the menubar.
 

@@ -28,7 +28,6 @@ APP_NAME = "CPyS-891"
 APP_VERSION = datetime.strftime(datetime.now(), "0.%m%d")
 APP_TITLE = f"{APP_NAME} - v{APP_VERSION}"
 ICON = "./images/icon.png"
-
 FONT = "./fonts/Quicksand-Regular.ttf"
 FONT_FAMILY = "Quicksand"
 FONT_SIZE = 11
@@ -210,7 +209,7 @@ class MainWindow(QMainWindow):
                                  rtscts=True)           # Need the rts / cts active to comm to FT-891
         try:
             self.rig.setPort(self.com_port)
-            # self.rig.open()                             # In code change remove the '#' in front
+            self.rig.open()                             # In code change remove the '#' in front
             print(self.com_port + ' Connected.')
 
         except serial.SerialException:
