@@ -210,7 +210,7 @@ class MainWindow(QMainWindow):
                                  rtscts=True)           # Need the rts / cts active to comm to FT-891
         try:
             self.rig.setPort(self.com_port)
-            self.rig.open()                             # In code change remove the '#' in front 
+            # self.rig.open()                             # In code change remove the '#' in front
             print(self.com_port + ' Connected.')
 
         except serial.SerialException:
@@ -276,7 +276,6 @@ class MainWindow(QMainWindow):
         self.help_menu.addAction(self.about_action)
         self.doc_action = QAction("Online &Doc")
         self.help_menu.addAction(self.doc_action)
-
 
         # ###### Status Bar
         self.status_bar = QStatusBar()
@@ -6628,7 +6627,7 @@ if __name__ == "__main__":
     app.processEvents()
     window = MainWindow(app)
     splash.finish(window)
-    #window.showMaximized()
+    # window.showMaximized()
     window.show()
     window.resize(window.minimumSizeHint())
     sys.exit(app.exec_())
