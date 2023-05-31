@@ -10,7 +10,6 @@
 #                          |__/                                          #
 ##########################################################################
 import platform
-import re
 import sys
 from datetime import datetime
 import configparser
@@ -165,6 +164,16 @@ VOX_SELECT = {"MIC": b"0", "DATA": b"1"}
 EMERGENCY_FREQ = {"DISABLE": b"0", "ENABLE": b"1"}
 RESET = {"ALL": b"0", "DATA": b"1", "FUNC": b"2"}
 BAUDRATE = ["4800", "9600", "19200", "38400"]
+CLAR_STATE = {"ON": b"0", "OFF": b"1"}
+MODES = {"LSB": b"1", "USB": b"2", "CW": b"3",
+         "FM": b"4", "AM": b"5", "RTTY-LSB": b"6",
+         "CW-R": b"7", "DATA-LSB": b"8", "FM-N": b"B",
+         "DATA-USB": b"C", "AM-N": b"D"}
+CTCSS_STATE = {"CTCSS OFF": b"0", "CTCSS ENC/DEC": b"1",
+               "CTCSS ENC": b"2"}
+RPT_SHIFT_DIR = {"Simplex": b"0", "Plus Shift": b"1",
+                 "Minus Shift": b"2"}
+TAG_STATE = {"TAG OFF": b"0", "TAG ON": b"1"}
 
 
 def format_combo(combobox):
@@ -217,10 +226,10 @@ class MainWindow(QMainWindow):
                                  bytesize=8,
                                  timeout=0.1,
                                  stopbits=serial.STOPBITS_ONE,
-                                 rtscts=True)           # Need the rts / cts active to comm to FT-891
+                                 rtscts=True)  # Need the rts / cts active to comm to FT-891
         try:
             self.rig.setPort(self.com_port)
-            self.rig.open()                             # In code change remove the '#' in front
+            """self.rig.open()  # In code change remove the '#' in front
             self.rig.write(b"FA;")
             rep = self.rig.read_until(";")
             rep = rep.replace(b";", b"")
@@ -228,7 +237,7 @@ class MainWindow(QMainWindow):
             if re.match("^FA\d{9}$", rep):
                 self.status_bar.showMessage(self.com_port + ' Connected.')
             else:
-                raise serial.SerialException
+                raise serial.SerialException"""
 
         except serial.SerialException:
             error_box = QMessageBox(QMessageBox.Critical,
@@ -300,9 +309,11 @@ class MainWindow(QMainWindow):
 
         self.menu_tab = QWidget()
         self.memory_tab = QWidget()
+        self.pms_tab = QWidget()
 
         self.tab.addTab(self.menu_tab, "Menu / Functions")
         self.tab.addTab(self.memory_tab, "Memory")
+        self.tab.addTab(self.pms_tab, "PMS")
 
         # ###### Menu tab
         self.menu_layout = QHBoxLayout()
@@ -3019,6 +3030,218 @@ class MainWindow(QMainWindow):
         self.memory_layout = QVBoxLayout()
         self.memory_tab.setLayout(self.memory_layout)
 
+        self.memory_table = QTableWidget(99, 8)
+        self.memory_layout.addWidget(self.memory_table)
+
+        self.memory_table.verticalHeader().setVisible(True)
+        self.memory_table.horizontalHeader().setVisible(True)
+        self.memory_table.setSortingEnabled(False)
+        self.memory_table.setAlternatingRowColors(True)
+        self.memory_table.setHorizontalHeaderLabels(["Frequency", "Clarifier offset",
+                                                     "CLAR state", "Mode", "CTCSS/DCS",
+                                                     "RPT shift direction", "TAG state",
+                                                     "TAG Name (max 12 chars ASCII)"])
+        self.memory_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        self.memory_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        self.memory_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
+        self.memory_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch)
+        self.memory_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
+        self.memory_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeMode.Stretch)
+        self.memory_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeMode.Stretch)
+        self.memory_table.horizontalHeader().setSectionResizeMode(7, QHeaderView.ResizeMode.Stretch)
+
+        regexp_freq = QRegExp(r"^\d{7,9}$")
+        regexp_tag = QRegExp(r"^[ -~]{1,12}$")
+
+        # Mem 001
+        self.mem_1_freq_entry = QLineEdit("7000000")
+        self.mem_1_freq_entry.setValidator(QRegExpValidator(regexp_freq))
+        self.mem_1_freq_entry.setAlignment(Qt.AlignCenter)
+        self.mem_1_clar_dir_spin = QSpinBox()
+        self.mem_1_clar_dir_spin.setAlignment(Qt.AlignCenter)
+        self.mem_1_clar_dir_spin.setMaximum(9999)
+        self.mem_1_clar_dir_spin.setMinimum(-9999)
+        self.mem_1_clar_state_combo = QComboBox()
+        self.mem_1_clar_state_combo.setEditable(True)
+        self.mem_1_clar_state_combo.lineEdit().setReadOnly(True)
+        self.mem_1_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mem_1_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
+        format_combo(self.mem_1_clar_state_combo)
+        self.mem_1_mode_combo = QComboBox()
+        self.mem_1_mode_combo.setEditable(True)
+        self.mem_1_mode_combo.lineEdit().setReadOnly(True)
+        self.mem_1_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mem_1_mode_combo.addItems(i for i in MODES.keys())
+        format_combo(self.mem_1_mode_combo)
+        self.mem_1_ctcss_dcs_state_combo = QComboBox()
+        self.mem_1_ctcss_dcs_state_combo.setEditable(True)
+        self.mem_1_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
+        self.mem_1_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mem_1_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
+        format_combo(self.mem_1_ctcss_dcs_state_combo)
+        self.mem_1_rpt_shift_dir_combo = QComboBox()
+        self.mem_1_rpt_shift_dir_combo.setEditable(True)
+        self.mem_1_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
+        self.mem_1_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mem_1_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
+        format_combo(self.mem_1_rpt_shift_dir_combo)
+        self.mem_1_tag_state_combo = QComboBox()
+        self.mem_1_tag_state_combo.setEditable(True)
+        self.mem_1_tag_state_combo.lineEdit().setReadOnly(True)
+        self.mem_1_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mem_1_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
+        format_combo(self.mem_1_tag_state_combo)
+        self.mem_1_tag_entry = QLineEdit()
+        self.mem_1_tag_entry.setValidator(QRegExpValidator(regexp_tag))
+        self.mem_1_tag_entry.setAlignment(Qt.AlignCenter)
+
+        self.memory_table.setCellWidget(0, 0, self.mem_1_freq_entry)
+        self.memory_table.setCellWidget(0, 1, self.mem_1_clar_dir_spin)
+        self.memory_table.setCellWidget(0, 2, self.mem_1_clar_state_combo)
+        self.memory_table.setCellWidget(0, 3, self.mem_1_mode_combo)
+        self.memory_table.setCellWidget(0, 4, self.mem_1_ctcss_dcs_state_combo)
+        self.memory_table.setCellWidget(0, 5, self.mem_1_rpt_shift_dir_combo)
+        self.memory_table.setCellWidget(0, 6, self.mem_1_tag_state_combo)
+        self.memory_table.setCellWidget(0, 7, self.mem_1_tag_entry)
+
+        # Mem 002
+        self.mem_2_freq_entry = QLineEdit("")
+        self.mem_2_freq_entry.setValidator(QRegExpValidator(regexp_freq))
+        self.mem_2_freq_entry.setAlignment(Qt.AlignCenter)
+        self.mem_2_clar_dir_spin = QSpinBox()
+        self.mem_2_clar_dir_spin.setAlignment(Qt.AlignCenter)
+        self.mem_2_clar_dir_spin.setMaximum(9999)
+        self.mem_2_clar_dir_spin.setMinimum(-9999)
+        self.mem_2_clar_state_combo = QComboBox()
+        self.mem_2_clar_state_combo.setEditable(True)
+        self.mem_2_clar_state_combo.lineEdit().setReadOnly(True)
+        self.mem_2_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mem_2_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
+        format_combo(self.mem_2_clar_state_combo)
+        self.mem_2_mode_combo = QComboBox()
+        self.mem_2_mode_combo.setEditable(True)
+        self.mem_2_mode_combo.lineEdit().setReadOnly(True)
+        self.mem_2_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mem_2_mode_combo.addItems(i for i in MODES.keys())
+        format_combo(self.mem_2_mode_combo)
+        self.mem_2_ctcss_dcs_state_combo = QComboBox()
+        self.mem_2_ctcss_dcs_state_combo.setEditable(True)
+        self.mem_2_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
+        self.mem_2_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mem_2_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
+        format_combo(self.mem_2_ctcss_dcs_state_combo)
+        self.mem_2_rpt_shift_dir_combo = QComboBox()
+        self.mem_2_rpt_shift_dir_combo.setEditable(True)
+        self.mem_2_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
+        self.mem_2_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mem_2_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
+        format_combo(self.mem_2_rpt_shift_dir_combo)
+        self.mem_2_tag_state_combo = QComboBox()
+        self.mem_2_tag_state_combo.setEditable(True)
+        self.mem_2_tag_state_combo.lineEdit().setReadOnly(True)
+        self.mem_2_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.mem_2_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
+        format_combo(self.mem_2_tag_state_combo)
+        self.mem_2_tag_entry = QLineEdit()
+        self.mem_2_tag_entry.setValidator(QRegExpValidator(regexp_tag))
+        self.mem_2_tag_entry.setAlignment(Qt.AlignCenter)
+
+        self.memory_table.setCellWidget(1, 0, self.mem_2_freq_entry)
+        self.memory_table.setCellWidget(1, 1, self.mem_2_clar_dir_spin)
+        self.memory_table.setCellWidget(1, 2, self.mem_2_clar_state_combo)
+        self.memory_table.setCellWidget(1, 3, self.mem_2_mode_combo)
+        self.memory_table.setCellWidget(1, 4, self.mem_2_ctcss_dcs_state_combo)
+        self.memory_table.setCellWidget(1, 5, self.mem_2_rpt_shift_dir_combo)
+        self.memory_table.setCellWidget(1, 6, self.mem_2_tag_state_combo)
+        self.memory_table.setCellWidget(1, 7, self.mem_2_tag_entry)
+
+        # ###### PMS
+        self.pms_layout = QVBoxLayout()
+        self.pms_tab.setLayout(self.pms_layout)
+
+        self.pms_table = QTableWidget(18, 8)
+        self.pms_layout.addWidget(self.pms_table)
+
+        self.pms_table.verticalHeader().setVisible(True)
+        self.pms_table.horizontalHeader().setVisible(True)
+        self.pms_table.setSortingEnabled(False)
+        self.pms_table.setAlternatingRowColors(True)
+        self.pms_table.setHorizontalHeaderLabels(["Frequency", "Clarifier offset",
+                                                  "CLAR state", "Mode", "CTCSS/DCS",
+                                                  "RPT shift direction", "TAG state",
+                                                  "TAG Name (max 12 chars ASCII)"])
+        self.pms_table.setVerticalHeaderLabels(["P1L", "P1U",
+                                                "P2L", "P2U",
+                                                "P3L", "P3U",
+                                                "P4L", "P4U",
+                                                "P5L", "P5U",
+                                                "P6L", "P6U",
+                                                "P7L", "P7U",
+                                                "P8L", "P8U",
+                                                "P9L", "P9U",])
+        self.pms_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
+        self.pms_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        self.pms_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
+        self.pms_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch)
+        self.pms_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
+        self.pms_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeMode.Stretch)
+        self.pms_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeMode.Stretch)
+        self.pms_table.horizontalHeader().setSectionResizeMode(7, QHeaderView.ResizeMode.Stretch)
+
+        regexp_freq = QRegExp(r"^\d{7,9}$")
+        regexp_tag = QRegExp(r"^[ -~]{1,12}$")
+
+        # Mem 001
+        self.pms_1_freq_entry = QLineEdit("")
+        self.pms_1_freq_entry.setValidator(QRegExpValidator(regexp_freq))
+        self.pms_1_freq_entry.setAlignment(Qt.AlignCenter)
+        self.pms_1_clar_dir_spin = QSpinBox()
+        self.pms_1_clar_dir_spin.setAlignment(Qt.AlignCenter)
+        self.pms_1_clar_dir_spin.setMaximum(9999)
+        self.pms_1_clar_dir_spin.setMinimum(-9999)
+        self.pms_1_clar_state_combo = QComboBox()
+        self.pms_1_clar_state_combo.setEditable(True)
+        self.pms_1_clar_state_combo.lineEdit().setReadOnly(True)
+        self.pms_1_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.pms_1_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
+        format_combo(self.pms_1_clar_state_combo)
+        self.pms_1_mode_combo = QComboBox()
+        self.pms_1_mode_combo.setEditable(True)
+        self.pms_1_mode_combo.lineEdit().setReadOnly(True)
+        self.pms_1_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.pms_1_mode_combo.addItems(i for i in MODES.keys())
+        format_combo(self.pms_1_mode_combo)
+        self.pms_1_ctcss_dcs_state_combo = QComboBox()
+        self.pms_1_ctcss_dcs_state_combo.setEditable(True)
+        self.pms_1_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
+        self.pms_1_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.pms_1_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
+        format_combo(self.pms_1_ctcss_dcs_state_combo)
+        self.pms_1_rpt_shift_dir_combo = QComboBox()
+        self.pms_1_rpt_shift_dir_combo.setEditable(True)
+        self.pms_1_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
+        self.pms_1_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.pms_1_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
+        format_combo(self.pms_1_rpt_shift_dir_combo)
+        self.pms_1_tag_state_combo = QComboBox()
+        self.pms_1_tag_state_combo.setEditable(True)
+        self.pms_1_tag_state_combo.lineEdit().setReadOnly(True)
+        self.pms_1_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
+        self.pms_1_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
+        format_combo(self.pms_1_tag_state_combo)
+        self.pms_1_tag_entry = QLineEdit()
+        self.pms_1_tag_entry.setValidator(QRegExpValidator(regexp_tag))
+        self.pms_1_tag_entry.setAlignment(Qt.AlignCenter)
+
+        self.pms_table.setCellWidget(0, 0, self.pms_1_freq_entry)
+        self.pms_table.setCellWidget(0, 1, self.pms_1_clar_dir_spin)
+        self.pms_table.setCellWidget(0, 2, self.pms_1_clar_state_combo)
+        self.pms_table.setCellWidget(0, 3, self.pms_1_mode_combo)
+        self.pms_table.setCellWidget(0, 4, self.pms_1_ctcss_dcs_state_combo)
+        self.pms_table.setCellWidget(0, 5, self.pms_1_rpt_shift_dir_combo)
+        self.pms_table.setCellWidget(0, 6, self.pms_1_tag_state_combo)
+        self.pms_table.setCellWidget(0, 7, self.pms_1_tag_entry)
+
     def send_config_2_radio(self):
         """Send the config to the Radio"""
         self.transfert = True
@@ -3357,7 +3580,7 @@ class MainWindow(QMainWindow):
         self.status_bar.removeWidget(self.progressbar)
         self.status_bar.showMessage("Done")
         self.transfert = False
-        
+
     def get_config_from_radio(self):
         self.transfert = True
 
