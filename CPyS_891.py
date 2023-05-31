@@ -309,7 +309,7 @@ class MainWindow(QMainWindow):
         self.menu_table.verticalHeader().setVisible(False)
         self.menu_table.horizontalHeader().setVisible(False)
         self.menu_table.setSortingEnabled(False)
-        self.menu_table.setMinimumSize(600, 450)
+        self.menu_table.setMinimumSize(600, 450)    # Set in W10 > values on (800, 450)
         self.menu_table.setAlternatingRowColors(True)
         self.menu_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         self.menu_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
