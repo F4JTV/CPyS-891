@@ -9,6 +9,7 @@
 #                 \___|_|  \_, |___/   \___//_/|_|                       #
 #                          |__/                                          #
 ##########################################################################
+import re
 import platform
 import sys
 from datetime import datetime
@@ -229,7 +230,7 @@ class MainWindow(QMainWindow):
                                  rtscts=True)  # Need the rts / cts active to comm to FT-891
         try:
             self.rig.setPort(self.com_port)
-            """self.rig.open()  # In code change remove the '#' in front
+            self.rig.open()  # In code change remove the '#' in front
             self.rig.write(b"FA;")
             rep = self.rig.read_until(";")
             rep = rep.replace(b";", b"")
@@ -237,7 +238,7 @@ class MainWindow(QMainWindow):
             if re.match("^FA\d{9}$", rep):
                 self.status_bar.showMessage(self.com_port + ' Connected.')
             else:
-                raise serial.SerialException"""
+                raise serial.SerialException
 
         except serial.SerialException:
             error_box = QMessageBox(QMessageBox.Critical,
@@ -3191,7 +3192,7 @@ class MainWindow(QMainWindow):
         regexp_freq = QRegExp(r"^\d{7,9}$")
         regexp_tag = QRegExp(r"^[ -~]{1,12}$")
 
-        # Mem 001
+        # PMS P1L
         self.pms_1_freq_entry = QLineEdit("")
         self.pms_1_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.pms_1_freq_entry.setAlignment(Qt.AlignCenter)
