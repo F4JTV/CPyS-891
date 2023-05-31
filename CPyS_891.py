@@ -10,6 +10,7 @@
 #                          |__/                                          #
 ##########################################################################
 import platform
+import re
 import sys
 from datetime import datetime
 import configparser
@@ -190,16 +191,26 @@ class MainWindow(QMainWindow):
             error_box.exec_()
             sys.exit()
 
-        self.app = appli
-        self.transfert = True
-        self.old_beacon_interval = int()
-        self.progressbar = QProgressBar()
-
         if platform.system() == "Windows":
             self.com_port = self.config["DEFAULT"]["windows_port"]
         elif platform.system() == "Linux":
             self.com_port = self.config["DEFAULT"]["linux_port"]
         self.baudrate = self.config["DEFAULT"]["baudrate"]
+
+        self.app = appli
+        self.transfert = True
+        self.old_beacon_interval = int()
+        self.progressbar = QProgressBar()
+
+        # ###### Status Bar
+        self.status_bar = QStatusBar()
+        self.setStatusBar(self.status_bar)
+
+        self.central_Widget = QWidget()
+        self.setCentralWidget(self.central_Widget)
+
+        self.main_layout = QVBoxLayout()
+        self.central_Widget.setLayout(self.main_layout)
 
         # ###### Rig
         self.rig = serial.Serial(baudrate=self.baudrate,
@@ -210,7 +221,14 @@ class MainWindow(QMainWindow):
         try:
             self.rig.setPort(self.com_port)
             self.rig.open()                             # In code change remove the '#' in front
-            print(self.com_port + ' Connected.')
+            self.rig.write(b"FA;")
+            rep = self.rig.read_until(";")
+            rep = rep.replace(b";", b"")
+            rep = rep.decode(ENCODER)
+            if re.match("^FA\d{9}$", rep):
+                self.status_bar.showMessage(self.com_port + ' Connected.')
+            else:
+                raise serial.SerialException
 
         except serial.SerialException:
             error_box = QMessageBox(QMessageBox.Critical,
@@ -276,16 +294,6 @@ class MainWindow(QMainWindow):
         self.doc_action = QAction("Online &Doc")
         self.help_menu.addAction(self.doc_action)
 
-        # ###### Status Bar
-        self.status_bar = QStatusBar()
-        self.setStatusBar(self.status_bar)
-
-        self.central_Widget = QWidget()
-        self.setCentralWidget(self.central_Widget)
-
-        self.main_layout = QVBoxLayout()
-        self.central_Widget.setLayout(self.main_layout)
-
         # ###### Tab
         self.tab = QTabWidget()
         self.main_layout.addWidget(self.tab)
@@ -309,11 +317,14 @@ class MainWindow(QMainWindow):
         self.menu_table.verticalHeader().setVisible(False)
         self.menu_table.horizontalHeader().setVisible(False)
         self.menu_table.setSortingEnabled(False)
-        self.menu_table.setMinimumSize(600, 450)    # Set in W10 > values on (800, 450)
         self.menu_table.setAlternatingRowColors(True)
         self.menu_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         self.menu_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
         self.menu_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
+        if platform.system() == "Windows":
+            self.menu_table.setMinimumSize(800, 450)
+        elif platform.system() == "Linux":
+            self.menu_table.setMinimumSize(600, 450)
 
         # ### ACG
         self.acg_separator = QTableWidgetItem("ACG")
