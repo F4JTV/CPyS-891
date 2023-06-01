@@ -5,6 +5,8 @@
 
 ___
 
+This script is a CPS like for the Yaesu FT-891, it uses the CAT with the pyserial module to control the transceiver 
+___
 ## 1) Installation :
 
 `git clone https://github.com/F4JTV/CPyS-891.git `</br>
