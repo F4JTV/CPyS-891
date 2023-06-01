@@ -33,6 +33,7 @@ TODO:
 - Menu -> done
 - Functions
 - Memory
+- Reset the rig to default config
 - Save and open config files
 - Presets for quick config
 - About 
