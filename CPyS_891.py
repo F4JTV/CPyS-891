@@ -10,16 +10,16 @@
 #                          |__/                                          #
 ##########################################################################
 import re
-import platform
 import sys
-from datetime import datetime
+import platform
 import configparser
+from datetime import datetime
 
-import serial.tools.list_ports
 from PyQt5.Qt import *
+import serial.tools.list_ports
 
 # TODO: Functions
-# TODO: Memory
+# TODO: Memory -> work in progress
 # TODO: save config to file (json)
 # TODO: open config from file (json)
 # TODO: Presets (json)
@@ -3258,6 +3258,7 @@ class MainWindow(QMainWindow):
         self.p1u_freq_entry = QLineEdit("")
         self.p1u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p1u_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p1u_freq_entry.returnPressed.connect(self.set_p1u)
         self.p1u_clar_dir_spin = QSpinBox()
         self.p1u_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p1u_clar_dir_spin.setMaximum(9999)
@@ -3309,6 +3310,7 @@ class MainWindow(QMainWindow):
         self.p2l_freq_entry = QLineEdit("")
         self.p2l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p2l_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p2l_freq_entry.returnPressed.connect(self.set_p2l)
         self.p2l_clar_dir_spin = QSpinBox()
         self.p2l_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p2l_clar_dir_spin.setMaximum(9999)
@@ -3360,6 +3362,7 @@ class MainWindow(QMainWindow):
         self.p2u_freq_entry = QLineEdit("")
         self.p2u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p2u_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p2u_freq_entry.returnPressed.connect(self.set_p2u)
         self.p2u_clar_dir_spin = QSpinBox()
         self.p2u_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p2u_clar_dir_spin.setMaximum(9999)
@@ -3411,6 +3414,7 @@ class MainWindow(QMainWindow):
         self.p3l_freq_entry = QLineEdit("")
         self.p3l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p3l_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p3l_freq_entry.returnPressed.connect(self.set_p3l)
         self.p3l_clar_dir_spin = QSpinBox()
         self.p3l_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p3l_clar_dir_spin.setMaximum(9999)
@@ -3462,6 +3466,7 @@ class MainWindow(QMainWindow):
         self.p3u_freq_entry = QLineEdit("")
         self.p3u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p3u_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p3u_freq_entry.returnPressed.connect(self.set_p3u)
         self.p3u_clar_dir_spin = QSpinBox()
         self.p3u_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p3u_clar_dir_spin.setMaximum(9999)
@@ -3513,6 +3518,7 @@ class MainWindow(QMainWindow):
         self.p4l_freq_entry = QLineEdit("")
         self.p4l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p4l_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p4l_freq_entry.returnPressed.connect(self.set_p4l)
         self.p4l_clar_dir_spin = QSpinBox()
         self.p4l_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p4l_clar_dir_spin.setMaximum(9999)
@@ -3564,6 +3570,7 @@ class MainWindow(QMainWindow):
         self.p4u_freq_entry = QLineEdit("")
         self.p4u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p4u_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p4u_freq_entry.returnPressed.connect(self.set_p4u)
         self.p4u_clar_dir_spin = QSpinBox()
         self.p4u_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p4u_clar_dir_spin.setMaximum(9999)
@@ -3615,6 +3622,7 @@ class MainWindow(QMainWindow):
         self.p5l_freq_entry = QLineEdit("")
         self.p5l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p5l_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p5l_freq_entry.returnPressed.connect(self.set_p5l)
         self.p5l_clar_dir_spin = QSpinBox()
         self.p5l_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p5l_clar_dir_spin.setMaximum(9999)
@@ -3666,6 +3674,7 @@ class MainWindow(QMainWindow):
         self.p5u_freq_entry = QLineEdit("")
         self.p5u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p5u_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p5u_freq_entry.returnPressed.connect(self.set_p5u)
         self.p5u_clar_dir_spin = QSpinBox()
         self.p5u_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p5u_clar_dir_spin.setMaximum(9999)
@@ -3717,6 +3726,7 @@ class MainWindow(QMainWindow):
         self.p6l_freq_entry = QLineEdit("")
         self.p6l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p6l_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p6l_freq_entry.returnPressed.connect(self.set_p6l)
         self.p6l_clar_dir_spin = QSpinBox()
         self.p6l_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p6l_clar_dir_spin.setMaximum(9999)
@@ -3768,6 +3778,7 @@ class MainWindow(QMainWindow):
         self.p6u_freq_entry = QLineEdit("")
         self.p6u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p6u_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p6u_freq_entry.returnPressed.connect(self.set_p6u)
         self.p6u_clar_dir_spin = QSpinBox()
         self.p6u_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p6u_clar_dir_spin.setMaximum(9999)
@@ -3819,6 +3830,7 @@ class MainWindow(QMainWindow):
         self.p7l_freq_entry = QLineEdit("")
         self.p7l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p7l_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p7l_freq_entry.returnPressed.connect(self.set_p7l)
         self.p7l_clar_dir_spin = QSpinBox()
         self.p7l_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p7l_clar_dir_spin.setMaximum(9999)
@@ -3870,6 +3882,7 @@ class MainWindow(QMainWindow):
         self.p7u_freq_entry = QLineEdit("")
         self.p7u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p7u_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p7u_freq_entry.returnPressed.connect(self.set_p7u)
         self.p7u_clar_dir_spin = QSpinBox()
         self.p7u_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p7u_clar_dir_spin.setMaximum(9999)
@@ -3921,6 +3934,7 @@ class MainWindow(QMainWindow):
         self.p8l_freq_entry = QLineEdit("")
         self.p8l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p8l_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p8l_freq_entry.returnPressed.connect(self.set_p8l)
         self.p8l_clar_dir_spin = QSpinBox()
         self.p8l_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p8l_clar_dir_spin.setMaximum(9999)
@@ -3972,6 +3986,7 @@ class MainWindow(QMainWindow):
         self.p8u_freq_entry = QLineEdit("")
         self.p8u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p8u_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p8u_freq_entry.returnPressed.connect(self.set_p8u)
         self.p8u_clar_dir_spin = QSpinBox()
         self.p8u_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p8u_clar_dir_spin.setMaximum(9999)
@@ -4023,6 +4038,7 @@ class MainWindow(QMainWindow):
         self.p9l_freq_entry = QLineEdit("")
         self.p9l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p9l_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p9l_freq_entry.returnPressed.connect(self.set_p9l)
         self.p9l_clar_dir_spin = QSpinBox()
         self.p9l_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p9l_clar_dir_spin.setMaximum(9999)
@@ -4074,6 +4090,7 @@ class MainWindow(QMainWindow):
         self.p9u_freq_entry = QLineEdit("")
         self.p9u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
         self.p9u_freq_entry.setAlignment(Qt.AlignCenter)
+        self.p9u_freq_entry.returnPressed.connect(self.set_p9u)
         self.p9u_clar_dir_spin = QSpinBox()
         self.p9u_clar_dir_spin.setAlignment(Qt.AlignCenter)
         self.p9u_clar_dir_spin.setMaximum(9999)
@@ -4120,52 +4137,6 @@ class MainWindow(QMainWindow):
         self.pms_table.setCellWidget(17, 5, self.p9u_rpt_shift_dir_combo)
         self.pms_table.setCellWidget(17, 6, self.p9u_tag_state_combo)
         self.pms_table.setCellWidget(17, 7, self.p9u_tag_entry)
-
-    def set_p1l(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p1l_freq_entry.hasAcceptableInput():
-                    freq = self.p1l_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p1l_clar_dir_spin.value())
-                    val = self.p1l_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p1l_clar_state_combo.currentText()]
-                    mode = MODES[self.p1l_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p1l_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p1l_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p1l_tag_state_combo.currentText()]
-                    tag = self.p1l_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P1L" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
 
     def send_config_2_radio(self):
         """Send the config to the Radio"""
@@ -4883,6 +4854,816 @@ class MainWindow(QMainWindow):
 
         elif rep == dialog.No:
             return
+
+    def set_p1l(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p1l_freq_entry.hasAcceptableInput():
+                    freq = self.p1l_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p1l_clar_dir_spin.value())
+                    val = self.p1l_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p1l_clar_state_combo.currentText()]
+                    mode = MODES[self.p1l_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p1l_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p1l_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p1l_tag_state_combo.currentText()]
+                    tag = self.p1l_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P1L" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p2l(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p2l_freq_entry.hasAcceptableInput():
+                    freq = self.p2l_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p2l_clar_dir_spin.value())
+                    val = self.p2l_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p2l_clar_state_combo.currentText()]
+                    mode = MODES[self.p2l_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p2l_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p2l_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p2l_tag_state_combo.currentText()]
+                    tag = self.p2l_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P2L" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p3l(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p3l_freq_entry.hasAcceptableInput():
+                    freq = self.p3l_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p3l_clar_dir_spin.value())
+                    val = self.p3l_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p3l_clar_state_combo.currentText()]
+                    mode = MODES[self.p3l_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p3l_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p3l_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p3l_tag_state_combo.currentText()]
+                    tag = self.p3l_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P3L" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p4l(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p4l_freq_entry.hasAcceptableInput():
+                    freq = self.p4l_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p4l_clar_dir_spin.value())
+                    val = self.p4l_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p4l_clar_state_combo.currentText()]
+                    mode = MODES[self.p4l_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p4l_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p4l_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p4l_tag_state_combo.currentText()]
+                    tag = self.p4l_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P4L" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p5l(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p5l_freq_entry.hasAcceptableInput():
+                    freq = self.p5l_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p5l_clar_dir_spin.value())
+                    val = self.p5l_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p5l_clar_state_combo.currentText()]
+                    mode = MODES[self.p5l_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p5l_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p5l_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p5l_tag_state_combo.currentText()]
+                    tag = self.p5l_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P5L" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p6l(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p6l_freq_entry.hasAcceptableInput():
+                    freq = self.p6l_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p6l_clar_dir_spin.value())
+                    val = self.p6l_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p6l_clar_state_combo.currentText()]
+                    mode = MODES[self.p6l_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p6l_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p6l_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p6l_tag_state_combo.currentText()]
+                    tag = self.p6l_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P6L" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p7l(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p7l_freq_entry.hasAcceptableInput():
+                    freq = self.p7l_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p7l_clar_dir_spin.value())
+                    val = self.p7l_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p7l_clar_state_combo.currentText()]
+                    mode = MODES[self.p7l_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p7l_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p7l_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p7l_tag_state_combo.currentText()]
+                    tag = self.p7l_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P7L" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p8l(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p8l_freq_entry.hasAcceptableInput():
+                    freq = self.p8l_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p8l_clar_dir_spin.value())
+                    val = self.p8l_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p8l_clar_state_combo.currentText()]
+                    mode = MODES[self.p8l_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p8l_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p8l_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p8l_tag_state_combo.currentText()]
+                    tag = self.p8l_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P8L" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p9l(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p9l_freq_entry.hasAcceptableInput():
+                    freq = self.p9l_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p9l_clar_dir_spin.value())
+                    val = self.p9l_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p9l_clar_state_combo.currentText()]
+                    mode = MODES[self.p9l_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p9l_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p9l_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p9l_tag_state_combo.currentText()]
+                    tag = self.p9l_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P9L" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p1u(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p1u_freq_entry.hasAcceptableInput():
+                    freq = self.p1u_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p1u_clar_dir_spin.value())
+                    val = self.p1u_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p1u_clar_state_combo.currentText()]
+                    mode = MODES[self.p1u_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p1u_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p1u_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p1u_tag_state_combo.currentText()]
+                    tag = self.p1u_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P1U" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p2u(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p2u_freq_entry.hasAcceptableInput():
+                    freq = self.p2u_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p2u_clar_dir_spin.value())
+                    val = self.p2u_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p2u_clar_state_combo.currentText()]
+                    mode = MODES[self.p2u_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p2u_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p2u_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p2u_tag_state_combo.currentText()]
+                    tag = self.p2u_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P2U" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p3u(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p3u_freq_entry.hasAcceptableInput():
+                    freq = self.p3u_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p3u_clar_dir_spin.value())
+                    val = self.p3u_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p3u_clar_state_combo.currentText()]
+                    mode = MODES[self.p3u_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p3u_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p3u_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p3u_tag_state_combo.currentText()]
+                    tag = self.p3u_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P3U" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p4u(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p4u_freq_entry.hasAcceptableInput():
+                    freq = self.p4u_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p4u_clar_dir_spin.value())
+                    val = self.p4u_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p4u_clar_state_combo.currentText()]
+                    mode = MODES[self.p4u_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p4u_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p4u_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p4u_tag_state_combo.currentText()]
+                    tag = self.p4u_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P4U" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p5u(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p5u_freq_entry.hasAcceptableInput():
+                    freq = self.p5u_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p5u_clar_dir_spin.value())
+                    val = self.p5u_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p5u_clar_state_combo.currentText()]
+                    mode = MODES[self.p5u_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p5u_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p5u_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p5u_tag_state_combo.currentText()]
+                    tag = self.p5u_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P5U" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p6u(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p6u_freq_entry.hasAcceptableInput():
+                    freq = self.p6u_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p6u_clar_dir_spin.value())
+                    val = self.p6u_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p6u_clar_state_combo.currentText()]
+                    mode = MODES[self.p6u_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p6u_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p6u_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p6u_tag_state_combo.currentText()]
+                    tag = self.p6u_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P6U" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p7u(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p7u_freq_entry.hasAcceptableInput():
+                    freq = self.p7u_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p7u_clar_dir_spin.value())
+                    val = self.p7u_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p7u_clar_state_combo.currentText()]
+                    mode = MODES[self.p7u_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p7u_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p7u_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p7u_tag_state_combo.currentText()]
+                    tag = self.p7u_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P7U" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p8u(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p8u_freq_entry.hasAcceptableInput():
+                    freq = self.p8u_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p8u_clar_dir_spin.value())
+                    val = self.p8u_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p8u_clar_state_combo.currentText()]
+                    mode = MODES[self.p8u_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p8u_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p8u_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p8u_tag_state_combo.currentText()]
+                    tag = self.p8u_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P8U" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
+
+    def set_p9u(self):
+        if self.rig.isOpen():
+            if self.transfert:
+                if self.p9u_freq_entry.hasAcceptableInput():
+                    freq = self.p9u_freq_entry.text()
+                    while len(freq) < 9:
+                        freq = "0" + freq
+                    freq = bytes(freq, ENCODER)
+
+                    clar = str(self.p9u_clar_dir_spin.value())
+                    val = self.p9u_clar_dir_spin.value()
+
+                    if -9999 < val <= -100:
+                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
+                    elif -100 < val <= -10:
+                        clar = clar[0] + "00" + clar[1] + clar[2]
+                    elif -10 < val < 0:
+                        clar = clar[0] + "000" + clar[1]
+                    elif 0 <= val < 10:
+                        clar = "+000" + clar[0]
+                    elif 10 <= val < 100:
+                        clar = "+00" + clar
+                    elif 100 <= val < 1000:
+                        clar = "+0" + clar
+                    elif 1000 <= val < 9999:
+                        clar = "+" + clar
+                    clar = bytes(clar, ENCODER)
+
+                    clar_state = CLAR_STATE[self.p9u_clar_state_combo.currentText()]
+                    mode = MODES[self.p9u_mode_combo.currentText()]
+                    ctcss = CTCSS_STATE[self.p9u_ctcss_dcs_state_combo.currentText()]
+                    rpt = RPT_SHIFT_DIR[self.p9u_rpt_shift_dir_combo.currentText()]
+                    tag_state = TAG_STATE[self.p9u_tag_state_combo.currentText()]
+                    tag = self.p9u_tag_entry.text()
+                    while len(tag) < 12:
+                        tag += " "
+                    tag = bytes(tag, ENCODER)
+
+                    cmd = b"MT" + b"P9U" + freq + clar + clar_state + b"0" + mode + b"0" + \
+                          ctcss + b"00" + rpt + tag_state + tag + b";"
+                    print(cmd)
+                    self.rig.write(cmd)
+                    rep = self.rig.read_until(b";")
+                    print(rep)
 
     def toggle_live_mode(self):
         """Toggle Live Mode"""

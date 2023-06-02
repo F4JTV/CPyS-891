@@ -32,8 +32,8 @@ ___
 TODO: 
 - Menu -> done
 - Functions
-- Memory
-- Reset the rig to default config
+- Memory -> in progress
+- Reset the rig to default config -> done
 - Save and open config files
 - Presets for quick config
 - About 
