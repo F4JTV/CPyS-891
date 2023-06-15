@@ -11,6 +11,7 @@
 ##########################################################################
 import re
 import sys
+import json
 import platform
 import configparser
 from datetime import datetime
@@ -219,7 +220,7 @@ class MainWindow(QMainWindow):
         self.central_Widget = QWidget()
         self.setCentralWidget(self.central_Widget)
 
-        self.main_layout = QVBoxLayout()
+        self.main_layout = QHBoxLayout()
         self.central_Widget.setLayout(self.main_layout)
 
         # ###### Rig
@@ -230,7 +231,7 @@ class MainWindow(QMainWindow):
                                  rtscts=True)
         try:
             self.rig.setPort(self.com_port)
-            self.rig.open()
+            """self.rig.open()
             self.rig.write(b"FA;")
             rep = self.rig.read_until(";")
             rep = rep.replace(b";", b"")
@@ -238,7 +239,7 @@ class MainWindow(QMainWindow):
             if re.match("^FA\d{9}$", rep):
                 self.status_bar.showMessage(self.com_port + ' Connected.')
             else:
-                raise serial.SerialException
+                raise serial.SerialException"""
 
         except serial.SerialException:
             error_box = QMessageBox(QMessageBox.Critical,
@@ -270,9 +271,11 @@ class MainWindow(QMainWindow):
         # Files Actions
         self.save_config_action = QAction("&Save config")
         self.file_menu.addAction(self.save_config_action)
+        self.save_config_action.triggered.connect(self.save_config_file)
 
         self.open_config_action = QAction("&Open config file")
         self.file_menu.addAction(self.open_config_action)
+        self.open_config_action.triggered.connect(self.get_config_file)
         self.file_menu.addSeparator()
 
         self.exit_action = QAction("Exit")
@@ -314,26 +317,11 @@ class MainWindow(QMainWindow):
         self.doc_action = QAction("Online &Doc")
         self.help_menu.addAction(self.doc_action)
 
-        # ###### Tab
-        self.tab = QTabWidget()
-        self.main_layout.addWidget(self.tab)
-
-        self.menu_tab = QWidget()
-        self.memory_tab = QWidget()
-        self.pms_tab = QWidget()
-
-        self.tab.addTab(self.menu_tab, "Menu / Functions")
-        self.tab.addTab(self.memory_tab, "Memory")
-        self.tab.addTab(self.pms_tab, "PMS")
-
-        # ###### Menu tab
-        self.menu_layout = QHBoxLayout()
-        self.menu_tab.setLayout(self.menu_layout)
-
+        # ###### Menu Table
         self.menu_table = QTableWidget(171, 3)
         self.function_layout = QScrollArea()
-        self.menu_layout.addWidget(self.menu_table, 1)
-        self.menu_layout.addWidget(self.function_layout, 3)
+        self.main_layout.addWidget(self.menu_table, 1)
+        self.main_layout.addWidget(self.function_layout, 3)
 
         # Menu Table
         self.menu_table.verticalHeader().setVisible(False)
@@ -3037,1106 +3025,364 @@ class MainWindow(QMainWindow):
             except AttributeError:
                 pass
 
-        # ###### Memory tab
-        self.memory_layout = QVBoxLayout()
-        self.memory_tab.setLayout(self.memory_layout)
+    def save_config_file(self):
+        acg_fast_delay = self.acg_fast_spin.value()
+        acg_mid_delay = self.acg_mid_spin.value()
+        acg_slow_delay = self.acg_slow_spin.value()
 
-        self.memory_table = QTableWidget(99, 8)
-        self.memory_layout.addWidget(self.memory_table)
+        lcd_contrast = self.lcd_contrast_spin.value()
+        dimmer_backlit = self.dimmer_backlit_spin.value()
+        dimmer_lcd = self.dimmer_lcd_spin.value()
+        dimmer_tx_busy = self.dimmer_tx_busy_spin.value()
+        peak_hold = self.peak_hold_combo.currentText()
+        zin_led = self.zin_led_combo.currentText()
+        pop_up_menu = self.pop_up_combo.currentText()
 
-        self.memory_table.verticalHeader().setVisible(True)
-        self.memory_table.horizontalHeader().setVisible(True)
-        self.memory_table.setSortingEnabled(False)
-        self.memory_table.setAlternatingRowColors(True)
-        self.memory_table.setHorizontalHeaderLabels(["Frequency (Hz)", "Clarifier offset (Hz)",
-                                                     "CLAR state", "Mode", "CTCSS/DCS",
-                                                     "RPT shift direction", "TAG state",
-                                                     "TAG Name (max 12 chars ASCII)"])
-        self.memory_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-        self.memory_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-        self.memory_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
-        self.memory_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch)
-        self.memory_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
-        self.memory_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeMode.Stretch)
-        self.memory_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeMode.Stretch)
-        self.memory_table.horizontalHeader().setSectionResizeMode(7, QHeaderView.ResizeMode.Stretch)
+        dvs_rx_out_lvl = self.dvs_rx_out_lvl_spin.value()
+        dvs_tx_out_lvl = self.dvs_tx_out_lvl_spin.value()
 
-        regexp_freq = QRegExp(r"^\d{7,9}$")
-        regexp_tag = QRegExp(r"^[ -~]{1,12}$")
+        keyer_type = self.keyer_type_combo.currentText()
+        keyer_dot_dash = self.keyer_dot_dash_combo.currentText()
+        cw_weight = self.cw_weight_spin.value()
+        beacon_interval = self.beacon_interval_spin.value()
+        number_style = self.number_style_combo.currentText()
+        contest_number = self.contest_number_spin.value()
+        cw_memory_1 = self.cw_memory_1_combo.currentText()
+        cw_memory_2 = self.cw_memory_2_combo.currentText()
+        cw_memory_3 = self.cw_memory_3_combo.currentText()
+        cw_memory_4 = self.cw_memory_4_combo.currentText()
+        cw_memory_5 = self.cw_memory_5_combo.currentText()
 
-        # Mem 001
-        self.mem_1_freq_entry = QLineEdit("7000000")
-        self.mem_1_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.mem_1_freq_entry.setAlignment(Qt.AlignCenter)
-        self.mem_1_clar_dir_spin = QSpinBox()
-        self.mem_1_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.mem_1_clar_dir_spin.setMaximum(9999)
-        self.mem_1_clar_dir_spin.setMinimum(-9999)
-        self.mem_1_clar_state_combo = QComboBox()
-        self.mem_1_clar_state_combo.setEditable(True)
-        self.mem_1_clar_state_combo.lineEdit().setReadOnly(True)
-        self.mem_1_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.mem_1_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.mem_1_clar_state_combo)
-        self.mem_1_mode_combo = QComboBox()
-        self.mem_1_mode_combo.setEditable(True)
-        self.mem_1_mode_combo.lineEdit().setReadOnly(True)
-        self.mem_1_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.mem_1_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.mem_1_mode_combo)
-        self.mem_1_ctcss_dcs_state_combo = QComboBox()
-        self.mem_1_ctcss_dcs_state_combo.setEditable(True)
-        self.mem_1_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.mem_1_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.mem_1_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.mem_1_ctcss_dcs_state_combo)
-        self.mem_1_rpt_shift_dir_combo = QComboBox()
-        self.mem_1_rpt_shift_dir_combo.setEditable(True)
-        self.mem_1_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.mem_1_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.mem_1_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.mem_1_rpt_shift_dir_combo)
-        self.mem_1_tag_state_combo = QComboBox()
-        self.mem_1_tag_state_combo.setEditable(True)
-        self.mem_1_tag_state_combo.lineEdit().setReadOnly(True)
-        self.mem_1_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.mem_1_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.mem_1_tag_state_combo)
-        self.mem_1_tag_entry = QLineEdit()
-        self.mem_1_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.mem_1_tag_entry.setAlignment(Qt.AlignCenter)
+        nb_width = self.nb_width_combo.currentText()
+        nb_rejection = self.nb_rejection_combo.currentText()
+        nb_level = self.nb_level_spin.value()
+        beep_level = self.beep_level_spin.value()
+        rf_sql_vr = self.rf_sql_vr_combo.currentText()
+        cat_rate = self.cat_rate_combo.currentText()
+        cat_tot = self.cat_tot_combo.currentText()
+        cat_rts = self.cat_rts_combo.currentText()
+        mem_grp = self.meme_group_combo.currentText()
+        fm_setting = self.fm_setting_combo.currentText()
+        rec_setting = self.rec_setting_combo.currentText()
+        atas_setting = self.atas_setting_combo.currentText()
+        quick_spl_freq = self.quick_spl_freq_spin.value()
+        tx_tot = self.tx_tot_spin.value()
+        mic_scan = self.mic_scan_combo.currentText()
+        mic_scan_resume = self.mic_scan_resume_combo.currentText()
+        ref_freq_adj = self.ref_freq_adj_spin.value()
+        clar_select = self.clar_select_combo.currentText()
+        apo = self.apo_combo.currentText()
+        fan_control = self.fan_control_combo.currentText()
 
-        self.memory_table.setCellWidget(0, 0, self.mem_1_freq_entry)
-        self.memory_table.setCellWidget(0, 1, self.mem_1_clar_dir_spin)
-        self.memory_table.setCellWidget(0, 2, self.mem_1_clar_state_combo)
-        self.memory_table.setCellWidget(0, 3, self.mem_1_mode_combo)
-        self.memory_table.setCellWidget(0, 4, self.mem_1_ctcss_dcs_state_combo)
-        self.memory_table.setCellWidget(0, 5, self.mem_1_rpt_shift_dir_combo)
-        self.memory_table.setCellWidget(0, 6, self.mem_1_tag_state_combo)
-        self.memory_table.setCellWidget(0, 7, self.mem_1_tag_entry)
+        am_lcut_freq = self.am_lcut_freq_combo.currentText()
+        am_lcut_slope = self.am_lcut_slope_combo.currentText()
+        am_hcut_freq = self.am_hcut_freq_combo.currentText()
+        am_hcut_slope = self.am_hcut_slope_combo.currentText()
+        am_mic_select = self.am_mic_select_combo.currentText()
+        am_out_level = self.am_out_level_spin.value()
+        am_ptt_select = self.am_ptt_select_combo.currentText()
 
-        # Mem 002
-        self.mem_2_freq_entry = QLineEdit("")
-        self.mem_2_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.mem_2_freq_entry.setAlignment(Qt.AlignCenter)
-        self.mem_2_clar_dir_spin = QSpinBox()
-        self.mem_2_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.mem_2_clar_dir_spin.setMaximum(9999)
-        self.mem_2_clar_dir_spin.setMinimum(-9999)
-        self.mem_2_clar_state_combo = QComboBox()
-        self.mem_2_clar_state_combo.setEditable(True)
-        self.mem_2_clar_state_combo.lineEdit().setReadOnly(True)
-        self.mem_2_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.mem_2_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.mem_2_clar_state_combo)
-        self.mem_2_mode_combo = QComboBox()
-        self.mem_2_mode_combo.setEditable(True)
-        self.mem_2_mode_combo.lineEdit().setReadOnly(True)
-        self.mem_2_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.mem_2_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.mem_2_mode_combo)
-        self.mem_2_ctcss_dcs_state_combo = QComboBox()
-        self.mem_2_ctcss_dcs_state_combo.setEditable(True)
-        self.mem_2_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.mem_2_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.mem_2_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.mem_2_ctcss_dcs_state_combo)
-        self.mem_2_rpt_shift_dir_combo = QComboBox()
-        self.mem_2_rpt_shift_dir_combo.setEditable(True)
-        self.mem_2_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.mem_2_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.mem_2_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.mem_2_rpt_shift_dir_combo)
-        self.mem_2_tag_state_combo = QComboBox()
-        self.mem_2_tag_state_combo.setEditable(True)
-        self.mem_2_tag_state_combo.lineEdit().setReadOnly(True)
-        self.mem_2_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.mem_2_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.mem_2_tag_state_combo)
-        self.mem_2_tag_entry = QLineEdit()
-        self.mem_2_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.mem_2_tag_entry.setAlignment(Qt.AlignCenter)
+        cw_lcut_freq = self.cw_lcut_freq_combo.currentText()
+        cw_lcut_slope = self.am_lcut_slope_combo.currentText()
+        cw_hcut_freq = self.cw_hcut_freq_combo.currentText()
+        cw_hcut_slope = self.am_hcut_slope_combo.currentText()
+        cw_out_level = self.cw_out_level_spin.value()
+        cw_auto_mode = self.cw_auto_mode_combo.currentText()
+        cw_bfo = self.cw_bfo_combo.currentText()
+        cw_bk_in_type = self.cw_bk_in_type_combo.currentText()
+        cw_bk_in_delay = self.cw_bk_in_delay_spin.value()
+        cw_wave_shape = self.cw_wav_shape_combo.currentText()
+        cw_freq_display = self.cw_freq_display_combo.currentText()
+        pc_keying = self.pc_keying_combo.currentText()
+        qsk_delay_time = self.qsk_delay_time_combo.currentText()
 
-        self.memory_table.setCellWidget(1, 0, self.mem_2_freq_entry)
-        self.memory_table.setCellWidget(1, 1, self.mem_2_clar_dir_spin)
-        self.memory_table.setCellWidget(1, 2, self.mem_2_clar_state_combo)
-        self.memory_table.setCellWidget(1, 3, self.mem_2_mode_combo)
-        self.memory_table.setCellWidget(1, 4, self.mem_2_ctcss_dcs_state_combo)
-        self.memory_table.setCellWidget(1, 5, self.mem_2_rpt_shift_dir_combo)
-        self.memory_table.setCellWidget(1, 6, self.mem_2_tag_state_combo)
-        self.memory_table.setCellWidget(1, 7, self.mem_2_tag_entry)
+        data_mode = self.data_mode_combo.currentText()
+        psk_tone = self.psk_tone_combo.currentText()
+        other_disp = self.other_disp_spin.value()
+        other_shift = self.other_shift_spin.value()
+        data_lcut_freq = self.data_lcut_freq_combo.currentText()
+        data_lcut_slope = self.data_lcut_slope_combo.currentText()
+        data_hcut_freq = self.data_hcut_freq_combo.currentText()
+        data_hcut_slope = self.data_hcut_slope_combo.currentText()
+        data_in_select = self.data_in_select_combo.currentText()
+        data_ptt_select = self.data_ptt_select_combo.currentText()
+        data_out_level = self.data_out_level_spin.value()
+        data_bfo = self.data_bfo_combo.currentText()
 
-        # ###### PMS
-        self.pms_layout = QVBoxLayout()
-        self.pms_tab.setLayout(self.pms_layout)
+        fm_mic_select = self.fm_mic_select_combo.currentText()
+        fm_out_level = self.fm_out_level_spin.value()
+        pkt_ptt_select = self.pkt_ptt_select_combo.currentText()
+        rpt_shift_28 = self.rpt_shift_28_spin.value()
+        rpt_shift_50 = self.rpt_shift_50_spin.value()
+        dcs_polarity = self.dcs_polarity_combo.currentText()
 
-        self.pms_table = QTableWidget(18, 8)
-        self.pms_layout.addWidget(self.pms_table)
+        rtty_lcut_freq = self.rtty_lcut_freq_combo.currentText()
+        rtty_lcut_slope = self.rtty_lcut_slope_combo.currentText()
+        rtty_hcut_freq = self.rtty_hcut_freq_combo.currentText()
+        rtty_hcut_slope = self.rtty_hcut_slope_combo.currentText()
+        rtty_shift_port = self.rtty_shift_port_combo.currentText()
+        rtty_polarity_r = self.rtty_polarity_r_combo.currentText()
+        rtty_polarity_t = self.rtty_polarity_t_combo.currentText()
+        rtty_out_level = self.rtty_out_level_spin.value()
+        rtty_shift_freq = self.rtty_shift_freq_combo.currentText()
+        rtty_mark_freq = self.rtty_mark_freq_combo.currentText()
+        rtty_bfo = self.rtty_bfo_combo.currentText()
 
-        self.pms_table.verticalHeader().setVisible(True)
-        self.pms_table.horizontalHeader().setVisible(True)
-        self.pms_table.setSortingEnabled(False)
-        self.pms_table.setAlternatingRowColors(True)
-        self.pms_table.setHorizontalHeaderLabels(["Frequency (Hz)", "Clarifier offset (Hz)",
-                                                  "CLAR state", "Mode", "CTCSS/DCS",
-                                                  "RPT shift direction", "TAG state",
-                                                  "TAG Name (max 12 chars ASCII)"])
-        self.pms_table.setVerticalHeaderLabels(["P1L", "P1U",
-                                                "P2L", "P2U",
-                                                "P3L", "P3U",
-                                                "P4L", "P4U",
-                                                "P5L", "P5U",
-                                                "P6L", "P6U",
-                                                "P7L", "P7U",
-                                                "P8L", "P8U",
-                                                "P9L", "P9U"])
-        self.pms_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
-        self.pms_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
-        self.pms_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
-        self.pms_table.horizontalHeader().setSectionResizeMode(3, QHeaderView.ResizeMode.Stretch)
-        self.pms_table.horizontalHeader().setSectionResizeMode(4, QHeaderView.ResizeMode.Stretch)
-        self.pms_table.horizontalHeader().setSectionResizeMode(5, QHeaderView.ResizeMode.Stretch)
-        self.pms_table.horizontalHeader().setSectionResizeMode(6, QHeaderView.ResizeMode.Stretch)
-        self.pms_table.horizontalHeader().setSectionResizeMode(7, QHeaderView.ResizeMode.Stretch)
+        ssb_lcut_freq = self.ssb_lcut_freq_combo.currentText()
+        ssb_lcut_slope = self.ssb_lcut_slope_combo.currentText()
+        ssb_hcut_freq = self.ssb_hcut_freq_combo.currentText()
+        ssb_hcut_slope = self.ssb_hcut_slope_combo.currentText()
+        ssb_mic_select = self.ssb_mic_select_combo.currentText()
+        ssb_out_level = self.ssb_out_level_spin.value()
+        ssb_bfo = self.ssb_bfo_combo.currentText()
+        ssb_ptt_select = self.ssb_ptt_select_combo.currentText()
+        ssb_tx_bpf = self.ssb_tx_bpf_combo.currentText()
 
-        regexp_freq = QRegExp(r"^\d{7,9}$")
-        regexp_tag = QRegExp(r"^[ -~]{1,12}$")
+        apf_width = self.apf_width_combo.currentText()
+        contour_level = self.contour_level_spin.value()
+        contour_width = self.contour_width_spin.value()
+        if_notch_width = self.if_notch_width_combo.currentText()
 
-        # PMS P1L
-        self.p1l_freq_entry = QLineEdit("")
-        self.p1l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p1l_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p1l_freq_entry.returnPressed.connect(self.set_p1l)
-        self.p1l_clar_dir_spin = QSpinBox()
-        self.p1l_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p1l_clar_dir_spin.setMaximum(9999)
-        self.p1l_clar_dir_spin.setMinimum(-9999)
-        self.p1l_clar_state_combo = QComboBox()
-        self.p1l_clar_state_combo.setEditable(True)
-        self.p1l_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p1l_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p1l_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p1l_clar_state_combo)
-        self.p1l_mode_combo = QComboBox()
-        self.p1l_mode_combo.setEditable(True)
-        self.p1l_mode_combo.lineEdit().setReadOnly(True)
-        self.p1l_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p1l_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p1l_mode_combo)
-        self.p1l_ctcss_dcs_state_combo = QComboBox()
-        self.p1l_ctcss_dcs_state_combo.setEditable(True)
-        self.p1l_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p1l_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p1l_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p1l_ctcss_dcs_state_combo)
-        self.p1l_rpt_shift_dir_combo = QComboBox()
-        self.p1l_rpt_shift_dir_combo.setEditable(True)
-        self.p1l_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p1l_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p1l_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p1l_rpt_shift_dir_combo)
-        self.p1l_tag_state_combo = QComboBox()
-        self.p1l_tag_state_combo.setEditable(True)
-        self.p1l_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p1l_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p1l_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p1l_tag_state_combo)
-        self.p1l_tag_entry = QLineEdit()
-        self.p1l_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p1l_tag_entry.setAlignment(Qt.AlignCenter)
+        scp_start_cycle = self.scp_start_cycle_combo.currentText()
+        scp_span_freq = self.scp_span_freq_combo.currentText()
 
-        self.pms_table.setCellWidget(0, 0, self.p1l_freq_entry)
-        self.pms_table.setCellWidget(0, 1, self.p1l_clar_dir_spin)
-        self.pms_table.setCellWidget(0, 2, self.p1l_clar_state_combo)
-        self.pms_table.setCellWidget(0, 3, self.p1l_mode_combo)
-        self.pms_table.setCellWidget(0, 4, self.p1l_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(0, 5, self.p1l_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(0, 6, self.p1l_tag_state_combo)
-        self.pms_table.setCellWidget(0, 7, self.p1l_tag_entry)
+        quick_dial = self.quick_dial_combo.currentText()
+        ssb_dial_step = self.ssb_dial_step_combo.currentText()
+        am_dial_step = self.am_dial_step_combo.currentText()
+        fm_dial_step = self.fm_dial_step_combo.currentText()
+        dial_step = self.dial_step_combo.currentText()
+        am_ch_step = self.am_ch_step_combo.currentText()
+        fm_ch_step = self.fm_ch_step_combo.currentText()
 
-        # PMS P1U
-        self.p1u_freq_entry = QLineEdit("")
-        self.p1u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p1u_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p1u_freq_entry.returnPressed.connect(self.set_p1u)
-        self.p1u_clar_dir_spin = QSpinBox()
-        self.p1u_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p1u_clar_dir_spin.setMaximum(9999)
-        self.p1u_clar_dir_spin.setMinimum(-9999)
-        self.p1u_clar_state_combo = QComboBox()
-        self.p1u_clar_state_combo.setEditable(True)
-        self.p1u_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p1u_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p1u_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p1u_clar_state_combo)
-        self.p1u_mode_combo = QComboBox()
-        self.p1u_mode_combo.setEditable(True)
-        self.p1u_mode_combo.lineEdit().setReadOnly(True)
-        self.p1u_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p1u_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p1u_mode_combo)
-        self.p1u_ctcss_dcs_state_combo = QComboBox()
-        self.p1u_ctcss_dcs_state_combo.setEditable(True)
-        self.p1u_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p1u_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p1u_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p1u_ctcss_dcs_state_combo)
-        self.p1u_rpt_shift_dir_combo = QComboBox()
-        self.p1u_rpt_shift_dir_combo.setEditable(True)
-        self.p1u_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p1u_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p1u_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p1u_rpt_shift_dir_combo)
-        self.p1u_tag_state_combo = QComboBox()
-        self.p1u_tag_state_combo.setEditable(True)
-        self.p1u_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p1u_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p1u_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p1u_tag_state_combo)
-        self.p1u_tag_entry = QLineEdit()
-        self.p1u_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p1u_tag_entry.setAlignment(Qt.AlignCenter)
+        eq_1_freq = self.eq_1_freq_combo.currentText()
+        eq_1_level = self.eq_1_level_spin.value()
+        eq_1_bwth = self.eq_1_bwth_spin.value()
+        eq_2_freq = self.eq_2_freq_combo.currentText()
+        eq_2_level = self.eq_2_level_spin.value()
+        eq_2_bwth = self.eq_2_bwth_spin.value()
+        eq_3_freq = self.eq_3_freq_combo.currentText()
+        eq_3_level = self.eq_3_level_spin.value()
+        eq_3_bwth = self.eq_3_bwth_spin.value()
+        p_eq_1_freq = self.p_eq_1_freq_combo.currentText()
+        p_eq_1_level = self.p_eq_1_level_spin.value()
+        p_eq_1_bwth = self.p_eq_1_bwth_spin.value()
+        p_eq_2_freq = self.p_eq_2_freq_combo.currentText()
+        p_eq_2_level = self.p_eq_2_level_spin.value()
+        p_eq_2_bwth = self.p_eq_2_bwth_spin.value()
+        p_eq_3_freq = self.p_eq_3_freq_combo.currentText()
+        p_eq_3_level = self.p_eq_3_level_spin.value()
+        p_eq_3_bwth = self.p_eq_3_bwth_spin.value()
 
-        self.pms_table.setCellWidget(1, 0, self.p1u_freq_entry)
-        self.pms_table.setCellWidget(1, 1, self.p1u_clar_dir_spin)
-        self.pms_table.setCellWidget(1, 2, self.p1u_clar_state_combo)
-        self.pms_table.setCellWidget(1, 3, self.p1u_mode_combo)
-        self.pms_table.setCellWidget(1, 4, self.p1u_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(1, 5, self.p1u_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(1, 6, self.p1u_tag_state_combo)
-        self.pms_table.setCellWidget(1, 7, self.p1u_tag_entry)
+        hf_ssb_pwr = self.hf_ssb_pwr_spin.value()
+        hf_am_pwr = self.hf_am_pwr_spin.value()
+        hf_pwr = self.hf_pwr_spin.value()
+        hf_50_ssb_pwr = self.ssb_50m_pwr_spin.value()
+        hf_50_am_pwr = self.am_50m_pwr_spin.value()
+        hf_50_pwr = self.pwr_50m_spin.value()
+        ssb_mic_gain = self.ssb_mic_gain_spin.value()
+        am_mic_gain = self.am_mic_gain_spin.value()
+        fm_mic_gain = self.fm_mic_gain_spin.value()
+        data_mic_gain = self.data_mic_gain_spin.value()
+        ssb_data_gain = self.ssb_data_gain_spin.value()
+        am_data_gain = self.am_data_gain_spin.value()
+        fm_data_gain = self.fm_data_gain_spin.value()
+        data_data_gain = self.data_data_gain_spin.value()
+        tuner_select = self.tuner_select_combo.currentText()
+        vox_select = self.vox_select_combo.currentText()
+        vox_gain = self.vox_gain_spin.value()
+        vox_delay = self.vox_delay_spin.value()
+        anti_vox_gain = self.anti_vox_gain_spin.value()
+        data_vox_gain = self.data_vox_gain_spin.value()
+        data_vox_delay = self.data_vox_delay_spin.value()
+        anti_dvox_gain = self.anti_dvox_gain_spin.value()
+        emergency_freq = self.emergency_freq_combo.currentText()
 
-        # PMS P2L
-        self.p2l_freq_entry = QLineEdit("")
-        self.p2l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p2l_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p2l_freq_entry.returnPressed.connect(self.set_p2l)
-        self.p2l_clar_dir_spin = QSpinBox()
-        self.p2l_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p2l_clar_dir_spin.setMaximum(9999)
-        self.p2l_clar_dir_spin.setMinimum(-9999)
-        self.p2l_clar_state_combo = QComboBox()
-        self.p2l_clar_state_combo.setEditable(True)
-        self.p2l_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p2l_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p2l_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p2l_clar_state_combo)
-        self.p2l_mode_combo = QComboBox()
-        self.p2l_mode_combo.setEditable(True)
-        self.p2l_mode_combo.lineEdit().setReadOnly(True)
-        self.p2l_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p2l_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p2l_mode_combo)
-        self.p2l_ctcss_dcs_state_combo = QComboBox()
-        self.p2l_ctcss_dcs_state_combo.setEditable(True)
-        self.p2l_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p2l_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p2l_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p2l_ctcss_dcs_state_combo)
-        self.p2l_rpt_shift_dir_combo = QComboBox()
-        self.p2l_rpt_shift_dir_combo.setEditable(True)
-        self.p2l_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p2l_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p2l_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p2l_rpt_shift_dir_combo)
-        self.p2l_tag_state_combo = QComboBox()
-        self.p2l_tag_state_combo.setEditable(True)
-        self.p2l_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p2l_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p2l_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p2l_tag_state_combo)
-        self.p2l_tag_entry = QLineEdit()
-        self.p2l_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p2l_tag_entry.setAlignment(Qt.AlignCenter)
+        config_dict = {
+            "Menu": {
+                "AGC FAST DELAY": acg_fast_delay,
+                "AGC MID DELAY": acg_mid_delay,
+                "AGC SLOW DELAY": acg_slow_delay,
+                "LCD CONTRAST": lcd_contrast,
+                "DIMMER BACKLIT": dimmer_backlit,
+                "DIMMER LCD": dimmer_lcd,
+                "DIMMER TX/BUSY": dimmer_tx_busy,
+                "PEAK HOLD": peak_hold,
+                "ZIN LED": zin_led,
+                "POP-UP MENU": pop_up_menu,
+                "DVS RX OUT LVL": dvs_rx_out_lvl,
+                "DVS TX OUT LVL": dvs_tx_out_lvl,
+                "KEYER TYPE": keyer_type,
+                "KEYER DOT/DASH": keyer_dot_dash,
+                "CW WEIGHT": cw_weight,
+                "BEACON INTERVAL": beacon_interval,
+                "NUMBER STYLE": number_style,
+                "CONTEST NUMBER": contest_number,
+                "CW MEMORY 1": cw_memory_1,
+                "CW MEMORY 2": cw_memory_2,
+                "CW MEMORY 3": cw_memory_3,
+                "CW MEMORY 4": cw_memory_4,
+                "CW MEMORY 5": cw_memory_5,
+                "NB WIDTH": nb_width,
+                "NB REJECTION": nb_rejection,
+                "NB LEVEL": nb_level,
+                "BEEP LEVEL": beep_level,
+                "RF/SQL VR": rf_sql_vr,
+                "CAT RATE": cat_rate,
+                "CAT TOT": cat_tot,
+                "CAT RTS": cat_rts,
+                "MEM GROUP": mem_grp,
+                "FM SETTING": fm_setting,
+                "REC SETTING": rec_setting,
+                "ATAS SETTING": atas_setting,
+                "QUICK SPL FREQ": quick_spl_freq,
+                "TX TOT": tx_tot,
+                "MIC SCAN": mic_scan,
+                "MIC SCAN RESUME": mic_scan_resume,
+                "REF FREQ ADJ": ref_freq_adj,
+                "CLAR SELECT": clar_select,
+                "APO": apo,
+                "FAN CONTROL": fan_control,
+                "AM LCUT FREQ": am_lcut_freq,
+                "AM LCUT SLOPE": am_lcut_slope,
+                "AM HCUT FREQ": am_hcut_freq,
+                "AM HCUT SLOPE": am_hcut_slope,
+                "AM MIC SELECT": am_mic_select,
+                "AM OUT LEVEL": am_out_level,
+                "AM PTT SELECT": am_ptt_select,
+                "CW LCUT FREQ": cw_lcut_freq,
+                "CW LCUT SLOPE": cw_lcut_slope,
+                "CW HCUT FREQ": cw_hcut_freq,
+                "CW HCUT SLOPE": cw_hcut_slope,
+                "CW OUT LEVEL": cw_out_level,
+                "CW AUTO MODE": cw_auto_mode,
+                "CW BFO": cw_bfo,
+                "CW BK-IN TYPE": cw_bk_in_type,
+                "CW BK-IN DELAY": cw_bk_in_delay,
+                "CW WAVE SHAPE": cw_wave_shape,
+                "CW FREQ DISPLAY": cw_freq_display,
+                "PC KEYING": pc_keying,
+                "QSK DELAY TIME": qsk_delay_time,
+                "DATA MODE": data_mode,
+                "PSK TONE": psk_tone,
+                "OTHER DISP": other_disp,
+                "OTHER SHIFT": other_shift,
+                "DATA LCUT FREQ": data_lcut_freq,
+                "DATA LCUT SLOPE": data_lcut_slope,
+                "DATA HCUT FREQ": data_hcut_freq,
+                "DATA HCUT SLOPE": data_hcut_slope,
+                "DATA IN SELECT": data_in_select,
+                "DATA PTT SELECT": data_ptt_select,
+                "DATA OUT LEVEL": data_out_level,
+                "DATA BFO": data_bfo,
+                "FM MIC SELECT": fm_mic_select,
+                "FM OUT LEVEL": fm_out_level,
+                "PKT PTT SELECT": pkt_ptt_select,
+                "RPT SHIFT 28MHz": rpt_shift_28,
+                "RPT SHIFT 50MHz": rpt_shift_50,
+                "DCS POLARITY": dcs_polarity,
+                "RTTY LCUT FREQ": rtty_lcut_freq,
+                "RTTY LCUT SLOPE": rtty_lcut_slope,
+                "RTTY HCUT FREQ": rtty_hcut_freq,
+                "RTTY HCUT SLOPE": rtty_hcut_slope,
+                "RTTY SHIFT PORT": rtty_shift_port,
+                "RTTY POLARITY-R": rtty_polarity_r,
+                "RTTY POLARITY-T": rtty_polarity_t,
+                "RTTY OUT LEVEL": rtty_out_level,
+                "RTTY SHIFT FREQ": rtty_shift_freq,
+                "RTTY MARK FREQ": rtty_mark_freq,
+                "RTTY BFO": rtty_bfo,
+                "SSB LCUT FREQ": ssb_lcut_freq,
+                "SSB LCUT SLOPE": ssb_lcut_slope,
+                "SSB HCUT FREQ": ssb_hcut_freq,
+                "SSB HCUT SLOPE": ssb_hcut_slope,
+                "SSB MIC SELECT": ssb_mic_select,
+                "SSB OUT LEVEL": ssb_out_level,
+                "SSB BFO": ssb_bfo,
+                "SSB PTT SELECT": ssb_ptt_select,
+                "SSB TX BPF": ssb_tx_bpf,
+                "APF WIDTH": apf_width,
+                "CONTOUR LEVEL": contour_level,
+                "CONTOUR WIDTH": contour_width,
+                "IF NOTCH WIDTH": if_notch_width,
+                "SCP START CYCLE": scp_start_cycle,
+                "SCP SPAN FREQ": scp_span_freq,
+                "QUICK DIAL": quick_dial,
+                "SSB DIAL STEP": ssb_dial_step,
+                "AM DIAL STEP": am_dial_step,
+                "FM DIAL STEP": fm_dial_step,
+                "DIAL STEP": dial_step,
+                "AM CH STEP": am_ch_step,
+                "FM CH STEP": fm_ch_step,
+                "EQ1 FREQ": eq_1_freq,
+                "EQ1 LEVEL": eq_1_level,
+                "EQ1 BWTH": eq_1_bwth,
+                "EQ2 FREQ": eq_2_freq,
+                "EQ2 LEVEL": eq_2_level,
+                "EQ2 BWTH": eq_2_bwth,
+                "EQ3 FREQ": eq_3_freq,
+                "EQ3 LEVEL": eq_3_level,
+                "EQ3 BWTH": eq_3_bwth,
+                "P-EQ1 FREQ": p_eq_1_freq,
+                "P-EQ1 LEVEL": p_eq_1_level,
+                "P-EQ1 BWTH": p_eq_1_bwth,
+                "P-EQ2 FREQ": p_eq_2_freq,
+                "P-EQ2 LEVEL": p_eq_2_level,
+                "P-EQ2 BWTH": p_eq_2_bwth,
+                "P-EQ3 FREQ": p_eq_3_freq,
+                "P-EQ3 LEVEL": p_eq_3_level,
+                "P-EQ3 BWTH": p_eq_3_bwth,
+                "HF SSB PWR": hf_ssb_pwr,
+                "HF AM PWR": hf_am_pwr,
+                "HF PWR": hf_pwr,
+                "50M SSB PWR": hf_50_ssb_pwr,
+                "50M AM PWR": hf_50_am_pwr,
+                "50M PWR": hf_50_pwr,
+                "SSB MIC GAIN": ssb_mic_gain,
+                "AM MIC GAIN": am_mic_gain,
+                "FM MIC GAIN": fm_mic_gain,
+                "DATA MIC GAIN": data_mic_gain,
+                "SSB DATA GAIN": ssb_data_gain,
+                "AM DATA GAIN": am_data_gain,
+                "FM DATA GAIN": fm_data_gain,
+                "DATA DATA GAIN": data_data_gain,
+                "TUNER SELECT": tuner_select,
+                "VOX SELECT": vox_select,
+                "VOX GAIN": vox_gain,
+                "VOX DELAY": vox_delay,
+                "ANTI VOX GAIN": anti_vox_gain,
+                "DATA VOX GAIN": data_vox_gain,
+                "DATA VOX DELAY": data_vox_delay,
+                "ANTI DVOX GAIN": anti_dvox_gain,
+                "EMERGENCY FREQ": emergency_freq},
+            "Functions": {}
+        }
 
-        self.pms_table.setCellWidget(2, 0, self.p2l_freq_entry)
-        self.pms_table.setCellWidget(2, 1, self.p2l_clar_dir_spin)
-        self.pms_table.setCellWidget(2, 2, self.p2l_clar_state_combo)
-        self.pms_table.setCellWidget(2, 3, self.p2l_mode_combo)
-        self.pms_table.setCellWidget(2, 4, self.p2l_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(2, 5, self.p2l_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(2, 6, self.p2l_tag_state_combo)
-        self.pms_table.setCellWidget(2, 7, self.p2l_tag_entry)
+        file_name = QFileDialog.getSaveFileName(self, "Configuration file name",
+                                                ".", "JSON file (*.json)")[0]
 
-        # PMS P2U
-        self.p2u_freq_entry = QLineEdit("")
-        self.p2u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p2u_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p2u_freq_entry.returnPressed.connect(self.set_p2u)
-        self.p2u_clar_dir_spin = QSpinBox()
-        self.p2u_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p2u_clar_dir_spin.setMaximum(9999)
-        self.p2u_clar_dir_spin.setMinimum(-9999)
-        self.p2u_clar_state_combo = QComboBox()
-        self.p2u_clar_state_combo.setEditable(True)
-        self.p2u_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p2u_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p2u_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p2u_clar_state_combo)
-        self.p2u_mode_combo = QComboBox()
-        self.p2u_mode_combo.setEditable(True)
-        self.p2u_mode_combo.lineEdit().setReadOnly(True)
-        self.p2u_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p2u_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p2u_mode_combo)
-        self.p2u_ctcss_dcs_state_combo = QComboBox()
-        self.p2u_ctcss_dcs_state_combo.setEditable(True)
-        self.p2u_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p2u_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p2u_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p2u_ctcss_dcs_state_combo)
-        self.p2u_rpt_shift_dir_combo = QComboBox()
-        self.p2u_rpt_shift_dir_combo.setEditable(True)
-        self.p2u_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p2u_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p2u_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p2u_rpt_shift_dir_combo)
-        self.p2u_tag_state_combo = QComboBox()
-        self.p2u_tag_state_combo.setEditable(True)
-        self.p2u_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p2u_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p2u_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p2u_tag_state_combo)
-        self.p2u_tag_entry = QLineEdit()
-        self.p2u_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p2u_tag_entry.setAlignment(Qt.AlignCenter)
+        if file_name == "":
+            return
 
-        self.pms_table.setCellWidget(3, 0, self.p2u_freq_entry)
-        self.pms_table.setCellWidget(3, 1, self.p2u_clar_dir_spin)
-        self.pms_table.setCellWidget(3, 2, self.p2u_clar_state_combo)
-        self.pms_table.setCellWidget(3, 3, self.p2u_mode_combo)
-        self.pms_table.setCellWidget(3, 4, self.p2u_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(3, 5, self.p2u_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(3, 6, self.p2u_tag_state_combo)
-        self.pms_table.setCellWidget(3, 7, self.p2u_tag_entry)
+        if ".json" not in file_name:
+            file_name += ".json"
 
-        # PMS P3L
-        self.p3l_freq_entry = QLineEdit("")
-        self.p3l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p3l_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p3l_freq_entry.returnPressed.connect(self.set_p3l)
-        self.p3l_clar_dir_spin = QSpinBox()
-        self.p3l_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p3l_clar_dir_spin.setMaximum(9999)
-        self.p3l_clar_dir_spin.setMinimum(-9999)
-        self.p3l_clar_state_combo = QComboBox()
-        self.p3l_clar_state_combo.setEditable(True)
-        self.p3l_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p3l_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p3l_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p3l_clar_state_combo)
-        self.p3l_mode_combo = QComboBox()
-        self.p3l_mode_combo.setEditable(True)
-        self.p3l_mode_combo.lineEdit().setReadOnly(True)
-        self.p3l_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p3l_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p3l_mode_combo)
-        self.p3l_ctcss_dcs_state_combo = QComboBox()
-        self.p3l_ctcss_dcs_state_combo.setEditable(True)
-        self.p3l_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p3l_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p3l_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p3l_ctcss_dcs_state_combo)
-        self.p3l_rpt_shift_dir_combo = QComboBox()
-        self.p3l_rpt_shift_dir_combo.setEditable(True)
-        self.p3l_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p3l_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p3l_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p3l_rpt_shift_dir_combo)
-        self.p3l_tag_state_combo = QComboBox()
-        self.p3l_tag_state_combo.setEditable(True)
-        self.p3l_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p3l_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p3l_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p3l_tag_state_combo)
-        self.p3l_tag_entry = QLineEdit()
-        self.p3l_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p3l_tag_entry.setAlignment(Qt.AlignCenter)
+        with open(file_name, "w") as file:
+            json.dump(config_dict, file,
+                      indent=4,
+                      sort_keys=False,
+                      ensure_ascii=False)
 
-        self.pms_table.setCellWidget(4, 0, self.p3l_freq_entry)
-        self.pms_table.setCellWidget(4, 1, self.p3l_clar_dir_spin)
-        self.pms_table.setCellWidget(4, 2, self.p3l_clar_state_combo)
-        self.pms_table.setCellWidget(4, 3, self.p3l_mode_combo)
-        self.pms_table.setCellWidget(4, 4, self.p3l_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(4, 5, self.p3l_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(4, 6, self.p3l_tag_state_combo)
-        self.pms_table.setCellWidget(4, 7, self.p3l_tag_entry)
+    def get_config_file(self):
+        file_name = QFileDialog.getOpenFileName(self, "Configuration file name",
+                                                ".", "JSON file (*.json)")[0]
 
-        # PMS P3U
-        self.p3u_freq_entry = QLineEdit("")
-        self.p3u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p3u_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p3u_freq_entry.returnPressed.connect(self.set_p3u)
-        self.p3u_clar_dir_spin = QSpinBox()
-        self.p3u_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p3u_clar_dir_spin.setMaximum(9999)
-        self.p3u_clar_dir_spin.setMinimum(-9999)
-        self.p3u_clar_state_combo = QComboBox()
-        self.p3u_clar_state_combo.setEditable(True)
-        self.p3u_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p3u_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p3u_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p3u_clar_state_combo)
-        self.p3u_mode_combo = QComboBox()
-        self.p3u_mode_combo.setEditable(True)
-        self.p3u_mode_combo.lineEdit().setReadOnly(True)
-        self.p3u_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p3u_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p3u_mode_combo)
-        self.p3u_ctcss_dcs_state_combo = QComboBox()
-        self.p3u_ctcss_dcs_state_combo.setEditable(True)
-        self.p3u_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p3u_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p3u_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p3u_ctcss_dcs_state_combo)
-        self.p3u_rpt_shift_dir_combo = QComboBox()
-        self.p3u_rpt_shift_dir_combo.setEditable(True)
-        self.p3u_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p3u_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p3u_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p3u_rpt_shift_dir_combo)
-        self.p3u_tag_state_combo = QComboBox()
-        self.p3u_tag_state_combo.setEditable(True)
-        self.p3u_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p3u_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p3u_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p3u_tag_state_combo)
-        self.p3u_tag_entry = QLineEdit()
-        self.p3u_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p3u_tag_entry.setAlignment(Qt.AlignCenter)
+        if file_name == "":
+            return
 
-        self.pms_table.setCellWidget(5, 0, self.p3u_freq_entry)
-        self.pms_table.setCellWidget(5, 1, self.p3u_clar_dir_spin)
-        self.pms_table.setCellWidget(5, 2, self.p3u_clar_state_combo)
-        self.pms_table.setCellWidget(5, 3, self.p3u_mode_combo)
-        self.pms_table.setCellWidget(5, 4, self.p3u_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(5, 5, self.p3u_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(5, 6, self.p3u_tag_state_combo)
-        self.pms_table.setCellWidget(5, 7, self.p3u_tag_entry)
+        with open(file_name, "r") as file:
+            config_dict = json.load(file)
 
-        # PMS P4L
-        self.p4l_freq_entry = QLineEdit("")
-        self.p4l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p4l_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p4l_freq_entry.returnPressed.connect(self.set_p4l)
-        self.p4l_clar_dir_spin = QSpinBox()
-        self.p4l_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p4l_clar_dir_spin.setMaximum(9999)
-        self.p4l_clar_dir_spin.setMinimum(-9999)
-        self.p4l_clar_state_combo = QComboBox()
-        self.p4l_clar_state_combo.setEditable(True)
-        self.p4l_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p4l_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p4l_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p4l_clar_state_combo)
-        self.p4l_mode_combo = QComboBox()
-        self.p4l_mode_combo.setEditable(True)
-        self.p4l_mode_combo.lineEdit().setReadOnly(True)
-        self.p4l_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p4l_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p4l_mode_combo)
-        self.p4l_ctcss_dcs_state_combo = QComboBox()
-        self.p4l_ctcss_dcs_state_combo.setEditable(True)
-        self.p4l_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p4l_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p4l_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p4l_ctcss_dcs_state_combo)
-        self.p4l_rpt_shift_dir_combo = QComboBox()
-        self.p4l_rpt_shift_dir_combo.setEditable(True)
-        self.p4l_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p4l_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p4l_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p4l_rpt_shift_dir_combo)
-        self.p4l_tag_state_combo = QComboBox()
-        self.p4l_tag_state_combo.setEditable(True)
-        self.p4l_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p4l_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p4l_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p4l_tag_state_combo)
-        self.p4l_tag_entry = QLineEdit()
-        self.p4l_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p4l_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(6, 0, self.p4l_freq_entry)
-        self.pms_table.setCellWidget(6, 1, self.p4l_clar_dir_spin)
-        self.pms_table.setCellWidget(6, 2, self.p4l_clar_state_combo)
-        self.pms_table.setCellWidget(6, 3, self.p4l_mode_combo)
-        self.pms_table.setCellWidget(6, 4, self.p4l_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(6, 5, self.p4l_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(6, 6, self.p4l_tag_state_combo)
-        self.pms_table.setCellWidget(6, 7, self.p4l_tag_entry)
-
-        # PMS P4U
-        self.p4u_freq_entry = QLineEdit("")
-        self.p4u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p4u_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p4u_freq_entry.returnPressed.connect(self.set_p4u)
-        self.p4u_clar_dir_spin = QSpinBox()
-        self.p4u_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p4u_clar_dir_spin.setMaximum(9999)
-        self.p4u_clar_dir_spin.setMinimum(-9999)
-        self.p4u_clar_state_combo = QComboBox()
-        self.p4u_clar_state_combo.setEditable(True)
-        self.p4u_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p4u_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p4u_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p4u_clar_state_combo)
-        self.p4u_mode_combo = QComboBox()
-        self.p4u_mode_combo.setEditable(True)
-        self.p4u_mode_combo.lineEdit().setReadOnly(True)
-        self.p4u_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p4u_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p4u_mode_combo)
-        self.p4u_ctcss_dcs_state_combo = QComboBox()
-        self.p4u_ctcss_dcs_state_combo.setEditable(True)
-        self.p4u_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p4u_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p4u_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p4u_ctcss_dcs_state_combo)
-        self.p4u_rpt_shift_dir_combo = QComboBox()
-        self.p4u_rpt_shift_dir_combo.setEditable(True)
-        self.p4u_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p4u_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p4u_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p4u_rpt_shift_dir_combo)
-        self.p4u_tag_state_combo = QComboBox()
-        self.p4u_tag_state_combo.setEditable(True)
-        self.p4u_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p4u_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p4u_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p4u_tag_state_combo)
-        self.p4u_tag_entry = QLineEdit()
-        self.p4u_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p4u_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(7, 0, self.p4u_freq_entry)
-        self.pms_table.setCellWidget(7, 1, self.p4u_clar_dir_spin)
-        self.pms_table.setCellWidget(7, 2, self.p4u_clar_state_combo)
-        self.pms_table.setCellWidget(7, 3, self.p4u_mode_combo)
-        self.pms_table.setCellWidget(7, 4, self.p4u_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(7, 5, self.p4u_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(7, 6, self.p4u_tag_state_combo)
-        self.pms_table.setCellWidget(7, 7, self.p4u_tag_entry)
-
-        # PMS P5L
-        self.p5l_freq_entry = QLineEdit("")
-        self.p5l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p5l_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p5l_freq_entry.returnPressed.connect(self.set_p5l)
-        self.p5l_clar_dir_spin = QSpinBox()
-        self.p5l_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p5l_clar_dir_spin.setMaximum(9999)
-        self.p5l_clar_dir_spin.setMinimum(-9999)
-        self.p5l_clar_state_combo = QComboBox()
-        self.p5l_clar_state_combo.setEditable(True)
-        self.p5l_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p5l_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p5l_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p5l_clar_state_combo)
-        self.p5l_mode_combo = QComboBox()
-        self.p5l_mode_combo.setEditable(True)
-        self.p5l_mode_combo.lineEdit().setReadOnly(True)
-        self.p5l_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p5l_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p5l_mode_combo)
-        self.p5l_ctcss_dcs_state_combo = QComboBox()
-        self.p5l_ctcss_dcs_state_combo.setEditable(True)
-        self.p5l_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p5l_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p5l_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p5l_ctcss_dcs_state_combo)
-        self.p5l_rpt_shift_dir_combo = QComboBox()
-        self.p5l_rpt_shift_dir_combo.setEditable(True)
-        self.p5l_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p5l_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p5l_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p5l_rpt_shift_dir_combo)
-        self.p5l_tag_state_combo = QComboBox()
-        self.p5l_tag_state_combo.setEditable(True)
-        self.p5l_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p5l_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p5l_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p5l_tag_state_combo)
-        self.p5l_tag_entry = QLineEdit()
-        self.p5l_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p5l_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(8, 0, self.p5l_freq_entry)
-        self.pms_table.setCellWidget(8, 1, self.p5l_clar_dir_spin)
-        self.pms_table.setCellWidget(8, 2, self.p5l_clar_state_combo)
-        self.pms_table.setCellWidget(8, 3, self.p5l_mode_combo)
-        self.pms_table.setCellWidget(8, 4, self.p5l_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(8, 5, self.p5l_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(8, 6, self.p5l_tag_state_combo)
-        self.pms_table.setCellWidget(8, 7, self.p5l_tag_entry)
-
-        # PMS P5U
-        self.p5u_freq_entry = QLineEdit("")
-        self.p5u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p5u_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p5u_freq_entry.returnPressed.connect(self.set_p5u)
-        self.p5u_clar_dir_spin = QSpinBox()
-        self.p5u_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p5u_clar_dir_spin.setMaximum(9999)
-        self.p5u_clar_dir_spin.setMinimum(-9999)
-        self.p5u_clar_state_combo = QComboBox()
-        self.p5u_clar_state_combo.setEditable(True)
-        self.p5u_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p5u_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p5u_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p5u_clar_state_combo)
-        self.p5u_mode_combo = QComboBox()
-        self.p5u_mode_combo.setEditable(True)
-        self.p5u_mode_combo.lineEdit().setReadOnly(True)
-        self.p5u_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p5u_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p5u_mode_combo)
-        self.p5u_ctcss_dcs_state_combo = QComboBox()
-        self.p5u_ctcss_dcs_state_combo.setEditable(True)
-        self.p5u_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p5u_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p5u_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p5u_ctcss_dcs_state_combo)
-        self.p5u_rpt_shift_dir_combo = QComboBox()
-        self.p5u_rpt_shift_dir_combo.setEditable(True)
-        self.p5u_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p5u_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p5u_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p5u_rpt_shift_dir_combo)
-        self.p5u_tag_state_combo = QComboBox()
-        self.p5u_tag_state_combo.setEditable(True)
-        self.p5u_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p5u_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p5u_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p5u_tag_state_combo)
-        self.p5u_tag_entry = QLineEdit()
-        self.p5u_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p5u_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(9, 0, self.p5u_freq_entry)
-        self.pms_table.setCellWidget(9, 1, self.p5u_clar_dir_spin)
-        self.pms_table.setCellWidget(9, 2, self.p5u_clar_state_combo)
-        self.pms_table.setCellWidget(9, 3, self.p5u_mode_combo)
-        self.pms_table.setCellWidget(9, 4, self.p5u_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(9, 5, self.p5u_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(9, 6, self.p5u_tag_state_combo)
-        self.pms_table.setCellWidget(9, 7, self.p5u_tag_entry)
-
-        # PMS P6L
-        self.p6l_freq_entry = QLineEdit("")
-        self.p6l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p6l_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p6l_freq_entry.returnPressed.connect(self.set_p6l)
-        self.p6l_clar_dir_spin = QSpinBox()
-        self.p6l_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p6l_clar_dir_spin.setMaximum(9999)
-        self.p6l_clar_dir_spin.setMinimum(-9999)
-        self.p6l_clar_state_combo = QComboBox()
-        self.p6l_clar_state_combo.setEditable(True)
-        self.p6l_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p6l_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p6l_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p6l_clar_state_combo)
-        self.p6l_mode_combo = QComboBox()
-        self.p6l_mode_combo.setEditable(True)
-        self.p6l_mode_combo.lineEdit().setReadOnly(True)
-        self.p6l_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p6l_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p6l_mode_combo)
-        self.p6l_ctcss_dcs_state_combo = QComboBox()
-        self.p6l_ctcss_dcs_state_combo.setEditable(True)
-        self.p6l_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p6l_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p6l_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p6l_ctcss_dcs_state_combo)
-        self.p6l_rpt_shift_dir_combo = QComboBox()
-        self.p6l_rpt_shift_dir_combo.setEditable(True)
-        self.p6l_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p6l_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p6l_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p6l_rpt_shift_dir_combo)
-        self.p6l_tag_state_combo = QComboBox()
-        self.p6l_tag_state_combo.setEditable(True)
-        self.p6l_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p6l_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p6l_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p6l_tag_state_combo)
-        self.p6l_tag_entry = QLineEdit()
-        self.p6l_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p6l_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(10, 0, self.p6l_freq_entry)
-        self.pms_table.setCellWidget(10, 1, self.p6l_clar_dir_spin)
-        self.pms_table.setCellWidget(10, 2, self.p6l_clar_state_combo)
-        self.pms_table.setCellWidget(10, 3, self.p6l_mode_combo)
-        self.pms_table.setCellWidget(10, 4, self.p6l_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(10, 5, self.p6l_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(10, 6, self.p6l_tag_state_combo)
-        self.pms_table.setCellWidget(10, 7, self.p6l_tag_entry)
-
-        # PMS P6U
-        self.p6u_freq_entry = QLineEdit("")
-        self.p6u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p6u_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p6u_freq_entry.returnPressed.connect(self.set_p6u)
-        self.p6u_clar_dir_spin = QSpinBox()
-        self.p6u_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p6u_clar_dir_spin.setMaximum(9999)
-        self.p6u_clar_dir_spin.setMinimum(-9999)
-        self.p6u_clar_state_combo = QComboBox()
-        self.p6u_clar_state_combo.setEditable(True)
-        self.p6u_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p6u_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p6u_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p6u_clar_state_combo)
-        self.p6u_mode_combo = QComboBox()
-        self.p6u_mode_combo.setEditable(True)
-        self.p6u_mode_combo.lineEdit().setReadOnly(True)
-        self.p6u_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p6u_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p6u_mode_combo)
-        self.p6u_ctcss_dcs_state_combo = QComboBox()
-        self.p6u_ctcss_dcs_state_combo.setEditable(True)
-        self.p6u_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p6u_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p6u_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p6u_ctcss_dcs_state_combo)
-        self.p6u_rpt_shift_dir_combo = QComboBox()
-        self.p6u_rpt_shift_dir_combo.setEditable(True)
-        self.p6u_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p6u_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p6u_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p6u_rpt_shift_dir_combo)
-        self.p6u_tag_state_combo = QComboBox()
-        self.p6u_tag_state_combo.setEditable(True)
-        self.p6u_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p6u_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p6u_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p6u_tag_state_combo)
-        self.p6u_tag_entry = QLineEdit()
-        self.p6u_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p6u_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(11, 0, self.p6u_freq_entry)
-        self.pms_table.setCellWidget(11, 1, self.p6u_clar_dir_spin)
-        self.pms_table.setCellWidget(11, 2, self.p6u_clar_state_combo)
-        self.pms_table.setCellWidget(11, 3, self.p6u_mode_combo)
-        self.pms_table.setCellWidget(11, 4, self.p6u_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(11, 5, self.p6u_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(11, 6, self.p6u_tag_state_combo)
-        self.pms_table.setCellWidget(11, 7, self.p6u_tag_entry)
-
-        # PMS P7L
-        self.p7l_freq_entry = QLineEdit("")
-        self.p7l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p7l_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p7l_freq_entry.returnPressed.connect(self.set_p7l)
-        self.p7l_clar_dir_spin = QSpinBox()
-        self.p7l_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p7l_clar_dir_spin.setMaximum(9999)
-        self.p7l_clar_dir_spin.setMinimum(-9999)
-        self.p7l_clar_state_combo = QComboBox()
-        self.p7l_clar_state_combo.setEditable(True)
-        self.p7l_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p7l_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p7l_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p7l_clar_state_combo)
-        self.p7l_mode_combo = QComboBox()
-        self.p7l_mode_combo.setEditable(True)
-        self.p7l_mode_combo.lineEdit().setReadOnly(True)
-        self.p7l_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p7l_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p7l_mode_combo)
-        self.p7l_ctcss_dcs_state_combo = QComboBox()
-        self.p7l_ctcss_dcs_state_combo.setEditable(True)
-        self.p7l_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p7l_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p7l_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p7l_ctcss_dcs_state_combo)
-        self.p7l_rpt_shift_dir_combo = QComboBox()
-        self.p7l_rpt_shift_dir_combo.setEditable(True)
-        self.p7l_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p7l_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p7l_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p7l_rpt_shift_dir_combo)
-        self.p7l_tag_state_combo = QComboBox()
-        self.p7l_tag_state_combo.setEditable(True)
-        self.p7l_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p7l_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p7l_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p7l_tag_state_combo)
-        self.p7l_tag_entry = QLineEdit()
-        self.p7l_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p7l_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(12, 0, self.p7l_freq_entry)
-        self.pms_table.setCellWidget(12, 1, self.p7l_clar_dir_spin)
-        self.pms_table.setCellWidget(12, 2, self.p7l_clar_state_combo)
-        self.pms_table.setCellWidget(12, 3, self.p7l_mode_combo)
-        self.pms_table.setCellWidget(12, 4, self.p7l_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(12, 5, self.p7l_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(12, 6, self.p7l_tag_state_combo)
-        self.pms_table.setCellWidget(12, 7, self.p7l_tag_entry)
-
-        # PMS P7U
-        self.p7u_freq_entry = QLineEdit("")
-        self.p7u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p7u_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p7u_freq_entry.returnPressed.connect(self.set_p7u)
-        self.p7u_clar_dir_spin = QSpinBox()
-        self.p7u_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p7u_clar_dir_spin.setMaximum(9999)
-        self.p7u_clar_dir_spin.setMinimum(-9999)
-        self.p7u_clar_state_combo = QComboBox()
-        self.p7u_clar_state_combo.setEditable(True)
-        self.p7u_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p7u_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p7u_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p7u_clar_state_combo)
-        self.p7u_mode_combo = QComboBox()
-        self.p7u_mode_combo.setEditable(True)
-        self.p7u_mode_combo.lineEdit().setReadOnly(True)
-        self.p7u_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p7u_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p7u_mode_combo)
-        self.p7u_ctcss_dcs_state_combo = QComboBox()
-        self.p7u_ctcss_dcs_state_combo.setEditable(True)
-        self.p7u_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p7u_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p7u_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p7u_ctcss_dcs_state_combo)
-        self.p7u_rpt_shift_dir_combo = QComboBox()
-        self.p7u_rpt_shift_dir_combo.setEditable(True)
-        self.p7u_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p7u_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p7u_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p7u_rpt_shift_dir_combo)
-        self.p7u_tag_state_combo = QComboBox()
-        self.p7u_tag_state_combo.setEditable(True)
-        self.p7u_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p7u_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p7u_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p7u_tag_state_combo)
-        self.p7u_tag_entry = QLineEdit()
-        self.p7u_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p7u_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(13, 0, self.p7u_freq_entry)
-        self.pms_table.setCellWidget(13, 1, self.p7u_clar_dir_spin)
-        self.pms_table.setCellWidget(13, 2, self.p7u_clar_state_combo)
-        self.pms_table.setCellWidget(13, 3, self.p7u_mode_combo)
-        self.pms_table.setCellWidget(13, 4, self.p7u_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(13, 5, self.p7u_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(13, 6, self.p7u_tag_state_combo)
-        self.pms_table.setCellWidget(13, 7, self.p7u_tag_entry)
-
-        # PMS P8L
-        self.p8l_freq_entry = QLineEdit("")
-        self.p8l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p8l_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p8l_freq_entry.returnPressed.connect(self.set_p8l)
-        self.p8l_clar_dir_spin = QSpinBox()
-        self.p8l_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p8l_clar_dir_spin.setMaximum(9999)
-        self.p8l_clar_dir_spin.setMinimum(-9999)
-        self.p8l_clar_state_combo = QComboBox()
-        self.p8l_clar_state_combo.setEditable(True)
-        self.p8l_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p8l_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p8l_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p8l_clar_state_combo)
-        self.p8l_mode_combo = QComboBox()
-        self.p8l_mode_combo.setEditable(True)
-        self.p8l_mode_combo.lineEdit().setReadOnly(True)
-        self.p8l_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p8l_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p8l_mode_combo)
-        self.p8l_ctcss_dcs_state_combo = QComboBox()
-        self.p8l_ctcss_dcs_state_combo.setEditable(True)
-        self.p8l_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p8l_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p8l_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p8l_ctcss_dcs_state_combo)
-        self.p8l_rpt_shift_dir_combo = QComboBox()
-        self.p8l_rpt_shift_dir_combo.setEditable(True)
-        self.p8l_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p8l_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p8l_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p8l_rpt_shift_dir_combo)
-        self.p8l_tag_state_combo = QComboBox()
-        self.p8l_tag_state_combo.setEditable(True)
-        self.p8l_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p8l_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p8l_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p8l_tag_state_combo)
-        self.p8l_tag_entry = QLineEdit()
-        self.p8l_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p8l_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(14, 0, self.p8l_freq_entry)
-        self.pms_table.setCellWidget(14, 1, self.p8l_clar_dir_spin)
-        self.pms_table.setCellWidget(14, 2, self.p8l_clar_state_combo)
-        self.pms_table.setCellWidget(14, 3, self.p8l_mode_combo)
-        self.pms_table.setCellWidget(14, 4, self.p8l_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(14, 5, self.p8l_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(14, 6, self.p8l_tag_state_combo)
-        self.pms_table.setCellWidget(14, 7, self.p8l_tag_entry)
-
-        # PMS P8U
-        self.p8u_freq_entry = QLineEdit("")
-        self.p8u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p8u_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p8u_freq_entry.returnPressed.connect(self.set_p8u)
-        self.p8u_clar_dir_spin = QSpinBox()
-        self.p8u_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p8u_clar_dir_spin.setMaximum(9999)
-        self.p8u_clar_dir_spin.setMinimum(-9999)
-        self.p8u_clar_state_combo = QComboBox()
-        self.p8u_clar_state_combo.setEditable(True)
-        self.p8u_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p8u_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p8u_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p8u_clar_state_combo)
-        self.p8u_mode_combo = QComboBox()
-        self.p8u_mode_combo.setEditable(True)
-        self.p8u_mode_combo.lineEdit().setReadOnly(True)
-        self.p8u_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p8u_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p8u_mode_combo)
-        self.p8u_ctcss_dcs_state_combo = QComboBox()
-        self.p8u_ctcss_dcs_state_combo.setEditable(True)
-        self.p8u_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p8u_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p8u_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p8u_ctcss_dcs_state_combo)
-        self.p8u_rpt_shift_dir_combo = QComboBox()
-        self.p8u_rpt_shift_dir_combo.setEditable(True)
-        self.p8u_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p8u_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p8u_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p8u_rpt_shift_dir_combo)
-        self.p8u_tag_state_combo = QComboBox()
-        self.p8u_tag_state_combo.setEditable(True)
-        self.p8u_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p8u_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p8u_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p8u_tag_state_combo)
-        self.p8u_tag_entry = QLineEdit()
-        self.p8u_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p8u_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(15, 0, self.p8u_freq_entry)
-        self.pms_table.setCellWidget(15, 1, self.p8u_clar_dir_spin)
-        self.pms_table.setCellWidget(15, 2, self.p8u_clar_state_combo)
-        self.pms_table.setCellWidget(15, 3, self.p8u_mode_combo)
-        self.pms_table.setCellWidget(15, 4, self.p8u_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(15, 5, self.p8u_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(15, 6, self.p8u_tag_state_combo)
-        self.pms_table.setCellWidget(15, 7, self.p8u_tag_entry)
-
-        # PMS P9L
-        self.p9l_freq_entry = QLineEdit("")
-        self.p9l_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p9l_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p9l_freq_entry.returnPressed.connect(self.set_p9l)
-        self.p9l_clar_dir_spin = QSpinBox()
-        self.p9l_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p9l_clar_dir_spin.setMaximum(9999)
-        self.p9l_clar_dir_spin.setMinimum(-9999)
-        self.p9l_clar_state_combo = QComboBox()
-        self.p9l_clar_state_combo.setEditable(True)
-        self.p9l_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p9l_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p9l_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p9l_clar_state_combo)
-        self.p9l_mode_combo = QComboBox()
-        self.p9l_mode_combo.setEditable(True)
-        self.p9l_mode_combo.lineEdit().setReadOnly(True)
-        self.p9l_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p9l_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p9l_mode_combo)
-        self.p9l_ctcss_dcs_state_combo = QComboBox()
-        self.p9l_ctcss_dcs_state_combo.setEditable(True)
-        self.p9l_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p9l_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p9l_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p9l_ctcss_dcs_state_combo)
-        self.p9l_rpt_shift_dir_combo = QComboBox()
-        self.p9l_rpt_shift_dir_combo.setEditable(True)
-        self.p9l_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p9l_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p9l_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p9l_rpt_shift_dir_combo)
-        self.p9l_tag_state_combo = QComboBox()
-        self.p9l_tag_state_combo.setEditable(True)
-        self.p9l_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p9l_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p9l_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p9l_tag_state_combo)
-        self.p9l_tag_entry = QLineEdit()
-        self.p9l_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p9l_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(16, 0, self.p9l_freq_entry)
-        self.pms_table.setCellWidget(16, 1, self.p9l_clar_dir_spin)
-        self.pms_table.setCellWidget(16, 2, self.p9l_clar_state_combo)
-        self.pms_table.setCellWidget(16, 3, self.p9l_mode_combo)
-        self.pms_table.setCellWidget(16, 4, self.p9l_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(16, 5, self.p9l_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(16, 6, self.p9l_tag_state_combo)
-        self.pms_table.setCellWidget(16, 7, self.p9l_tag_entry)
-
-        # PMS P9U
-        self.p9u_freq_entry = QLineEdit("")
-        self.p9u_freq_entry.setValidator(QRegExpValidator(regexp_freq))
-        self.p9u_freq_entry.setAlignment(Qt.AlignCenter)
-        self.p9u_freq_entry.returnPressed.connect(self.set_p9u)
-        self.p9u_clar_dir_spin = QSpinBox()
-        self.p9u_clar_dir_spin.setAlignment(Qt.AlignCenter)
-        self.p9u_clar_dir_spin.setMaximum(9999)
-        self.p9u_clar_dir_spin.setMinimum(-9999)
-        self.p9u_clar_state_combo = QComboBox()
-        self.p9u_clar_state_combo.setEditable(True)
-        self.p9u_clar_state_combo.lineEdit().setReadOnly(True)
-        self.p9u_clar_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p9u_clar_state_combo.addItems([i for i in CLAR_STATE.keys()])
-        format_combo(self.p9u_clar_state_combo)
-        self.p9u_mode_combo = QComboBox()
-        self.p9u_mode_combo.setEditable(True)
-        self.p9u_mode_combo.lineEdit().setReadOnly(True)
-        self.p9u_mode_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p9u_mode_combo.addItems(i for i in MODES.keys())
-        format_combo(self.p9u_mode_combo)
-        self.p9u_ctcss_dcs_state_combo = QComboBox()
-        self.p9u_ctcss_dcs_state_combo.setEditable(True)
-        self.p9u_ctcss_dcs_state_combo.lineEdit().setReadOnly(True)
-        self.p9u_ctcss_dcs_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p9u_ctcss_dcs_state_combo.addItems([i for i in CTCSS_STATE.keys()])
-        format_combo(self.p9u_ctcss_dcs_state_combo)
-        self.p9u_rpt_shift_dir_combo = QComboBox()
-        self.p9u_rpt_shift_dir_combo.setEditable(True)
-        self.p9u_rpt_shift_dir_combo.lineEdit().setReadOnly(True)
-        self.p9u_rpt_shift_dir_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p9u_rpt_shift_dir_combo.addItems([i for i in RPT_SHIFT_DIR.keys()])
-        format_combo(self.p9u_rpt_shift_dir_combo)
-        self.p9u_tag_state_combo = QComboBox()
-        self.p9u_tag_state_combo.setEditable(True)
-        self.p9u_tag_state_combo.lineEdit().setReadOnly(True)
-        self.p9u_tag_state_combo.lineEdit().setAlignment(Qt.AlignCenter)
-        self.p9u_tag_state_combo.addItems([i for i in TAG_STATE.keys()])
-        format_combo(self.p9u_tag_state_combo)
-        self.p9u_tag_entry = QLineEdit()
-        self.p9u_tag_entry.setValidator(QRegExpValidator(regexp_tag))
-        self.p9u_tag_entry.setAlignment(Qt.AlignCenter)
-
-        self.pms_table.setCellWidget(17, 0, self.p9u_freq_entry)
-        self.pms_table.setCellWidget(17, 1, self.p9u_clar_dir_spin)
-        self.pms_table.setCellWidget(17, 2, self.p9u_clar_state_combo)
-        self.pms_table.setCellWidget(17, 3, self.p9u_mode_combo)
-        self.pms_table.setCellWidget(17, 4, self.p9u_ctcss_dcs_state_combo)
-        self.pms_table.setCellWidget(17, 5, self.p9u_rpt_shift_dir_combo)
-        self.pms_table.setCellWidget(17, 6, self.p9u_tag_state_combo)
-        self.pms_table.setCellWidget(17, 7, self.p9u_tag_entry)
+        self.acg_fast_spin.setValue(config_dict["Menu"]["AGC FAST DELAY"])
 
     def send_config_2_radio(self):
         """Send the config to the Radio"""
@@ -4854,816 +4100,6 @@ class MainWindow(QMainWindow):
 
         elif rep == dialog.No:
             return
-
-    def set_p1l(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p1l_freq_entry.hasAcceptableInput():
-                    freq = self.p1l_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p1l_clar_dir_spin.value())
-                    val = self.p1l_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p1l_clar_state_combo.currentText()]
-                    mode = MODES[self.p1l_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p1l_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p1l_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p1l_tag_state_combo.currentText()]
-                    tag = self.p1l_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P1L" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p2l(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p2l_freq_entry.hasAcceptableInput():
-                    freq = self.p2l_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p2l_clar_dir_spin.value())
-                    val = self.p2l_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p2l_clar_state_combo.currentText()]
-                    mode = MODES[self.p2l_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p2l_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p2l_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p2l_tag_state_combo.currentText()]
-                    tag = self.p2l_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P2L" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p3l(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p3l_freq_entry.hasAcceptableInput():
-                    freq = self.p3l_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p3l_clar_dir_spin.value())
-                    val = self.p3l_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p3l_clar_state_combo.currentText()]
-                    mode = MODES[self.p3l_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p3l_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p3l_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p3l_tag_state_combo.currentText()]
-                    tag = self.p3l_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P3L" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p4l(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p4l_freq_entry.hasAcceptableInput():
-                    freq = self.p4l_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p4l_clar_dir_spin.value())
-                    val = self.p4l_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p4l_clar_state_combo.currentText()]
-                    mode = MODES[self.p4l_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p4l_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p4l_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p4l_tag_state_combo.currentText()]
-                    tag = self.p4l_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P4L" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p5l(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p5l_freq_entry.hasAcceptableInput():
-                    freq = self.p5l_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p5l_clar_dir_spin.value())
-                    val = self.p5l_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p5l_clar_state_combo.currentText()]
-                    mode = MODES[self.p5l_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p5l_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p5l_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p5l_tag_state_combo.currentText()]
-                    tag = self.p5l_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P5L" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p6l(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p6l_freq_entry.hasAcceptableInput():
-                    freq = self.p6l_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p6l_clar_dir_spin.value())
-                    val = self.p6l_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p6l_clar_state_combo.currentText()]
-                    mode = MODES[self.p6l_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p6l_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p6l_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p6l_tag_state_combo.currentText()]
-                    tag = self.p6l_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P6L" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p7l(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p7l_freq_entry.hasAcceptableInput():
-                    freq = self.p7l_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p7l_clar_dir_spin.value())
-                    val = self.p7l_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p7l_clar_state_combo.currentText()]
-                    mode = MODES[self.p7l_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p7l_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p7l_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p7l_tag_state_combo.currentText()]
-                    tag = self.p7l_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P7L" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p8l(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p8l_freq_entry.hasAcceptableInput():
-                    freq = self.p8l_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p8l_clar_dir_spin.value())
-                    val = self.p8l_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p8l_clar_state_combo.currentText()]
-                    mode = MODES[self.p8l_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p8l_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p8l_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p8l_tag_state_combo.currentText()]
-                    tag = self.p8l_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P8L" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p9l(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p9l_freq_entry.hasAcceptableInput():
-                    freq = self.p9l_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p9l_clar_dir_spin.value())
-                    val = self.p9l_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p9l_clar_state_combo.currentText()]
-                    mode = MODES[self.p9l_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p9l_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p9l_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p9l_tag_state_combo.currentText()]
-                    tag = self.p9l_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P9L" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p1u(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p1u_freq_entry.hasAcceptableInput():
-                    freq = self.p1u_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p1u_clar_dir_spin.value())
-                    val = self.p1u_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p1u_clar_state_combo.currentText()]
-                    mode = MODES[self.p1u_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p1u_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p1u_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p1u_tag_state_combo.currentText()]
-                    tag = self.p1u_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P1U" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p2u(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p2u_freq_entry.hasAcceptableInput():
-                    freq = self.p2u_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p2u_clar_dir_spin.value())
-                    val = self.p2u_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p2u_clar_state_combo.currentText()]
-                    mode = MODES[self.p2u_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p2u_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p2u_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p2u_tag_state_combo.currentText()]
-                    tag = self.p2u_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P2U" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p3u(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p3u_freq_entry.hasAcceptableInput():
-                    freq = self.p3u_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p3u_clar_dir_spin.value())
-                    val = self.p3u_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p3u_clar_state_combo.currentText()]
-                    mode = MODES[self.p3u_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p3u_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p3u_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p3u_tag_state_combo.currentText()]
-                    tag = self.p3u_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P3U" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p4u(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p4u_freq_entry.hasAcceptableInput():
-                    freq = self.p4u_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p4u_clar_dir_spin.value())
-                    val = self.p4u_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p4u_clar_state_combo.currentText()]
-                    mode = MODES[self.p4u_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p4u_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p4u_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p4u_tag_state_combo.currentText()]
-                    tag = self.p4u_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P4U" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p5u(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p5u_freq_entry.hasAcceptableInput():
-                    freq = self.p5u_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p5u_clar_dir_spin.value())
-                    val = self.p5u_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p5u_clar_state_combo.currentText()]
-                    mode = MODES[self.p5u_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p5u_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p5u_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p5u_tag_state_combo.currentText()]
-                    tag = self.p5u_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P5U" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p6u(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p6u_freq_entry.hasAcceptableInput():
-                    freq = self.p6u_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p6u_clar_dir_spin.value())
-                    val = self.p6u_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p6u_clar_state_combo.currentText()]
-                    mode = MODES[self.p6u_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p6u_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p6u_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p6u_tag_state_combo.currentText()]
-                    tag = self.p6u_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P6U" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p7u(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p7u_freq_entry.hasAcceptableInput():
-                    freq = self.p7u_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p7u_clar_dir_spin.value())
-                    val = self.p7u_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p7u_clar_state_combo.currentText()]
-                    mode = MODES[self.p7u_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p7u_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p7u_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p7u_tag_state_combo.currentText()]
-                    tag = self.p7u_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P7U" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p8u(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p8u_freq_entry.hasAcceptableInput():
-                    freq = self.p8u_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p8u_clar_dir_spin.value())
-                    val = self.p8u_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p8u_clar_state_combo.currentText()]
-                    mode = MODES[self.p8u_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p8u_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p8u_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p8u_tag_state_combo.currentText()]
-                    tag = self.p8u_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P8U" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
-
-    def set_p9u(self):
-        if self.rig.isOpen():
-            if self.transfert:
-                if self.p9u_freq_entry.hasAcceptableInput():
-                    freq = self.p9u_freq_entry.text()
-                    while len(freq) < 9:
-                        freq = "0" + freq
-                    freq = bytes(freq, ENCODER)
-
-                    clar = str(self.p9u_clar_dir_spin.value())
-                    val = self.p9u_clar_dir_spin.value()
-
-                    if -9999 < val <= -100:
-                        clar = clar[0] + "0" + clar[1] + clar[2] + clar[3]
-                    elif -100 < val <= -10:
-                        clar = clar[0] + "00" + clar[1] + clar[2]
-                    elif -10 < val < 0:
-                        clar = clar[0] + "000" + clar[1]
-                    elif 0 <= val < 10:
-                        clar = "+000" + clar[0]
-                    elif 10 <= val < 100:
-                        clar = "+00" + clar
-                    elif 100 <= val < 1000:
-                        clar = "+0" + clar
-                    elif 1000 <= val < 9999:
-                        clar = "+" + clar
-                    clar = bytes(clar, ENCODER)
-
-                    clar_state = CLAR_STATE[self.p9u_clar_state_combo.currentText()]
-                    mode = MODES[self.p9u_mode_combo.currentText()]
-                    ctcss = CTCSS_STATE[self.p9u_ctcss_dcs_state_combo.currentText()]
-                    rpt = RPT_SHIFT_DIR[self.p9u_rpt_shift_dir_combo.currentText()]
-                    tag_state = TAG_STATE[self.p9u_tag_state_combo.currentText()]
-                    tag = self.p9u_tag_entry.text()
-                    while len(tag) < 12:
-                        tag += " "
-                    tag = bytes(tag, ENCODER)
-
-                    cmd = b"MT" + b"P9U" + freq + clar + clar_state + b"0" + mode + b"0" + \
-                          ctcss + b"00" + rpt + tag_state + tag + b";"
-                    print(cmd)
-                    self.rig.write(cmd)
-                    rep = self.rig.read_until(b";")
-                    print(rep)
 
     def toggle_live_mode(self):
         """Toggle Live Mode"""

@@ -1,6 +1,6 @@
 <del><h1 align="center">CPyS-891</h1></del>
 <del><p align="center">
-    <img src="./images/icon.png" alt="TPOL CCH" width="754" height="464" />
+    <img src="./images/icon.png" alt="CPyS-891 LOGO" width="754" height="464" />
 </p></del>
 
 ___
@@ -27,17 +27,19 @@ ___
 
 ## 3) Dev plan :
 
-- this script is still in developpement, for now, only the Menu of the FT-891 is implemented.
+This script is still in developpement, for now, only the Menu of the FT-891 is implemented.
 
-TODO: 
 - Menu -> done
 - Functions
-- Memory -> in progress
+- Memory -> got to contact Yaesu for getting Memory
 - Reset the rig to default config -> done
-- Save and open config files
+- Save config files -> done 
+- open config files -> in progress
 - Presets for quick config
 - About 
 - Documentation
+
+___
 
 ## 4) Thanks to contributors for there work and ideas:
 PA2EON
