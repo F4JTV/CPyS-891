@@ -20,11 +20,11 @@ from PyQt5.Qt import *
 import serial.tools.list_ports
 
 # TODO: Functions
-# TODO: Memory -> work in progress
-# TODO: save config to file (json)
+# TODO: Memory -> contact Yaesu
 # TODO: open config from file (json)
 # TODO: Presets (json)
 # TODO: About window
+# TODO: Doc
 
 APP_NAME = "CPyS-891"
 APP_VERSION = datetime.strftime(datetime.now(), "0.%m%d")
@@ -231,7 +231,7 @@ class MainWindow(QMainWindow):
                                  rtscts=True)
         try:
             self.rig.setPort(self.com_port)
-            """self.rig.open()
+            self.rig.open()
             self.rig.write(b"FA;")
             rep = self.rig.read_until(";")
             rep = rep.replace(b";", b"")
@@ -239,7 +239,7 @@ class MainWindow(QMainWindow):
             if re.match("^FA\d{9}$", rep):
                 self.status_bar.showMessage(self.com_port + ' Connected.')
             else:
-                raise serial.SerialException"""
+                raise serial.SerialException
 
         except serial.SerialException:
             error_box = QMessageBox(QMessageBox.Critical,
