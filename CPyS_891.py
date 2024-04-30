@@ -2,187 +2,26 @@
 ##########################################################################
 #   CPyS-891 is a CPS for the Yaesu FT-891 made with Python3 and PyQt5   #
 #                 It uses serial module for CAT protocol                 #
-#                                                                        #
-#                  ___ ___      ___     ___ ___ _                        #
-#                 / __| _ \_  _/ __|___( _ / _ / |                       #
-#                | (__|  _| || \__ |___/ _ \_, | |                       #
-#                 \___|_|  \_, |___/   \___//_/|_|                       #
-#                          |__/                                          #
 ##########################################################################
 import re
 import sys
 import json
+import serial
 import platform
 import configparser
-from datetime import datetime
 
-from PyQt5.Qt import *
-import serial.tools.list_ports
+from const import *
 
 # TODO: Functions
-# TODO: Memory -> contact Yaesu
-# TODO: open config from file (json)
+# TODO: Tooltips (Menu and functions)
+# TODO: Memory
+# TODO: Panel
 # TODO: Presets (json)
 # TODO: About window
 # TODO: Doc
 
-APP_NAME = "CPyS-891"
-APP_VERSION = datetime.strftime(datetime.now(), "0.%m%d")
-APP_TITLE = f"{APP_NAME} - v{APP_VERSION}"
-ICON = "./images/icon.png"
-FONT = "./fonts/Quicksand-Regular.ttf"
-FONT_FAMILY = "Quicksand"
-FONT_SIZE = 11
-ENCODER = "ascii"
-PEAK_HOLD = {"OFF": b"0", "0.5 sec": b"1",
-             "1.0 sec": b"2", "2.0 sec": b"3"}
-ZIN_LED = {"DISABLE": b"0", "ENABLE": b"1"}
-POPUP_MENU = {"UPPER": b"0", "LOWER": b"1"}
-KEYER_TYPE = {"OFF": b"0", "BUG": b"1", "ELEKEY-A": b"2",
-              "ELEKEY-B": b"3", "ELEKEY-Y": b"4", "ACS": b"5"}
-KEYER_DOT_DASH = {"NOR": b"0", "REV": b"1"}
-NUMBER_STYLE = {"1290": b"0", "AUNO": b"1",
-                "AUNT": b"2", "A2NO": b"3",
-                "A2NT": b"4", "12NO": b"5",
-                "12NT": b"6"}
-CW_MEMORY = {"TEXT": b"0", "MESSAGE": b"1"}
-NB_WIDHT = {"1 msec": b"0", "3 msec": b"1", "10 msec": b"2"}
-NB_REJECTION = {"10 dB": b"0", "30 dB": b"1", "50 dB": b"2"}
-RF_SQL_VR = {"RF": b"0", "SQL": b"1"}
-CAT_RATE = {"4800 bds": b"0", "9600 bds": b"1",
-            "19200 bps": b"2", "38400 bps": b"3"}
-CAT_TOT = {"10 msec": b"0", "100 msec": b"1",
-           "1000 msec": b"2", "3000 msec": b"3"}
-CAT_RTS = {"DISABLE": b"0", "ENABLE": b"1"}
-MEMORY_GROUP = {"DISABLE": b"0", "ENABLE": b"1"}
-FM_SETTING = {"DISABLE": b"0", "ENABLE": b"1"}
-REC_SETTING = {"DISABLE": b"0", "ENABLE": b"1"}
-ATAS_SETTING = {"DISABLE": b"0", "ENABLE": b"1"}
-MIC_SCAN = {"DISABLE": b"0", "ENABLE": b"1"}
-MIC_SCAN_RESUME = {"PAUSE": b"0", "TIME": b"1"}
-CLAR_SELECT = {"RX": b"0", "TX": b"1", "TRX": b"2"}
-APO = {"OFF": b"0", "1 h": b"1", "2 h": b"2", "4 h": b"3",
-       "6 h": b"4", "8 h": b"5", "10 h": b"6", "12 h": b"7"}
-FAN_CONTROL = {"NORMAL": b"0", "CONTEST": b"1"}
-LCUT_FREQ = {"OFF": b"00", "100 Hz": b"01", "150 Hz": b"02",
-             "200 Hz": b"03", "250 Hz": b"04", "300 Hz": b"05",
-             "350 Hz": b"06", "400 Hz": b"07", "450 Hz": b"08",
-             "500 Hz": b"09", "550 Hz": b"10", "600 Hz": b"11",
-             "650 Hz": b"12", "700 Hz": b"13", "750 Hz": b"14",
-             "800 Hz": b"15", "850 Hz": b"16", "900 Hz": b"17",
-             "950 Hz": b"18", "1000 Hz": b"19"}
-HCUT_FREQ = {"OFF": b"00", "700 Hz": b"01", "750 Hz": b"02",
-             "800 Hz": b"03", "850 Hz": b"04", "900 Hz": b"05",
-             "950 Hz": b"06", "1000 Hz": b"07", "1050 Hz": b"08",
-             "1100 Hz": b"09", "1150 Hz": b"10", "1200 Hz": b"11",
-             "1250 Hz": b"12", "1300 Hz": b"13", "1350 Hz": b"14",
-             "1400 Hz": b"15", "1450 Hz": b"16", "1500 Hz": b"17",
-             "1550 Hz": b"18", "1600 Hz": b"19", "1650 Hz": b"20",
-             "1700 Hz": b"21", "1750 Hz": b"22", "1800 Hz": b"23",
-             "1850 Hz": b"24", "1900 Hz": b"25", "1950 Hz": b"26",
-             "2000 Hz": b"27", "2050 Hz": b"28", "2100 Hz": b"29",
-             "2150 Hz": b"30", "2200 Hz": b"31", "2250 Hz": b"32",
-             "2300 Hz": b"33", "2350 Hz": b"34", "2400 Hz": b"35",
-             "2450 Hz": b"36", "2500 Hz": b"37", "2550 Hz": b"38",
-             "2600 Hz": b"39", "2650 Hz": b"40", "2700 Hz": b"41",
-             "2750 Hz": b"42", "2800 Hz": b"43", "2850 Hz": b"44",
-             "2900 Hz": b"45", "2950 Hz": b"46", "3000 Hz": b"47",
-             "3050 Hz": b"48", "3100 Hz": b"49", "3150 Hz": b"50",
-             "3200 Hz": b"51", "3250 Hz": b"52", "3300 Hz": b"53",
-             "3350 Hz": b"54", "3400 Hz": b"55", "3450 Hz": b"56",
-             "3500 Hz": b"57", "3550 Hz": b"58", "3600 Hz": b"59",
-             "3650 Hz": b"60", "3700 Hz": b"61", "3750 Hz": b"62",
-             "3800 Hz": b"63", "3850 Hz": b"64", "3900 Hz": b"65",
-             "3950 Hz": b"66", "4000 Hz": b"67"}
-AM_MIC_SELECT = {"MIC": b"0", "REAR": b"1"}
-AM_PTT_SELECT = {"DAKY": b"0", "RTS": b"1", "DTR": b"2"}
-CW_AUTO_MODE = {"OFF": b"0", "50M": b"1", "ON": b"2"}
-CW_BFO = {"USB": b"0", "LSB": b"1", "AUTO": b"2"}
-CW_BK_IN_TYPE = {"SEMI": b"0", "FULL": b"1"}
-CW_WAVE_SHAPE = {"2 msec": b"1", "4 msec": b"2"}
-CW_FREQ_DISPLAY = {"FREQ": b"0", "PITCH": b"1"}
-PC_KEYING = {"OFF": b"0", "DAKY": b"1",
-             "RTS": b"2", "DTR": b"3"}
-QSK_DELAY_TIME = {"15 msec": b"0", "20 msec": b"1",
-                  "25 msec": b"2", "30 msec": b"3"}
-DATA_MODE = {"PSK": b"0", "OTHER": b"1"}
-PSK_TONE = {"1000 Hz": b"0", "1500 Hz": b"1", "2000 Hz": b"2"}
-SLOPE = {"6 dB/oct": b"0", "18 dB/oct": b"1"}
-DATA_IN_SELECT = {"MIC": b"0", "REAR": b"1"}
-DATA_PTT_SELECT = {"DAKY": b"0", "RTS": b"1", "DTR": b"2"}
-DATA_BFO = {"USB": b"0", "LSB": b"1"}
-FM_MIC_SELECT = {"MIC": b"0", "REAR": b"1"}
-PKT_PTT_SELECT = {"DAKY": b"0", "RTS": b"1", "DTR": b"2"}
-DCS_POLARITY = {"Tn-Rn": b"0", "Tn-Riv": b"1",
-                "Tiv-Rn": b"2", "Tiv-Riv": b"3"}
-RTTY_SHIT_PORT = {"SHIFT": b"0", "DTR": b"1", "RTS": b"2"}
-RTTY_POLARITY = {"NOR": b"0", "REV": b"1"}
-RTTY_SHIFT_FREQ = {"170 Hz": b"0", "200 Hz": b"1",
-                   "425 Hz": b"2", "850 Hz": b"3"}
-RTTY_MARK_FREQ = {"1275 Hz": b"0", "2125 Hz": b"1"}
-RTTY_BFO = {"USB": b"0", "LSB": b"1"}
-SSB_MIC_SELECT = {"MIC": b"0", "REAR": b"1"}
-SSB_BFO = {"USB": b"0", "LSB": b"1", "AUTO": b"2"}
-SSB_PTT_SELECT = {"DAKY": b"0", "RTS": b"1", "DTR": b"2"}
-SSB_TX_BPF = {"100-3000": b"0", "100-2900": b"1",
-              "200-2800": b"2", "300-2700": b"3",
-              "400-2600": b"4"}
-APF_WIDTH = {"NARROW": b"0", "MEDIUM": b"1", "WIDE": b"2"}
-IF_NOTCH_WIDTH = {"NARROW": b"0", "WIDE": b"1"}
-SCP_START_CYCLE = {"OFF": b"0", "3 sec": b"1",
-                   "2.5 sec": b"2", "10 sec": b"3"}
-SCP_SPAN_FREQ = {"37.5 kHz": b"00", "75 kHz": b"01",
-                 "150 kHz": b"02", "375 kHz": b"03",
-                 "750 kHz": b"04"}
-QUICK_DIAL = {"50 kHz": b"0", "100 kHz": b"1", "500 kHz": b"2"}
-SSB_DIAL_STEP = {"2 Hz": b"0", "5 Hz": b"1", "10 Hz": b"2"}
-AM_DIAL_STEP = {"10 Hz": b"0", "100 Hz": b"1"}
-FM_DIAL_STEP = {"10 Hz": b"0", "100 Hz": b"1"}
-DIAL_STEP = {"2 Hz": b"0", "5 Hz": b"1", "10 Hz": b"2"}
-AM_CH_STEP = {"2.5 kHz": b"0", "5 kHz": b"1",
-              "9 kHz": b"2", "10 kHz": b"3",
-              "12.5 kHz": b"4", "25 kHz": b"5"}
-FM_CH_STEP = {"5 kHz": b"0", "6.25 kHz": b"1",
-              "10 kHz": b"2", "12.5 kHz": b"3",
-              "15 kHz": b"4", "20 kHz": b"5",
-              "25 kHz": b"6"}
-EQ_1_FREQ = {"OFF": b"00", "100 Hz": b"01", "200 Hz": b"02",
-             "300 Hz": b"03", "400 Hz": b"04", "500 Hz": b"05",
-             "600 Hz": b"06", "700 Hz": b"07"}
-EQ_2_FREQ = {"OFF": b"00", "700 Hz": b"01", "800 Hz": b"02",
-             "900 Hz": b"03", "1000 Hz": b"04", "1100 Hz": b"05",
-             "1200 Hz": b"06", "1300 Hz": b"07", "1400 Hz": b"08",
-             "1500 Hz": b"09"}
-EQ_3_FREQ = {"OFF": b"00", "1500 Hz": b"01", "1600 Hz": b"02",
-             "1700 Hz": b"03", "1800 Hz": b"04", "1900 Hz": b"05",
-             "2000 Hz": b"06", "2100 Hz": b"07", "2200 Hz": b"08",
-             "2300 Hz": b"09", "2400 Hz": b"10", "2500 Hz": b"11",
-             "2600 Hz": b"12", "2700 Hz": b"13", "2800 Hz": b"14",
-             "2900 Hz": b"15", "3000 Hz": b"16", "3100 Hz": b"17",
-             "3200 Hz": b"18"}
-TUNER_SELECT = {"OFF": b"0", "EXTERNAL": b"1",
-                "ATAS": b"2", "LAMP": b"3"}
-VOX_SELECT = {"MIC": b"0", "DATA": b"1"}
-EMERGENCY_FREQ = {"DISABLE": b"0", "ENABLE": b"1"}
-RESET = {"ALL": b"0", "DATA": b"1", "FUNC": b"2"}
-BAUDRATE = ["4800", "9600", "19200", "38400"]
-CLAR_STATE = {"ON": b"0", "OFF": b"1"}
-MODES = {"LSB": b"1", "USB": b"2", "CW": b"3",
-         "FM": b"4", "AM": b"5", "RTTY-LSB": b"6",
-         "CW-R": b"7", "DATA-LSB": b"8", "FM-N": b"B",
-         "DATA-USB": b"C", "AM-N": b"D"}
-CTCSS_STATE = {"CTCSS OFF": b"0", "CTCSS ENC/DEC": b"1",
-               "CTCSS ENC": b"2"}
-RPT_SHIFT_DIR = {"Simplex": b"0", "Plus Shift": b"1",
-                 "Minus Shift": b"2"}
-TAG_STATE = {"TAG OFF": b"0", "TAG ON": b"1"}
 
-
-def format_combo(combobox):
-    for i in range(0, combobox.count()):
-        combobox.setItemData(i, Qt.AlignCenter, Qt.TextAlignmentRole)
-
-
+# noinspection PyUnresolvedReferences
 class MainWindow(QMainWindow):
     """ Main Window """
 
@@ -209,7 +48,7 @@ class MainWindow(QMainWindow):
         self.baudrate = self.config["DEFAULT"]["baudrate"]
 
         self.app = appli
-        self.transfert = True
+        self.transfert = False
         self.old_beacon_interval = int()
         self.progressbar = QProgressBar()
 
@@ -224,6 +63,7 @@ class MainWindow(QMainWindow):
         self.central_Widget.setLayout(self.main_layout)
 
         # ###### Rig
+        # noinspection PyTypeChecker
         self.rig = serial.Serial(baudrate=self.baudrate,
                                  bytesize=8,
                                  timeout=0.1,
@@ -233,7 +73,7 @@ class MainWindow(QMainWindow):
             self.rig.setPort(self.com_port)
             self.rig.open()
             self.rig.write(b"FA;")
-            rep = self.rig.read_until(";")
+            rep = self.rig.read_until(b";")
             rep = rep.replace(b";", b"")
             rep = rep.decode(ENCODER)
             if re.match("^FA\d{9}$", rep):
@@ -244,7 +84,8 @@ class MainWindow(QMainWindow):
         except serial.SerialException:
             error_box = QMessageBox(QMessageBox.Critical,
                                     "Connection error",
-                                    'Check "CPyS.cfg" file and check if the FT-891 is plugged',
+                                    '- Check "CPyS.cfg" for the port\n'
+                                    '- Check if the FT-891 is plugged and powered ON',
                                     QMessageBox.Ok)
             error_box.setModal(True)
             error_box.exec_()
@@ -288,12 +129,12 @@ class MainWindow(QMainWindow):
         self.edit_menu.addAction(self.live_mode_action)
         self.edit_menu.addSeparator()
         self.live_mode_action.setCheckable(True)
-        self.live_mode_action.setChecked(True)
+        self.live_mode_action.setChecked(False)
         self.live_mode_action.triggered.connect(self.toggle_live_mode)
 
         self.send_to_radio_action = QAction("Send config to FT-891")
         self.edit_menu.addAction(self.send_to_radio_action)
-        self.send_to_radio_action.setDisabled(True)
+        self.send_to_radio_action.setEnabled(True)
         self.send_to_radio_action.triggered.connect(self.send_config_2_radio)
 
         self.get_from_radio_action = QAction("Get config from FT-891")
@@ -317,13 +158,163 @@ class MainWindow(QMainWindow):
         self.doc_action = QAction("Online &Doc")
         self.help_menu.addAction(self.doc_action)
 
-        # ###### Menu Table
+        # ###### Main Layout
         self.menu_table = QTableWidget(171, 3)
-        self.function_layout = QScrollArea()
+        self.function_layout = QVBoxLayout()
         self.main_layout.addWidget(self.menu_table, 1)
-        self.main_layout.addWidget(self.function_layout, 3)
+        self.main_layout.addLayout(self.function_layout, 1)
 
-        # Menu Table
+        # ###### Function Layout & Group
+        self.function_1_grp = QGroupBox()
+        self.function_2_grp = QGroupBox()
+        self.function_cw_grp = QGroupBox()
+        self.function_fm_grp = QGroupBox()
+        self.function_rec_grp = QGroupBox()
+        self.function_atas_grp = QGroupBox()
+        self.function_1_layout = QGridLayout()
+        self.function_2_layout = QGridLayout()
+        self.function_cw_layout = QGridLayout()
+        self.function_fm_layout = QGridLayout()
+        self.function_rec_layout = QGridLayout()
+        self.function_atas_layout = QGridLayout()
+        self.function_1_grp.setLayout(self.function_1_layout)
+        self.function_2_grp.setLayout(self.function_2_layout)
+        self.function_cw_grp.setLayout(self.function_cw_layout)
+        self.function_fm_grp.setLayout(self.function_fm_layout)
+        self.function_rec_grp.setLayout(self.function_rec_layout)
+        self.function_atas_grp.setLayout(self.function_atas_layout)
+        self.function_layout.addWidget(self.function_1_grp, 4, Qt.AlignmentFlag.AlignCenter)
+        self.function_layout.addWidget(self.function_2_grp, 4, Qt.AlignmentFlag.AlignCenter)
+        self.function_layout.addWidget(self.function_cw_grp, 3, Qt.AlignmentFlag.AlignCenter)
+        self.function_layout.addWidget(self.function_fm_grp, 3, Qt.AlignmentFlag.AlignCenter)
+        self.function_layout.addWidget(self.function_rec_grp, 3, Qt.AlignmentFlag.AlignCenter)
+        self.function_layout.addWidget(self.function_atas_grp, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_cw_grp.setFixedWidth(400)
+        self.function_fm_grp.setFixedWidth(400)
+        self.function_atas_grp.setFixedWidth(400)
+
+        # ###### Function 1
+        self.function_1_label = QLabel("Function 1")
+        self.tnr_btn = QPushButton("TNR")
+        self.vox_btn = QPushButton("VOX")
+        self.prc_btn = QPushButton("PRC")
+        self.mon_btn = QPushButton("MON")
+        self.spl_btn = QPushButton("SPL")
+        self.ipo_btn = QPushButton("IPO")
+        self.att_btn = QPushButton("ATT")
+        self.nar_btn = QPushButton("NAR")
+        self.nb_btn = QPushButton("NB")
+        self.sft_btn = QPushButton("SFT")
+        self.wdh_btn = QPushButton("WDH")
+        self.nch_btn = QPushButton("NCH")
+        self.function_1_layout.addWidget(self.function_1_label, 0, 0, 1, 4, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.tnr_btn, 1, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.vox_btn, 1, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.prc_btn, 1, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.mon_btn, 1, 3, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.spl_btn, 2, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.ipo_btn, 2, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.att_btn, 2, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.nar_btn, 2, 3, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.nb_btn, 3, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.sft_btn, 3, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.wdh_btn, 3, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_1_layout.addWidget(self.nch_btn, 3, 3, 1, 1, Qt.AlignmentFlag.AlignCenter)
+
+        # ###### Function 2
+        self.function_2_label = QLabel("Function 2")
+        self.mtr_btn = QPushButton("MTR")
+        self.scp_btn = QPushButton("SCP")
+        self.agc_btn = QPushButton("AGC")
+        self.dnr_btn = QPushButton("DNR")
+        self.dnf_btn = QPushButton("DNF")
+        self.cnt_btn = QPushButton("CNT")
+        self.mox_btn = QPushButton("MOX")
+        self.txw_btn = QPushButton("TXW")
+        self.meq_btn = QPushButton("MEQ")
+        self.qmb_btn = QPushButton("QMB")
+        self.function_2_layout.addWidget(self.function_2_label, 0, 0, 1, 4, Qt.AlignmentFlag.AlignCenter)
+        self.function_2_layout.addWidget(self.mtr_btn, 1, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_2_layout.addWidget(self.scp_btn, 1, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_2_layout.addWidget(self.agc_btn, 1, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_2_layout.addWidget(self.dnr_btn, 1, 3, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_2_layout.addWidget(self.dnf_btn, 2, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_2_layout.addWidget(self.cnt_btn, 2, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_2_layout.addWidget(self.mox_btn, 2, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_2_layout.addWidget(self.txw_btn, 2, 3, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_2_layout.addWidget(self.meq_btn, 3, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_2_layout.addWidget(self.qmb_btn, 3, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+
+        # ###### CW Setting
+        self.cw_setting_label = QLabel("CW Setting")
+        self.speed_btn = QPushButton("SPEED")
+        self.zin_btn = QPushButton("ZIN")
+        self.apf_btn = QPushButton("APF")
+        self.pitch_btn = QPushButton("PITCH")
+        self.keyer_btn = QPushButton("KEYER")
+        self.bk_in_btn = QPushButton("BK-IN")
+        self.function_cw_layout.addWidget(self.cw_setting_label, 0, 0, 1, 3, Qt.AlignmentFlag.AlignCenter)
+        self.function_cw_layout.addWidget(self.speed_btn, 1, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_cw_layout.addWidget(self.zin_btn, 1, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_cw_layout.addWidget(self.apf_btn, 1, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_cw_layout.addWidget(self.pitch_btn, 2, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_cw_layout.addWidget(self.keyer_btn, 2, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_cw_layout.addWidget(self.bk_in_btn, 2, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+
+        # ###### FM Setting
+        self.fm_setting_label = QLabel("FM Setting")
+        self.t_dcs_btn = QPushButton("T/DCS")
+        self.tone_btn = QPushButton("TONE")
+        self.dcs_btn = QPushButton("DCS")
+        self.rpt_btn = QPushButton("RPT")
+        self.rev_btn = QPushButton("REV")
+        self.function_fm_layout.addWidget(self.fm_setting_label, 0, 0, 1, 3, Qt.AlignmentFlag.AlignCenter)
+        self.function_fm_layout.addWidget(self.t_dcs_btn, 1, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_fm_layout.addWidget(self.tone_btn, 1, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_fm_layout.addWidget(self.dcs_btn, 1, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_fm_layout.addWidget(self.rpt_btn, 2, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_fm_layout.addWidget(self.rev_btn, 2, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_fm_grp.setDisabled(True)
+
+        # ###### REC Setting
+        self.rec_setting_label = QLabel("REC Setting")
+        self.dec_btn = QPushButton("DEC")
+        self.pb_btn = QPushButton("PB")
+        self.mem_btn = QPushButton("MEM")
+        self.ch1_btn = QPushButton("CH1")
+        self.ch2_btn = QPushButton("CH2")
+        self.ch3_btn = QPushButton("CH3")
+        self.ch4_btn = QPushButton("CH4")
+        self.ch5_btn = QPushButton("CH5")
+        self.function_rec_layout.addWidget(self.rec_setting_label, 0, 0, 1, 4, Qt.AlignmentFlag.AlignCenter)
+        self.function_rec_layout.addWidget(self.dec_btn, 1, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_rec_layout.addWidget(self.pb_btn, 1, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_rec_layout.addWidget(self.mem_btn, 1, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_rec_layout.addWidget(self.ch1_btn, 1, 3, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_rec_layout.addWidget(self.ch2_btn, 2, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_rec_layout.addWidget(self.ch3_btn, 2, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_rec_layout.addWidget(self.ch4_btn, 2, 2, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_rec_layout.addWidget(self.ch5_btn, 2, 3, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_rec_grp.setDisabled(True)
+
+        # ###### ATAS Setting
+        self.atas_setting_label = QLabel("ATAS Setting")
+        self.atas_up_btn = QPushButton()
+        self.atas_up_btn.setFixedWidth(150)
+        pixmapi_up = QStyle.SP_TitleBarShadeButton
+        icon_up = self.style().standardIcon(pixmapi_up)
+        self.atas_up_btn.setIcon(icon_up)
+        self.atas_down_btn = QPushButton()
+        self.atas_down_btn.setFixedWidth(150)
+        pixmapi_down = QStyle.SP_TitleBarUnshadeButton
+        icon_down = self.style().standardIcon(pixmapi_down)
+        self.atas_down_btn.setIcon(icon_down)
+        self.function_atas_layout.addWidget(self.atas_setting_label, 0, 0, 1, 2, Qt.AlignmentFlag.AlignCenter)
+        self.function_atas_layout.addWidget(self.atas_up_btn, 1, 0, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_atas_layout.addWidget(self.atas_down_btn, 1, 1, 1, 1, Qt.AlignmentFlag.AlignCenter)
+        self.function_atas_grp.setDisabled(True)
+
+        # ###### Menu Table
         self.menu_table.verticalHeader().setVisible(False)
         self.menu_table.horizontalHeader().setVisible(False)
         self.menu_table.setSortingEnabled(False)
@@ -336,7 +327,9 @@ class MainWindow(QMainWindow):
         elif platform.system() == "Linux":
             self.menu_table.setMinimumSize(600, 450)
 
-        # ### ACG
+        #########################################################################
+        #                               ACG
+        #########################################################################
         self.acg_separator = QTableWidgetItem("ACG")
         self.menu_table.setItem(0, 0, self.acg_separator)
         self.menu_table.setSpan(0, 0, 1, 3)
@@ -392,7 +385,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(3, 1, self.acg_slow_parm_name)
         self.menu_table.setCellWidget(3, 2, self.acg_slow_spin)
 
-        # ### DISPLAY
+        #########################################################################
+        #                               DISPLAY
+        #########################################################################
         self.display_separator = QTableWidgetItem("DISPLAY")
         self.display_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(4, 0, self.display_separator)
@@ -508,7 +503,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(11, 1, self.pop_up_parm_name)
         self.menu_table.setCellWidget(11, 2, self.pop_up_combo)
 
-        # ### DVS
+        #########################################################################
+        #                               DVS
+        #########################################################################
         self.dvs_separator = QTableWidgetItem("DVS")
         self.dvs_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(12, 0, self.dvs_separator)
@@ -543,7 +540,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(14, 1, self.dvs_tx_out_lvl_parm_name)
         self.menu_table.setCellWidget(14, 2, self.dvs_tx_out_lvl_spin)
 
-        # ### Keyer
+        #########################################################################
+        #                               Keyer
+        #########################################################################
         self.keyer_separator = QTableWidgetItem("KEYER")
         self.keyer_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(15, 0, self.keyer_separator)
@@ -734,7 +733,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(26, 1, self.cw_memory_5_parm_name)
         self.menu_table.setCellWidget(26, 2, self.cw_memory_5_combo)
 
-        # ### General
+        #########################################################################
+        #                               General
+        #########################################################################
         self.general_separator = QTableWidgetItem("GENERAL")
         self.general_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(27, 0, self.general_separator)
@@ -1077,7 +1078,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(47, 1, self.fan_control_parm_name)
         self.menu_table.setCellWidget(47, 2, self.fan_control_combo)
 
-        # AM
+        #########################################################################
+        #                               AM
+        #########################################################################
         self.mode_am_separator = QTableWidgetItem("MODE AM")
         self.mode_am_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(48, 0, self.mode_am_separator)
@@ -1200,7 +1203,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(55, 1, self.am_ptt_select_parm_name)
         self.menu_table.setCellWidget(55, 2, self.am_ptt_select_combo)
 
-        # CW
+        #########################################################################
+        #                               CW
+        #########################################################################
         self.mode_cw_separator = QTableWidgetItem("MODE CW")
         self.mode_cw_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(56, 0, self.mode_cw_separator)
@@ -1425,7 +1430,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(69, 1, self.qsk_delay_time_parm_name)
         self.menu_table.setCellWidget(69, 2, self.qsk_delay_time_combo)
 
-        # MODE DAT
+        #########################################################################
+        #                            Mode DATA
+        #########################################################################
         self.mode_dat_separator = QTableWidgetItem("MODE DAT")
         self.mode_dat_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(70, 0, self.mode_dat_separator)
@@ -1633,7 +1640,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(82, 1, self.data_bfo_parm_name)
         self.menu_table.setCellWidget(82, 2, self.data_bfo_combo)
 
-        # MODE FM
+        #########################################################################
+        #                           Mode FM
+        #########################################################################
         self.mode_fm_separator = QTableWidgetItem("MODE FM")
         self.mode_fm_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(83, 0, self.mode_fm_separator)
@@ -1740,7 +1749,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(89, 1, self.dcs_polarity_parm_name)
         self.menu_table.setCellWidget(89, 2, self.dcs_polarity_combo)
 
-        # Mode RTTY
+        #########################################################################
+        #                             Mode RTTY
+        #########################################################################
         self.mode_rtty_separator = QTableWidgetItem("MODE RTY")
         self.mode_rtty_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(90, 0, self.mode_rtty_separator)
@@ -1932,7 +1943,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(101, 1, self.rtty_bfo_parm_name)
         self.menu_table.setCellWidget(101, 2, self.rtty_bfo_combo)
 
-        # Mode SSB
+        #########################################################################
+        #                            Mode SSB
+        #########################################################################
         self.mode_ssb_separator = QTableWidgetItem("MODE SSB")
         self.mode_ssb_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(102, 0, self.mode_ssb_separator)
@@ -2090,7 +2103,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(111, 1, self.ssb_tx_bpf_parm_name)
         self.menu_table.setCellWidget(111, 2, self.ssb_tx_bpf_combo)
 
-        # RX DSP
+        #########################################################################
+        #                            RX DSP
+        #########################################################################
         self.rx_dsp_separator = QTableWidgetItem("RX DSP")
         self.rx_dsp_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(112, 0, self.rx_dsp_separator)
@@ -2162,7 +2177,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(116, 1, self.if_notch_width_parm_name)
         self.menu_table.setCellWidget(116, 2, self.if_notch_width_combo)
 
-        # SCOPE
+        #########################################################################
+        #                              Scope
+        #########################################################################
         self.scope_separator = QTableWidgetItem("SCOPE")
         self.scope_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(117, 0, self.scope_separator)
@@ -2202,7 +2219,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(119, 1, self.scp_span_freq_parm_name)
         self.menu_table.setCellWidget(119, 2, self.scp_span_freq_combo)
 
-        # TUNING
+        #########################################################################
+        #                               Tuning
+        #########################################################################
         self.tuning_separator = QTableWidgetItem("TUNING")
         self.tuning_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(120, 0, self.tuning_separator)
@@ -2327,7 +2346,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(127, 1, self.fm_ch_step_parm_name)
         self.menu_table.setCellWidget(127, 2, self.fm_ch_step_combo)
 
-        # TX AUDIO
+        #########################################################################
+        #                            TX Audio
+        #########################################################################
         self.tx_audio_separator = QTableWidgetItem("TX AUDIO")
         self.tx_audio_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(128, 0, self.tx_audio_separator)
@@ -2627,7 +2648,9 @@ class MainWindow(QMainWindow):
         self.menu_table.setItem(146, 1, self.p_eq_3_bwth_parm_name)
         self.menu_table.setCellWidget(146, 2, self.p_eq_3_bwth_spin)
 
-        # TX GNRL
+        #########################################################################
+        #                            TX General
+        #########################################################################
         self.tx_gnrl_separator = QTableWidgetItem("TX GNRL")
         self.tx_gnrl_separator.setBackground(QColor(Qt.GlobalColor.lightGray))
         self.menu_table.setItem(147, 0, self.tx_gnrl_separator)
@@ -3026,6 +3049,7 @@ class MainWindow(QMainWindow):
                 pass
 
     def save_config_file(self):
+        """ Save config into a file """
         acg_fast_delay = self.acg_fast_spin.value()
         acg_mid_delay = self.acg_mid_spin.value()
         acg_slow_delay = self.acg_slow_spin.value()
@@ -3083,9 +3107,9 @@ class MainWindow(QMainWindow):
         am_ptt_select = self.am_ptt_select_combo.currentText()
 
         cw_lcut_freq = self.cw_lcut_freq_combo.currentText()
-        cw_lcut_slope = self.am_lcut_slope_combo.currentText()
+        cw_lcut_slope = self.cw_lcut_slope_combo.currentText()
         cw_hcut_freq = self.cw_hcut_freq_combo.currentText()
-        cw_hcut_slope = self.am_hcut_slope_combo.currentText()
+        cw_hcut_slope = self.cw_hcut_slope_combo.currentText()
         cw_out_level = self.cw_out_level_spin.value()
         cw_auto_mode = self.cw_auto_mode_combo.currentText()
         cw_bfo = self.cw_bfo_combo.currentText()
@@ -3372,7 +3396,10 @@ class MainWindow(QMainWindow):
                       sort_keys=False,
                       ensure_ascii=False)
 
+        self.status_bar.showMessage(f"Configuration file: {file_name} saved.")
+
     def get_config_file(self):
+        """ Get config from a file """
         file_name = QFileDialog.getOpenFileName(self, "Configuration file name",
                                                 ".", "JSON file (*.json)")[0]
 
@@ -3383,6 +3410,177 @@ class MainWindow(QMainWindow):
             config_dict = json.load(file)
 
         self.acg_fast_spin.setValue(config_dict["Menu"]["AGC FAST DELAY"])
+        self.acg_mid_spin.setValue(config_dict["Menu"]["AGC MID DELAY"])
+        self.acg_slow_spin.setValue(config_dict["Menu"]["AGC SLOW DELAY"])
+
+        self.lcd_contrast_spin.setValue(config_dict["Menu"]["LCD CONTRAST"])
+        self.dimmer_backlit_spin.setValue(config_dict["Menu"]["DIMMER BACKLIT"])
+        self.dimmer_lcd_spin.setValue(config_dict["Menu"]["DIMMER LCD"])
+        self.dimmer_tx_busy_spin.setValue(config_dict["Menu"]["DIMMER TX/BUSY"])
+        self.peak_hold_combo.setCurrentText(config_dict["Menu"]["PEAK HOLD"])
+        self.zin_led_combo.setCurrentText(config_dict["Menu"]["ZIN LED"])
+        self.pop_up_combo.setCurrentText(config_dict["Menu"]["POP-UP MENU"])
+
+        self.dvs_rx_out_lvl_spin.setValue(config_dict["Menu"]["DVS RX OUT LVL"])
+        self.dvs_tx_out_lvl_spin.setValue(config_dict["Menu"]["DVS TX OUT LVL"])
+
+        self.keyer_type_combo.setCurrentText(config_dict["Menu"]["KEYER TYPE"])
+        self.keyer_dot_dash_combo.setCurrentText(config_dict["Menu"]["KEYER DOT/DASH"])
+        self.cw_weight_spin.setValue(config_dict["Menu"]["CW WEIGHT"])
+        self.beacon_interval_spin.setValue(config_dict["Menu"]["BEACON INTERVAL"])
+        self.number_style_combo.setCurrentText(config_dict["Menu"]["NUMBER STYLE"])
+        self.contest_number_spin.setValue(config_dict["Menu"]["CONTEST NUMBER"])
+        self.cw_memory_1_combo.setCurrentText(config_dict["Menu"]["CW MEMORY 1"])
+        self.cw_memory_2_combo.setCurrentText(config_dict["Menu"]["CW MEMORY 2"])
+        self.cw_memory_3_combo.setCurrentText(config_dict["Menu"]["CW MEMORY 3"])
+        self.cw_memory_4_combo.setCurrentText(config_dict["Menu"]["CW MEMORY 4"])
+        self.cw_memory_5_combo.setCurrentText(config_dict["Menu"]["CW MEMORY 5"])
+
+        self.nb_width_combo.setCurrentText(config_dict["Menu"]["NB WIDTH"])
+        self.nb_rejection_combo.setCurrentText(config_dict["Menu"]["NB REJECTION"])
+        self.nb_level_spin.setValue(config_dict["Menu"]["NB LEVEL"])
+        self.beep_level_spin.setValue(config_dict["Menu"]["BEEP LEVEL"])
+        self.rf_sql_vr_combo.setCurrentText(config_dict["Menu"]["RF/SQL VR"])
+        self.cat_rate_combo.setCurrentText(config_dict["Menu"]["CAT RATE"])
+        self.cat_tot_combo.setCurrentText(config_dict["Menu"]["CAT TOT"])
+        self.cat_rts_combo.setCurrentText(config_dict["Menu"]["CAT RTS"])
+        self.meme_group_combo.setCurrentText(config_dict["Menu"]["MEM GROUP"])
+        self.fm_setting_combo.setCurrentText(config_dict["Menu"]["FM SETTING"])
+        self.rec_setting_combo.setCurrentText(config_dict["Menu"]["REC SETTING"])
+        self.atas_setting_combo.setCurrentText(config_dict["Menu"]["ATAS SETTING"])
+        self.quick_spl_freq_spin.setValue(config_dict["Menu"]["QUICK SPL FREQ"])
+        self.tx_tot_spin.setValue(config_dict["Menu"]["TX TOT"])
+        self.mic_scan_combo.setCurrentText(config_dict["Menu"]["MIC SCAN"])
+        self.mic_scan_resume_combo.setCurrentText(config_dict["Menu"]["MIC SCAN RESUME"])
+        self.ref_freq_adj_spin.setValue(config_dict["Menu"]["REF FREQ ADJ"])
+        self.clar_select_combo.setCurrentText(config_dict["Menu"]["CLAR SELECT"])
+        self.apo_combo.setCurrentText(config_dict["Menu"]["APO"])
+        self.fan_control_combo.setCurrentText(config_dict["Menu"]["FAN CONTROL"])
+
+        self.am_lcut_freq_combo.setCurrentText(config_dict["Menu"]["AM LCUT FREQ"])
+        self.am_lcut_slope_combo.setCurrentText(config_dict["Menu"]["AM LCUT SLOPE"])
+        self.am_hcut_freq_combo.setCurrentText(config_dict["Menu"]["AM HCUT FREQ"])
+        self.am_hcut_slope_combo.setCurrentText(config_dict["Menu"]["AM HCUT SLOPE"])
+        self.am_mic_select_combo.setCurrentText(config_dict["Menu"]["AM MIC SELECT"])
+        self.am_out_level_spin.setValue(config_dict["Menu"]["AM OUT LEVEL"])
+        self.am_ptt_select_combo.setCurrentText(config_dict["Menu"]["AM PTT SELECT"])
+
+        self.cw_lcut_freq_combo.setCurrentText(config_dict["Menu"]["CW LCUT FREQ"])
+        self.cw_lcut_slope_combo.setCurrentText(config_dict["Menu"]["CW LCUT SLOPE"])
+        self.cw_hcut_freq_combo.setCurrentText(config_dict["Menu"]["CW HCUT FREQ"])
+        self.cw_hcut_slope_combo.setCurrentText(config_dict["Menu"]["CW HCUT SLOPE"])
+        self.cw_out_level_spin.setValue(config_dict["Menu"]["CW OUT LEVEL"])
+        self.cw_auto_mode_combo.setCurrentText(config_dict["Menu"]["CW AUTO MODE"])
+        self.cw_bfo_combo.setCurrentText(config_dict["Menu"]["CW BFO"])
+        self.cw_bk_in_type_combo.setCurrentText(config_dict["Menu"]["CW BK-IN TYPE"])
+        self.cw_bk_in_delay_spin.setValue(config_dict["Menu"]["CW BK-IN DELAY"])
+        self.cw_wav_shape_combo.setCurrentText(config_dict["Menu"]["CW WAVE SHAPE"])
+        self.cw_freq_display_combo.setCurrentText(config_dict["Menu"]["CW FREQ DISPLAY"])
+        self.pc_keying_combo.setCurrentText(config_dict["Menu"]["PC KEYING"])
+        self.qsk_delay_time_combo.setCurrentText(config_dict["Menu"]["QSK DELAY TIME"])
+
+        self.data_mode_combo.setCurrentText(config_dict["Menu"]["DATA MODE"])
+        self.psk_tone_combo.setCurrentText(config_dict["Menu"]["PSK TONE"])
+        self.other_disp_spin.setValue(config_dict["Menu"]["OTHER DISP"])
+        self.other_shift_spin.setValue(config_dict["Menu"]["OTHER SHIFT"])
+        self.data_lcut_freq_combo.setCurrentText(config_dict["Menu"]["DATA LCUT FREQ"])
+        self.data_lcut_slope_combo.setCurrentText(config_dict["Menu"]["DATA LCUT SLOPE"])
+        self.data_hcut_freq_combo.setCurrentText(config_dict["Menu"]["DATA HCUT FREQ"])
+        self.data_hcut_slope_combo.setCurrentText(config_dict["Menu"]["DATA HCUT SLOPE"])
+        self.data_in_select_combo.setCurrentText(config_dict["Menu"]["DATA IN SELECT"])
+        self.data_ptt_select_combo.setCurrentText(config_dict["Menu"]["DATA PTT SELECT"])
+        self.data_out_level_spin.setValue(config_dict["Menu"]["DATA OUT LEVEL"])
+        self.data_bfo_combo.setCurrentText(config_dict["Menu"]["DATA BFO"])
+
+        self.fm_mic_select_combo.setCurrentText(config_dict["Menu"]["FM MIC SELECT"])
+        self.fm_out_level_spin.setValue(config_dict["Menu"]["FM OUT LEVEL"])
+        self.pkt_ptt_select_combo.setCurrentText(config_dict["Menu"]["PKT PTT SELECT"])
+        self.rpt_shift_28_spin.setValue(config_dict["Menu"]["RPT SHIFT 28MHz"])
+        self.rpt_shift_50_spin.setValue(config_dict["Menu"]["RPT SHIFT 50MHz"])
+        self.dcs_polarity_combo.setCurrentText(config_dict["Menu"]["DCS POLARITY"])
+
+        self.rtty_lcut_freq_combo.setCurrentText(config_dict["Menu"]["RTTY LCUT FREQ"])
+        self.rtty_lcut_slope_combo.setCurrentText(config_dict["Menu"]["RTTY LCUT SLOPE"])
+        self.rtty_hcut_freq_combo.setCurrentText(config_dict["Menu"]["RTTY HCUT FREQ"])
+        self.rtty_hcut_slope_combo.setCurrentText(config_dict["Menu"]["RTTY HCUT SLOPE"])
+        self.rtty_shift_port_combo.setCurrentText(config_dict["Menu"]["RTTY SHIFT PORT"])
+        self.rtty_polarity_r_combo.setCurrentText(config_dict["Menu"]["RTTY POLARITY-R"])
+        self.rtty_polarity_t_combo.setCurrentText(config_dict["Menu"]["RTTY POLARITY-T"])
+        self.rtty_out_level_spin.setValue(config_dict["Menu"]["RTTY OUT LEVEL"])
+        self.rtty_shift_freq_combo.setCurrentText(config_dict["Menu"]["RTTY SHIFT FREQ"])
+        self.rtty_mark_freq_combo.setCurrentText(config_dict["Menu"]["RTTY MARK FREQ"])
+        self.rtty_bfo_combo.setCurrentText(config_dict["Menu"]["RTTY BFO"])
+
+        self.ssb_lcut_freq_combo.setCurrentText(config_dict["Menu"]["SSB LCUT FREQ"])
+        self.ssb_lcut_slope_combo.setCurrentText(config_dict["Menu"]["SSB LCUT SLOPE"])
+        self.ssb_hcut_freq_combo.setCurrentText(config_dict["Menu"]["SSB HCUT FREQ"])
+        self.ssb_hcut_slope_combo.setCurrentText(config_dict["Menu"]["SSB HCUT SLOPE"])
+        self.ssb_mic_select_combo.setCurrentText(config_dict["Menu"]["SSB MIC SELECT"])
+        self.ssb_out_level_spin.setValue(config_dict["Menu"]["SSB OUT LEVEL"])
+        self.ssb_bfo_combo.setCurrentText(config_dict["Menu"]["SSB BFO"])
+        self.ssb_ptt_select_combo.setCurrentText(config_dict["Menu"]["SSB PTT SELECT"])
+        self.ssb_tx_bpf_combo.setCurrentText(config_dict["Menu"]["SSB TX BPF"])
+
+        self.apf_width_combo.setCurrentText(config_dict["Menu"]["APF WIDTH"])
+        self.contour_level_spin.setValue(config_dict["Menu"]["CONTOUR LEVEL"])
+        self.contour_width_spin.setValue(config_dict["Menu"]["CONTOUR WIDTH"])
+        self.if_notch_width_combo.setCurrentText(config_dict["Menu"]["IF NOTCH WIDTH"])
+
+        self.scp_start_cycle_combo.setCurrentText(config_dict["Menu"]["SCP START CYCLE"])
+        self.scp_span_freq_combo.setCurrentText(config_dict["Menu"]["SCP SPAN FREQ"])
+
+        self.quick_dial_combo.setCurrentText(config_dict["Menu"]["QUICK DIAL"])
+        self.ssb_dial_step_combo.setCurrentText(config_dict["Menu"]["SSB DIAL STEP"])
+        self.am_dial_step_combo.setCurrentText(config_dict["Menu"]["AM DIAL STEP"])
+        self.fm_dial_step_combo.setCurrentText(config_dict["Menu"]["FM DIAL STEP"])
+        self.dial_step_combo.setCurrentText(config_dict["Menu"]["DIAL STEP"])
+        self.am_ch_step_combo.setCurrentText(config_dict["Menu"]["AM CH STEP"])
+        self.fm_ch_step_combo.setCurrentText(config_dict["Menu"]["FM CH STEP"])
+
+        self.eq_1_freq_combo.setCurrentText(config_dict["Menu"]["EQ1 FREQ"])
+        self.eq_1_level_spin.setValue(config_dict["Menu"]["EQ1 LEVEL"])
+        self.eq_1_bwth_spin.setValue(config_dict["Menu"]["EQ1 BWTH"])
+        self.eq_2_freq_combo.setCurrentText(config_dict["Menu"]["EQ2 FREQ"])
+        self.eq_2_level_spin.setValue(config_dict["Menu"]["EQ2 LEVEL"])
+        self.eq_2_bwth_spin.setValue(config_dict["Menu"]["EQ2 BWTH"])
+        self.eq_3_freq_combo.setCurrentText(config_dict["Menu"]["EQ3 FREQ"])
+        self.eq_3_level_spin.setValue(config_dict["Menu"]["EQ3 LEVEL"])
+        self.eq_3_bwth_spin.setValue(config_dict["Menu"]["EQ3 BWTH"])
+        self.p_eq_1_freq_combo.setCurrentText(config_dict["Menu"]["P-EQ1 FREQ"])
+        self.p_eq_1_level_spin.setValue(config_dict["Menu"]["P-EQ1 LEVEL"])
+        self.p_eq_1_bwth_spin.setValue(config_dict["Menu"]["P-EQ1 BWTH"])
+        self.p_eq_2_freq_combo.setCurrentText(config_dict["Menu"]["P-EQ2 FREQ"])
+        self.p_eq_2_level_spin.setValue(config_dict["Menu"]["P-EQ2 LEVEL"])
+        self.p_eq_2_bwth_spin.setValue(config_dict["Menu"]["P-EQ2 BWTH"])
+        self.p_eq_3_freq_combo.setCurrentText(config_dict["Menu"]["P-EQ3 FREQ"])
+        self.p_eq_3_level_spin.setValue(config_dict["Menu"]["P-EQ3 LEVEL"])
+        self.p_eq_3_bwth_spin.setValue(config_dict["Menu"]["P-EQ3 BWTH"])
+
+        self.hf_ssb_pwr_spin.setValue(config_dict["Menu"]["HF SSB PWR"])
+        self.hf_am_pwr_spin.setValue(config_dict["Menu"]["HF AM PWR"])
+        self.hf_pwr_spin.setValue(config_dict["Menu"]["HF PWR"])
+        self.ssb_50m_pwr_spin.setValue(config_dict["Menu"]["50M SSB PWR"])
+        self.am_50m_pwr_spin.setValue(config_dict["Menu"]["50M AM PWR"])
+        self.pwr_50m_spin.setValue(config_dict["Menu"]["50M PWR"])
+        self.ssb_mic_gain_spin.setValue(config_dict["Menu"]["SSB MIC GAIN"])
+        self.am_mic_gain_spin.setValue(config_dict["Menu"]["AM MIC GAIN"])
+        self.fm_mic_gain_spin.setValue(config_dict["Menu"]["FM MIC GAIN"])
+        self.data_mic_gain_spin.setValue(config_dict["Menu"]["DATA MIC GAIN"])
+        self.ssb_data_gain_spin.setValue(config_dict["Menu"]["SSB DATA GAIN"])
+        self.am_data_gain_spin.setValue(config_dict["Menu"]["AM DATA GAIN"])
+        self.fm_data_gain_spin.setValue(config_dict["Menu"]["FM DATA GAIN"])
+        self.data_data_gain_spin.setValue(config_dict["Menu"]["DATA DATA GAIN"])
+        self.tuner_select_combo.setCurrentText(config_dict["Menu"]["TUNER SELECT"])
+        self.vox_select_combo.setCurrentText(config_dict["Menu"]["VOX SELECT"])
+        self.vox_gain_spin.setValue(config_dict["Menu"]["VOX GAIN"])
+        self.vox_delay_spin.setValue(config_dict["Menu"]["VOX DELAY"])
+        self.anti_vox_gain_spin.setValue(config_dict["Menu"]["ANTI VOX GAIN"])
+        self.data_vox_gain_spin.setValue(config_dict["Menu"]["DATA VOX GAIN"])
+        self.data_vox_delay_spin.setValue(config_dict["Menu"]["DATA VOX DELAY"])
+        self.anti_dvox_gain_spin.setValue(config_dict["Menu"]["ANTI DVOX GAIN"])
+        self.emergency_freq_combo.setCurrentText(config_dict["Menu"]["EMERGENCY FREQ"])
+
+        self.status_bar.showMessage(f"Configuration file: {file_name} loaded.")
 
     def send_config_2_radio(self):
         """Send the config to the Radio"""
@@ -3724,6 +3922,7 @@ class MainWindow(QMainWindow):
         self.transfert = False
 
     def get_config_from_radio(self):
+        """ Get config from the radio """
         self.transfert = True
 
         self.progressbar = QProgressBar(self)
@@ -4063,6 +4262,7 @@ class MainWindow(QMainWindow):
             self.transfert = False
 
     def make_reset_all(self):
+        """ Reset all parameters """
         dialog = QMessageBox()
         rep = dialog.question(self,
                               "Reset",
@@ -4076,6 +4276,7 @@ class MainWindow(QMainWindow):
             return
 
     def make_reset_data(self):
+        """ Reset data """
         dialog = QMessageBox()
         rep = dialog.question(self,
                               "Reset",
@@ -4089,6 +4290,7 @@ class MainWindow(QMainWindow):
             return
 
     def make_reset_func(self):
+        """ Reset functions """
         dialog = QMessageBox()
         rep = dialog.question(self,
                               "Reset",
@@ -4187,7 +4389,7 @@ class MainWindow(QMainWindow):
                 self.rig.write(cmd)
 
     def get_lcd_contrast(self):
-        """Get ACG MID DELAY"""
+        """Get LCD contrast"""
         if self.rig.isOpen():
             if self.transfert:
                 self.rig.write(b"EX0201;")
@@ -4208,6 +4410,7 @@ class MainWindow(QMainWindow):
                 self.rig.write(cmd)
 
     def get_dimmer_backlit(self):
+        """Get dimmer backlit"""
         if self.rig.isOpen():
             if self.transfert:
                 self.rig.write(b"EX0202;")
@@ -4228,6 +4431,7 @@ class MainWindow(QMainWindow):
                 self.rig.write(cmd)
 
     def get_dimmer_lcd(self):
+        """Get dimmer LCD"""
         if self.rig.isOpen():
             if self.transfert:
                 self.rig.write(b"EX0203;")
@@ -4248,6 +4452,7 @@ class MainWindow(QMainWindow):
                 self.rig.write(cmd)
 
     def get_dimmer_tx_busy(self):
+        """Get DIMMER TX/BUSY"""
         if self.rig.isOpen():
             if self.transfert:
                 self.rig.write(b"EX0204;")
@@ -4265,6 +4470,7 @@ class MainWindow(QMainWindow):
                 self.rig.write(cmd)
 
     def get_peak_hold(self):
+        """Get PEAK HOLD"""
         if self.rig.isOpen():
             if self.transfert:
                 self.rig.write(b"EX0205;")
@@ -7025,6 +7231,25 @@ class MainWindow(QMainWindow):
             self.rig.close()
 
 
+class GenericFunctionWindow(QDialog):
+    """Generic function Window"""
+
+    def __init__(self, master):
+        super().__init__()
+        self.master = master
+
+        self.setWindowTitle("Paramètres")
+        self.setModal(True)
+        self.setFixedSize(QSize(600, 610))
+        self.setWindowFlags(Qt.WindowCloseButtonHint)
+        x = self.master.geometry().x() + self.master.width() // 2 - self.width() // 2
+        y = self.master.geometry().y() + self.master.height() // 2 - self.height() // 2
+        self.setGeometry(x, y, 600, 610)
+
+        self.main_layout = QVBoxLayout()
+        self.setLayout(self.main_layout)
+
+
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
@@ -7041,7 +7266,7 @@ if __name__ == "__main__":
     app.processEvents()
     window = MainWindow(app)
     splash.finish(window)
-    window.showMaximized()
-    # window.show()
-    # window.resize(window.minimumSizeHint())
+    # window.showMaximized()
+    window.show()
+    window.resize(window.minimumSizeHint())
     sys.exit(app.exec_())
